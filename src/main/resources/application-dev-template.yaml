@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432
+    username: "schedule-planning"
+    password: "123456"
+logging:
+  level:
+    com.xlf: debug
+    com.xlf.schedule.mapper: info
+xutil:
+  mail:
+    default-encoding: "utf-8"
+    host: "smtp.qiye.aliyun.com"
+    username: ""
+    password: ""
+    nickname: "SchedulePlanning"
+    port: 25
