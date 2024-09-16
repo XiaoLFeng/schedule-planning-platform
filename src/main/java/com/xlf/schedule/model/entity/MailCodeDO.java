@@ -31,39 +31,36 @@ import lombok.experimental.Accessors;
 import java.sql.Timestamp;
 
 /**
- * 用户角色表实体
+ * 邮箱验证码表实体
  * <p>
- * 该类用于定义用户角色表实体;
+ * 该类用于定义邮箱验证码表实体;
  *
  * @since v1.0.0
  * @version v1.0.0
  * @author xiao_lfeng
  */
 @Data
-@TableName("xf_role")
+@TableName("xf_mail_code")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleDO {
+public class MailCodeDO {
     /**
-     * 用户角色表主键
+     * 验证码UUID
      */
-    @TableId(type = IdType.NONE)
-    private String roleUuid;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String codeUuid;
     /**
-     * 用户角色表名称
+     * 邮箱
      */
-    private String name;
+    private String mail;
     /**
-     * 用户角色表显示名称
+     * 验证码
      */
-    private String displayName;
+    private String code;
     /**
-     * 用户角色表描述
-     */
-    private String roleDesc;
-    /**
-     * 用户角色表创建时间
+     * 创建时间
      */
     private Timestamp createdAt;
+    private Timestamp expiredAt;
 }

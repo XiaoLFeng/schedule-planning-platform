@@ -25,7 +25,9 @@ import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.vo.AuthChangePasswordVO;
 import com.xlf.schedule.model.vo.AuthLoginVO;
 import com.xlf.schedule.model.vo.AuthRegisterVO;
+import com.xlf.schedule.model.vo.AuthResetPasswordVO;
 import com.xlf.schedule.service.AuthService;
+import com.xlf.schedule.service.MailService;
 import com.xlf.schedule.service.TokenService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
@@ -59,6 +61,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final TokenService tokenService;
+    private final MailService mailService;
 
     /**
      * 登录
@@ -90,6 +93,13 @@ public class AuthController {
         }
     }
 
+    /**
+     * 注册
+     * <p>
+     * 该方法用于注册。
+     *
+     * @return {@link AuthRegisterVO} 注册信息
+     */
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<BaseResponse<AuthUserDTO>> register(
@@ -105,12 +115,26 @@ public class AuthController {
         return ResultUtil.success("注册成功", authUserDTO);
     }
 
+    /**
+     * 登出
+     * <p>
+     * 该方法用于登出。
+     *
+     * @return {@link Void} 空
+     */
     @GetMapping("/logout")
     public ResponseEntity<BaseResponse<Void>> logout(HttpServletRequest request) {
         tokenService.deleteTokenByRequest(request);
         return ResultUtil.success("登出成功");
     }
 
+    /**
+     * 修改密码
+     * <p>
+     * 该方法用于修改密码。
+     *
+     * @return {@link Void} 空
+     */
     @PutMapping("/password/change")
     public ResponseEntity<BaseResponse<Void>> changePassword(
             @Validated @RequestBody AuthChangePasswordVO authChangePasswordVO,
@@ -120,5 +144,26 @@ public class AuthController {
         authService.checkUserAndPassword(getUserDTO.getUuid(), authChangePasswordVO.getOldPassword(), request);
         authService.changePassword(getUserDTO.getUuid(), authChangePasswordVO.getNewPassword());
         return ResultUtil.success("修改密码成功");
+    }
+
+    /**
+     * 重置密码
+     * <p>
+     * 该方法用于重置密码。
+     *
+     * @return {@link Void} 空
+     */
+    @PutMapping("/password/reset")
+    @Transactional
+    public ResponseEntity<BaseResponse<Void>> resetPassword(
+            @Validated @RequestBody AuthResetPasswordVO authResetPasswordVO
+    ) {
+        UserDTO getUserDTO = userService.getUserByEmail(authResetPasswordVO.getMail());
+        if (mailService.verifyMailCode(authResetPasswordVO.getMail(), authResetPasswordVO.getCode())) {
+            authService.changePassword(getUserDTO.getUuid(), authResetPasswordVO.getPassword());
+        } else {
+            throw new BusinessException("验证码错误", ErrorCode.OPERATION_DENIED);
+        }
+        return ResultUtil.success("重置密码成功");
     }
 }

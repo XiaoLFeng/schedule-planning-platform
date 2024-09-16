@@ -18,52 +18,24 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.entity;
+package com.xlf.schedule.dao;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import java.sql.Timestamp;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xlf.schedule.mapper.MailCodeMapper;
+import com.xlf.schedule.model.entity.MailCodeDO;
+import org.springframework.stereotype.Repository;
 
 /**
- * 用户角色表实体
+ * 邮箱验证码表数据访问对象
  * <p>
- * 该类用于定义用户角色表实体;
+ * 该类用于定义邮箱验证码表数据访问对象;
+ * 该类使用 {@link Repository} 注解标记;
  *
  * @since v1.0.0
  * @version v1.0.0
  * @author xiao_lfeng
  */
-@Data
-@TableName("xf_role")
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class RoleDO {
-    /**
-     * 用户角色表主键
-     */
-    @TableId(type = IdType.NONE)
-    private String roleUuid;
-    /**
-     * 用户角色表名称
-     */
-    private String name;
-    /**
-     * 用户角色表显示名称
-     */
-    private String displayName;
-    /**
-     * 用户角色表描述
-     */
-    private String roleDesc;
-    /**
-     * 用户角色表创建时间
-     */
-    private Timestamp createdAt;
+@Repository
+public class MailCodeDAO extends ServiceImpl<MailCodeMapper, MailCodeDO> implements IService<MailCodeDO> {
 }

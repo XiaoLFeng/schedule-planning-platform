@@ -39,6 +39,14 @@ public class SystemConstant {
      */
     public static final String SYSTEM_CHINESE_NAME = "日程规划平台";
     /**
+     * 系统版权
+     */
+    public static final String SYSTEM_COPYRIGHT = "Copyright (C) 2016-2024 XiaoLFeng. All rights reserved.";
+    /**
+     * 系统中文版权
+     */
+    public static final String SYSTEM_CHINESE_COPYRIGHT = "版权所有 (C) 2016-2024 XiaoLFeng. 保留所有权利。";
+    /**
      * 系统版本
      */
     public static final String SYSTEM_VERSION = "v1.0.0";

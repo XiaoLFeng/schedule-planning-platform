@@ -18,63 +18,28 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.dto;
+-- auto-generated definition
+create table xf_mail_code
+(
+    code_uuid  varchar(32)             not null
+        constraint xf_mail_code_pk
+            primary key,
+    mail       varchar(254)            not null,
+    code       varchar(6)              not null,
+    created_at timestamp default now() not null,
+    expired_at timestamp               not null
+);
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+comment on table xf_mail_code is '邮箱验证码';
+comment on column xf_mail_code.code_uuid is '邮箱验证码主键';
+comment on column xf_mail_code.mail is '邮箱';
+comment on column xf_mail_code.code is '邮箱验证码';
+comment on column xf_mail_code.created_at is '创建时间';
+comment on column xf_mail_code.expired_at is '过期时间';
 
-import java.sql.Timestamp;
+create unique index xf_mail_code_code_uindex
+    on xf_mail_code (code);
 
-/**
- * 用户数据传输对象
- * <p>
- * 该类用于定义用户数据传输对象；
- *
- * @since v1.0.0
- * @version v1.0.0
- * @author xiao_lfeng
- */
-@Data
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class UserDTO {
-    /**
-     * 用户表主键
-     */
-    private String uuid;
-    /**
-     * 用户名
-     */
-    private String username;
-    /**
-     * 手机号
-     */
-    private String phone;
-    /**
-     * 用户邮箱
-     */
-    private String email;
-    /**
-     * 角色
-     */
-    private String role;
-    /**
-     * 创建时间
-     */
-    private Timestamp createdAt;
-    /**
-     * 修改时间
-     */
-    private Timestamp updatedAt;
-    /**
-     * 用户是否开启
-     */
-    private Boolean enable;
-    /**
-     * 封禁到
-     */
-    private Timestamp bannedAt;
-}
+create unique index xf_mail_code_mail_uindex
+    on xf_mail_code (mail);
+

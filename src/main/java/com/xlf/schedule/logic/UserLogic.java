@@ -100,4 +100,26 @@ public class UserLogic implements UserService {
         }
         return this.getUserByUuid(getTokenDO.getUserUuid());
     }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getEmail, email).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        UserDTO userDTO = new UserDTO();
+        BeanUtils.copyProperties(userDO, userDTO);
+        return userDTO;
+    }
+
+    @Override
+    public UserDTO getUserByPhone(String phone) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getPhone, phone).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        UserDTO userDTO = new UserDTO();
+        BeanUtils.copyProperties(userDO, userDTO);
+        return userDTO;
+    }
 }

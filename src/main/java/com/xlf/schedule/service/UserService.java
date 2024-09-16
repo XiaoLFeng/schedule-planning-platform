@@ -68,4 +68,26 @@ public interface UserService {
      * @return {@link UserDTO} 用户信息
      */
     UserDTO getUserByToken(HttpServletRequest request);
+
+    /**
+     * 通过邮箱获取用户信息
+     * <p>
+     * 该方法用于通过邮箱获取用户信息；
+     * 查询成功用户后，返回用户信息。
+     *
+     * @param email 邮箱
+     * @return {@link UserDTO} 用户信息
+     */
+    UserDTO getUserByEmail(String email);
+
+    /**
+     * 通过手机号获取用户信息
+     * <p>
+     * 该方法用于通过手机号获取用户信息；
+     * 查询成功用户后，返回用户信息。
+     *
+     * @param phone 手机号
+     * @return {@link UserDTO} 用户信息
+     */
+    UserDTO getUserByPhone(String phone);
 }
