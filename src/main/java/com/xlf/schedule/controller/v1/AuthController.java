@@ -23,6 +23,7 @@ package com.xlf.schedule.controller.v1;
 import com.xlf.schedule.model.dto.AuthUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.vo.AuthLoginVO;
+import com.xlf.schedule.model.vo.AuthRegisterVO;
 import com.xlf.schedule.service.AuthService;
 import com.xlf.schedule.service.TokenService;
 import com.xlf.schedule.service.UserService;
@@ -77,7 +78,7 @@ public class AuthController {
                 || Pattern.matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$", authLoginVO.getUser())
                 || Pattern.matches("^[a-zA-Z0-9_-]{4,36}$", authLoginVO.getUser())
         ) {
-            UserDTO getUserDTO = userService.getUserForThreeType(authLoginVO.getUser(), request);
+            UserDTO getUserDTO = userService.getUserForThreeType(authLoginVO.getUser());
             authService.checkUserAndPassword(getUserDTO.getUuid(), authLoginVO.getPassword(), request);
             String getUserToken = tokenService.createToken(getUserDTO.getUuid(), 12L, request);
             AuthUserDTO authUserDTO = new AuthUserDTO()
@@ -87,5 +88,19 @@ public class AuthController {
         } else {
             throw new BusinessException("用户名格式不正确", ErrorCode.BODY_ERROR);
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<BaseResponse<AuthUserDTO>> register(
+            @Validated @RequestBody AuthRegisterVO authRegisterVO,
+            HttpServletRequest request
+    ) {
+        String getUserUuid = authService.registerUser(authRegisterVO);
+        UserDTO getUserDTO = userService.getUserByUuid(getUserUuid);
+        String getUserToken = tokenService.createToken(getUserUuid, 12L, request);
+        AuthUserDTO authUserDTO = new AuthUserDTO()
+                .setUser(getUserDTO)
+                .setToken(getUserToken);
+        return ResultUtil.success("注册成功", authUserDTO);
     }
 }

@@ -24,9 +24,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 /**
- * AuthLoginVO
- * <br/>
- * 授权登录实体
+ * 授权登录值对象
+ * <p>
+ * 该类用于定义授权登录值对象;
  *
  * @since v1.0.0
  * @version v1.0.0

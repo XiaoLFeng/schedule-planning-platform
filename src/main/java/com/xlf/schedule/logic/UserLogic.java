@@ -24,8 +24,8 @@ import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.service.UserService;
-import com.xlf.utility.exception.library.UserAuthenticationException;
-import jakarta.servlet.http.HttpServletRequest;
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class UserLogic implements UserService {
     private final UserDAO userDAO;
 
     @Override
-    public UserDTO getUserForThreeType(String user, HttpServletRequest request) {
+    public UserDTO getUserForThreeType(String user) {
         // 检查用户类型
         UserDO userDO;
         if (Pattern.matches("^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", user)) {
@@ -62,7 +62,19 @@ public class UserLogic implements UserService {
             userDO = null;
         }
         if (userDO == null) {
-            throw new UserAuthenticationException(UserAuthenticationException.ErrorType.USER_NOT_EXIST, request);
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        UserDTO userDTO = new UserDTO();
+        BeanUtils.copyProperties(userDO, userDTO);
+
+        return userDTO;
+    }
+
+    @Override
+    public UserDTO getUserByUuid(String userUuid) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
         }
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);

@@ -18,42 +18,32 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.service;
+package com.xlf.schedule.model.vo;
 
-import com.xlf.schedule.model.dto.UserDTO;
-import com.xlf.schedule.model.entity.UserDO;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
 /**
- * 用户服务接口
- * <br/>
- * 用户服务，用于用户相关操作。
+ * 授权注册值对象
+ * <p>
+ * 该类用于定义授权注册值对象;
  *
- * @author xiao_lfeng
- * @version v1.0.0
  * @since v1.0.0
+ * @version v1.0.0
+ * @author xiao_lfeng
  */
-public interface UserService {
-
-    /**
-     * 获取用户信息
-     * <p>
-     * 该方法用于获取用户信息；
-     * 用户可查询条件有三种 {@code 手机号}、{@code 邮箱}、{@code 用户名}；
-     * 查询成功用户后，返回用户信息。
-     *
-     * @param user 用户
-     * @return {@link UserDO} 用户信息
-     */
-    UserDTO getUserForThreeType(String user);
-
-    /**
-     * 通过用户UUID获取用户信息
-     * <p>
-     * 该方法用于通过用户UUID获取用户信息；
-     * 查询成功用户后，返回用户信息。
-     *
-     * @param userUuid 用户UUID
-     * @return {@link UserDTO} 用户信息
-     */
-    UserDTO getUserByUuid(String userUuid);
+@Getter
+@SuppressWarnings("unused")
+public class AuthRegisterVO {
+    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,36}$", message = "用户名格式不准确")
+    private String username;
+    @Pattern(regexp = "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", message = "手机号格式不正确")
+    private String phone;
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
+    private String email;
+    @NotBlank(message = "密码不能为空")
+    private String password;
 }

@@ -20,7 +20,7 @@
 
 package com.xlf.schedule.service;
 
-import com.xlf.schedule.model.entity.UserDO;
+import com.xlf.schedule.model.vo.AuthRegisterVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -47,5 +47,14 @@ public interface AuthService {
      */
     void checkUserAndPassword(String userUuid, String password, HttpServletRequest request);
 
-    UserDO registerUser();
+    /**
+     * 注册用户
+     * <p>
+     * 该方法用于注册用户；注册用户时，需要提供 {@code 用户名}、{@code 手机号}、{@code 邮箱}、{@code 密码}；
+     * 注册成功后，返回用户信息。
+     *
+     * @param authRegisterVO 授权注册值对象
+     * @return 用户UUID
+     */
+    String registerUser(AuthRegisterVO authRegisterVO);
 }

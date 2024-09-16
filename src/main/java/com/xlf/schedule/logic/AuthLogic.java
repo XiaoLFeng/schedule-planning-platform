@@ -20,13 +20,20 @@
 
 package com.xlf.schedule.logic;
 
+import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.dao.UserDAO;
+import com.xlf.schedule.model.entity.RoleDO;
 import com.xlf.schedule.model.entity.UserDO;
+import com.xlf.schedule.model.vo.AuthRegisterVO;
 import com.xlf.schedule.service.AuthService;
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.exception.library.UserAuthenticationException;
 import com.xlf.utility.util.PasswordUtil;
+import com.xlf.utility.util.UuidUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 /**
@@ -48,6 +55,10 @@ public class AuthLogic implements AuthService {
      * 用户数据访问对象
      */
     private final UserDAO userDAO;
+    /**
+     * 角色数据访问对象
+     */
+    private final RoleDAO roleDAO;
 
     @Override
     public void checkUserAndPassword(String userUuid, String password, HttpServletRequest request) {
@@ -61,7 +72,26 @@ public class AuthLogic implements AuthService {
     }
 
     @Override
-    public UserDO registerUser() {
-        return null;
+    public String registerUser(@NotNull AuthRegisterVO authRegisterVO) {
+        // 检查用户信息
+        boolean isExistUser = userDAO.lambdaQuery()
+                .eq(UserDO::getUsername, authRegisterVO.getUsername()).or()
+                .eq(UserDO::getPhone, authRegisterVO.getPhone()).or()
+                .eq(UserDO::getEmail, authRegisterVO.getEmail()).exists();
+        if (isExistUser) {
+            throw new BusinessException("用户已存在", ErrorCode.EXISTED);
+        }
+        // 注册用户
+        String newUserUuid = UuidUtil.generateStringUuid();
+        RoleDO getUseRole = roleDAO.lambdaQuery().eq(RoleDO::getName, "USER").one();
+        UserDO userDO = new UserDO()
+                .setUuid(newUserUuid)
+                .setUsername(authRegisterVO.getUsername())
+                .setPhone(authRegisterVO.getPhone())
+                .setEmail(authRegisterVO.getEmail())
+                .setRole(getUseRole.getRoleUuid())
+                .setPassword(PasswordUtil.encrypt(authRegisterVO.getPassword()));
+        userDAO.save(userDO);
+        return newUserUuid;
     }
 }
