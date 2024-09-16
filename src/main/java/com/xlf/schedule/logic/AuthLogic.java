@@ -94,4 +94,16 @@ public class AuthLogic implements AuthService {
         userDAO.save(userDO);
         return newUserUuid;
     }
+
+    @Override
+    public void changePassword(String userUuid, String password) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        userDO
+                .setOldPassword(userDO.getPassword())
+                .setPassword(PasswordUtil.encrypt(password));
+        userDAO.lambdaUpdate().eq(UserDO::getUuid, userUuid).update(userDO);
+    }
 }

@@ -23,6 +23,9 @@ package com.xlf.schedule.logic;
 import com.xlf.schedule.dao.TokenDAO;
 import com.xlf.schedule.model.entity.TokenDO;
 import com.xlf.schedule.service.TokenService;
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.util.HeaderUtil;
 import com.xlf.utility.util.UuidUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 令牌逻辑
@@ -79,10 +83,20 @@ public class TokenLogic implements TokenService {
 
     @Override
     @Transactional
-    public boolean deleteToken(String token) {
-        return tokenDAO.lambdaUpdate()
+    public void deleteToken(String token) {
+        tokenDAO.lambdaUpdate()
                 .eq(TokenDO::getTokenUuid, token)
                 .remove();
+    }
+
+    @Override
+    @Transactional
+    public void deleteTokenByRequest(HttpServletRequest request) {
+        UUID getTokenUuid = HeaderUtil.getAuthorizeUserUuid(request);
+        if (getTokenUuid == null) {
+            throw new BusinessException("令牌不存在", ErrorCode.NOT_EXIST);
+        }
+        this.deleteToken(getTokenUuid.toString());
     }
 
     @Override

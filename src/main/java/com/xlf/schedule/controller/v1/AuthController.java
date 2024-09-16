@@ -22,6 +22,7 @@ package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.model.dto.AuthUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.vo.AuthChangePasswordVO;
 import com.xlf.schedule.model.vo.AuthLoginVO;
 import com.xlf.schedule.model.vo.AuthRegisterVO;
 import com.xlf.schedule.service.AuthService;
@@ -34,11 +35,9 @@ import com.xlf.utility.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Pattern;
 
@@ -69,6 +68,7 @@ public class AuthController {
      * @return {@link AuthLoginVO} 登录信息
      */
     @PostMapping
+    @Transactional
     public ResponseEntity<BaseResponse<AuthUserDTO>> login(
             @Validated @RequestBody AuthLoginVO authLoginVO,
             HttpServletRequest request
@@ -91,6 +91,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Transactional
     public ResponseEntity<BaseResponse<AuthUserDTO>> register(
             @Validated @RequestBody AuthRegisterVO authRegisterVO,
             HttpServletRequest request
@@ -102,5 +103,22 @@ public class AuthController {
                 .setUser(getUserDTO)
                 .setToken(getUserToken);
         return ResultUtil.success("注册成功", authUserDTO);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<BaseResponse<Void>> logout(HttpServletRequest request) {
+        tokenService.deleteTokenByRequest(request);
+        return ResultUtil.success("登出成功");
+    }
+
+    @PutMapping("/password/change")
+    public ResponseEntity<BaseResponse<Void>> changePassword(
+            @Validated @RequestBody AuthChangePasswordVO authChangePasswordVO,
+            HttpServletRequest request
+    ) {
+        UserDTO getUserDTO = userService.getUserByToken(request);
+        authService.checkUserAndPassword(getUserDTO.getUuid(), authChangePasswordVO.getOldPassword(), request);
+        authService.changePassword(getUserDTO.getUuid(), authChangePasswordVO.getNewPassword());
+        return ResultUtil.success("修改密码成功");
     }
 }

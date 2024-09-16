@@ -22,6 +22,7 @@ package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.UserDO;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 用户服务接口
@@ -56,4 +57,15 @@ public interface UserService {
      * @return {@link UserDTO} 用户信息
      */
     UserDTO getUserByUuid(String userUuid);
+
+    /**
+     * 通过用户UUID获取用户信息
+     * <p>
+     * 该方法用于通过用户UUID获取用户信息；
+     * 查询成功用户后，返回用户信息。
+     *
+     * @param request 请求
+     * @return {@link UserDTO} 用户信息
+     */
+    UserDTO getUserByToken(HttpServletRequest request);
 }

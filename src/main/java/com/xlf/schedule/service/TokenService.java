@@ -1,3 +1,23 @@
+/*
+ * ***************************************************************************************
+ * author: XiaoLFeng(https://www.x-lf.com)
+ * about:
+ *   The project contains the source code of com.xlf.schedule.
+ *   All source code for this project is licensed under the MIT open source license.
+ * licenseStatement:
+ *   Copyright (c) 2016-2024 XiaoLFeng. All rights reserved.
+ *   For more information about the MIT license, please view the LICENSE file
+ *     in the project root directory or visit:
+ *   https://opensource.org/license/MIT
+ * disclaimer:
+ *   Since this project is in the model design stage, we are not responsible for any losses
+ *     caused by using this project for commercial purposes.
+ *   If you modify the code and redistribute it, you need to clearly indicate what changes
+ *     you made in the corresponding file.
+ *   If you want to modify it for commercial use, please contact me.
+ * ***************************************************************************************
+ */
+
 package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.entity.TokenDO;
@@ -34,9 +54,17 @@ public interface TokenService {
      * 该方法用于检查令牌。
      *
      * @param token 令牌
-     * @return {@link Boolean} 是否有效
      */
-    boolean deleteToken(String token);
+    void deleteToken(String token);
+
+    /**
+     * 删除令牌
+     * <p>
+     * 该方法用于删除令牌。
+     *
+     * @param request 请求
+     */
+    void deleteTokenByRequest(HttpServletRequest request);
 
     /**
      * 清除令牌

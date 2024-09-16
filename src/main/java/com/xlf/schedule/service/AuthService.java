@@ -57,4 +57,15 @@ public interface AuthService {
      * @return 用户UUID
      */
     String registerUser(AuthRegisterVO authRegisterVO);
+
+    /**
+     * 修改密码
+     * <p>
+     * 该方法用于修改密码；修改密码时，需要提供 {@code 用户UUID}、{@code 密码}；
+     * 修改成功后，返回用户信息。
+     *
+     * @param userUuid 用户UUID
+     * @param password 密码
+     */
+    void changePassword(String userUuid, String password);
 }

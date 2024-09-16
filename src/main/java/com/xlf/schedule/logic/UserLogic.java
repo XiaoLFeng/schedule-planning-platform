@@ -20,16 +20,21 @@
 
 package com.xlf.schedule.logic;
 
+import com.xlf.schedule.dao.TokenDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.TokenDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.util.HeaderUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -47,6 +52,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserLogic implements UserService {
     private final UserDAO userDAO;
+    private final TokenDAO tokenDAO;
 
     @Override
     public UserDTO getUserForThreeType(String user) {
@@ -80,5 +86,18 @@ public class UserLogic implements UserService {
         BeanUtils.copyProperties(userDO, userDTO);
 
         return userDTO;
+    }
+
+    @Override
+    public UserDTO getUserByToken(HttpServletRequest request) {
+        UUID getUserUuid = HeaderUtil.getAuthorizeUserUuid(request);
+        if (getUserUuid == null) {
+            throw new BusinessException("令牌不存在", ErrorCode.NOT_EXIST);
+        }
+        TokenDO getTokenDO = tokenDAO.lambdaQuery().eq(TokenDO::getTokenUuid, getUserUuid.toString()).one();
+        if (getTokenDO == null) {
+            throw new BusinessException("令牌不存在", ErrorCode.NOT_EXIST);
+        }
+        return this.getUserByUuid(getTokenDO.getUserUuid());
     }
 }
