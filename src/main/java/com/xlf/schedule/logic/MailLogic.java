@@ -31,6 +31,7 @@ import com.xlf.utility.exception.BusinessException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -55,6 +56,7 @@ import java.util.Map;
  * @version v1.0.0
  * @since v1.0.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailLogic implements MailService {
@@ -71,6 +73,8 @@ public class MailLogic implements MailService {
     @Transactional
     public void sendMailCode(String mail, String code) {
         this.smtpSendMail(mail, "code", "验证码", Map.of("code", code));
+        // 已有验证码删除
+        mailCodeDAO.lambdaUpdate().eq(MailCodeDO::getMail, mail).remove();
         MailCodeDO mailCodeDO = new MailCodeDO()
                 .setMail(mail)
                 .setCode(code)
@@ -79,6 +83,7 @@ public class MailLogic implements MailService {
     }
 
     @Override
+    @Transactional
     public MailCodeDO getMailCode(String mail) {
         MailCodeDO mailCodeDO = mailCodeDAO.lambdaQuery().eq(MailCodeDO::getMail, mail).one();
         if (mailCodeDO == null) {
@@ -93,6 +98,7 @@ public class MailLogic implements MailService {
     }
 
     @Override
+    @Transactional
     public boolean verifyMailCode(String mail, String code) {
         MailCodeDO getMailCode = this.getMailCode(mail);
         if (getMailCode.getCode().equals(code)) {
@@ -105,12 +111,14 @@ public class MailLogic implements MailService {
     }
 
     @Override
+    @Transactional
     public void deleteMailCode(String mail) {
         MailCodeDO getMailCode = this.getMailCode(mail);
         mailCodeDAO.lambdaUpdate().eq(MailCodeDO::getCodeUuid, getMailCode.getCodeUuid()).remove();
     }
 
     @Override
+    @Transactional
     public boolean ableResendMailCode(String mail) {
         MailCodeDO getMailCode = this.getMailCode(mail);
         if (getMailCode == null) {
@@ -140,14 +148,15 @@ public class MailLogic implements MailService {
         }
         // 模板注入参数
         HashMap<String, Object> mailTemplateParameters = new HashMap<>(parameters);
-        mailTemplateParameters.put("title", SystemConstant.SYSTEM_CHINESE_NAME);
+        mailTemplateParameters.put("title", SystemConstant.SYSTEM_CHINESE_NAME + " - " + subject);
         mailTemplateParameters.put("mail", mail);
         mailTemplateParameters.put("copyright", SystemConstant.SYSTEM_CHINESE_COPYRIGHT);
         mailTemplateParameters.put("now_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()));
         // 处理 Context
         Context context = new Context();
         context.setVariables(mailTemplateParameters);
-        String getProcess = templateEngine.process(template, context);
+        String getProcess = templateEngine
+                .process(getMailTemplateResource.getPath().replace("templates/", ""), context);
 
         // 发送邮件
         MimeMessage mimeMessage = utilConfig.javaMailSender().createMimeMessage();
@@ -157,6 +166,8 @@ public class MailLogic implements MailService {
             sendHelper.setTo(mail);
             sendHelper.setSubject(subject);
             sendHelper.setText(getProcess, true);
+            utilConfig.javaMailSender().send(mimeMessage);
+            log.debug("[MAIL] 发送邮件 {} 标题 {} 成功", mail, subject);
         } catch (MessagingException e) {
             throw new MailSendException("邮件发送失败：" + e.getMessage());
         }

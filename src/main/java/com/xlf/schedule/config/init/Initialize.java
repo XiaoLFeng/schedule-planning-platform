@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.config.init;
 
+import com.xlf.schedule.constant.MailConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.InfoDAO;
 import com.xlf.schedule.dao.RoleDAO;
@@ -30,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -50,6 +52,7 @@ public class Initialize {
     private final InfoDAO infoDAO;
     private final RoleDAO roleDAO;
     private final JdbcTemplate jdbcTemplate;
+    private final Environment environment;
 
     private PrepareAlgorithm prepare;
 
@@ -125,6 +128,9 @@ public class Initialize {
         SystemConstant.isDebugMode = Boolean.parseBoolean(prepare.initGetGlobalVariable("system_debug_mode"));
         SystemConstant.superAdminUUID = prepare.initGetGlobalVariable("system_super_admin_uuid");
         SystemConstant.testUserUUID = prepare.initGetGlobalVariable("system_test_user_uuid");
+        MailConstant.MailUsername = environment.getProperty("xutil.mail.username");
+        MailConstant.MailNickName = environment.getProperty("xutil.mail.nickname");
+        MailConstant.MailDefaultEncoding = environment.getProperty("xutil.mail.default-encoding");
     }
 
     /**

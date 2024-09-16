@@ -23,10 +23,14 @@ package com.xlf.schedule.controller.v1;
 import com.xlf.schedule.model.entity.MailCodeDO;
 import com.xlf.schedule.model.vo.MailSendVO;
 import com.xlf.schedule.service.MailService;
+import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
+import com.xlf.utility.ResultUtil;
 import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,12 +64,37 @@ public class MailController {
      * @param mailSendVO 邮件发送视图对象
      */
     @PostMapping("/send")
-    public void sendMail(
+    public ResponseEntity<BaseResponse<Void>> sendMail(
             @Validated @RequestBody MailSendVO mailSendVO
     ) {
+        String random = RandomUtil.createRandomString(6);
+        try {
+            this.sendMail(mailSendVO, random);
+        } catch (BusinessException e) {
+            if (e.getErrorCode().equals(ErrorCode.NOT_EXIST)) {
+                mailService.sendMailCode(mailSendVO.getMail(), random);
+            } else {
+                this.sendMail(mailSendVO, random);
+            }
+        }
+        return ResultUtil.success("发送成功");
+    }
+
+    /**
+     * 发送邮件
+     * <p>
+     * 该方法用于发送邮件；
+     * 发送邮件时，需要提供 {@code 邮箱}、{@code 随机码}；
+     * 发送成功后，返回发送结果。
+     *
+     * @param mailSendVO 邮件发送视图对象
+     * @param random     随机码
+     */
+    private void sendMail(@NotNull MailSendVO mailSendVO, String random) {
         MailCodeDO getMailCode = mailService.getMailCode(mailSendVO.getMail());
         if (getMailCode == null) {
-            String random = RandomUtil.createRandomString(6);
+            mailService.sendMailCode(mailSendVO.getMail(), random);
+        } else {
             if (mailService.ableResendMailCode(mailSendVO.getMail())) {
                 mailService.sendMailCode(mailSendVO.getMail(), random);
             } else {
