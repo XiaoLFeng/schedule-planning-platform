@@ -38,3 +38,4 @@ README.pdf
 .idea/
 .logs/
 .cache/
+.DS_Store
