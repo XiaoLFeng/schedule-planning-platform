@@ -37,3 +37,4 @@ application-dev.yaml
 README.pdf
 .idea/
 .logs/
+.cache/

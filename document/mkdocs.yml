@@ -1,0 +1,74 @@
+site_name: 学生日程规划平台
+site_url: http://localhost:8000
+copyright: Copyright &copy; 2016-2024 XiaoLFeng All rights reserved.
+repo_url: https://github.com/XiaoLFeng/schedule-planning-platform
+repo_name: schedule-planning-platform
+nav:
+  - 项目描述: index.md
+  - 主要功能预览: preview.md
+  - 系统概述: overview.md
+  - 开发文档:
+    - 项目结构: dev/structure.md
+    - 技术栈: dev/tech-stack.md
+    - 项目部署: dev/deploy.md
+    - 项目启动: dev/start.md
+    - 项目打包: dev/build.md
+    - 项目测试: dev/test.md
+    - 接口文档: dev/api.md
+  - 设计文档:
+    - 数据库设计: design/database.md
+    - 接口设计: design/api.md
+    - 系统设计:
+      - 系统架构: design/system/architecture.md
+      - 系统流程: design/system/flow.md
+      - 系统模块: design/system/module.md
+  - 源码:
+    - 版权声明: source/copyright.md
+theme:
+  name: material
+  font: false
+  language: zh
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.instant.preview
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - toc.follow
+    - navigation.top
+    - search.suggest
+plugins:
+  - search
+  - offline
+  - privacy:
+      links_attr_map:
+        target: _blank
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/XiaoLFeng
+    - icon: fontawesome/solid/paper-plane
+      link: mailto:gm@x-lf.cn
+extra_javascript:
+  - js/custom.js
