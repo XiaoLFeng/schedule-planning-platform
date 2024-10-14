@@ -2,7 +2,7 @@
 
 ## 数据库关系
 
-![image](../assets/database-image.png)
+![image](../assets/image/database-image.png)
 
 
 
