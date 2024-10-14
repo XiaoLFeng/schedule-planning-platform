@@ -104,6 +104,10 @@ public class Initialize {
         prepare.checkTable("xf_logs");
         prepare.checkTable("xf_role");
         prepare.checkTable("xf_user");
+        prepare.checkTable("xf_token");
+        prepare.checkTable("xf_mail_code");
+        prepare.checkTable("xf_group");
+        prepare.checkTable("xf_group_member");
     }
 
     /**

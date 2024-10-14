@@ -2,6 +2,10 @@
 
 ## 数据库关系
 
+![image](../assets/database-image.png)
+
+
+
 ## 数据库表信息
 
 ### xf_info
@@ -171,6 +175,63 @@
 - Column `updated_at`: 修改时间
 - Column `enable`: 用户是否开启
 - Column `banned_at`: 封禁到
+
+## xf_group
+
+| Column Name | Data Type   | Primary Key | Foreign Key | Extra                         |
+| ----------- | ----------- | ----------- | ----------- | ----------------------------- |
+| group_uuid  | varchar(32) | Yes         | No          | not null                      |
+| name        | varchar(30) | No          | No          | not null                      |
+| master      | varchar(36) | No          | Yes         | not null                      |
+| tags        | jsonb       | No          | No          | default '[]'::jsonb, not null |
+| created_at  | timestamp   | No          | No          | default now(), not null       |
+| updated_at  | timestamp   | No          | No          |                               |
+| deleted_at  | timestamp   | No          | No          |                               |
+
+### Foreign Keys
+
+| Column | References Table | References Column |
+| ------ | ---------------- | ----------------- |
+| master | xf_user          | uuid              |
+
+### Comments
+
+- Table: 分组
+- Column `group_uuid`: 小组主键
+- Column `name`: 小组名字
+- Column `master`: 小组队长
+- Column `tags`: 类型（自定义输入，便于区分）
+- Column `created_at`: 创建时间
+- Column `updated_at`: 更新时间
+- Column `deleted_at`: 删除时间
+
+## xf_group_member
+
+| Column Name       | Data Type   | Primary Key | Foreign Key | Extra                   |
+| ----------------- | ----------- | ----------- | ----------- | ----------------------- |
+| group_member_uuid | varchar(32) | Yes         | No          | not null                |
+| group_uuid        | varchar(32) | No          | Yes         | not null                |
+| user_uuid         | varchar(36) | No          | Yes         | not null                |
+| status            | smallint    | No          | No          | default 0, not null     |
+| created_at        | timestamp   | No          | No          | default now(), not null |
+| updated_at        | timestamp   | No          | No          |                         |
+
+### Foreign Keys
+
+| Column     | References Table | References Column |
+| ---------- | ---------------- | ----------------- |
+| group_uuid | xf_group         | group_uuid        |
+| user_uuid  | xf_user          | uuid              |
+
+### Comments
+
+- Table: 小组成员
+- Column `group_member_uuid`: 小组成员主键
+- Column `group_uuid`: 小组主键
+- Column `user_uuid`: 用户主键
+- Column `status`: 状态（0: 等待同意，1: 用户同意，2: 用户拒绝）
+- Column `created_at`: 创建时间
+- Column `updated_at`: 更新时间
 
 ## 建表文件
 
