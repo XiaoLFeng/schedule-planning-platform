@@ -233,6 +233,53 @@
 - Column `created_at`: 创建时间
 - Column `updated_at`: 更新时间
 
+## xf_schedule
+
+| Column Name   | Data Type     | Primary Key | Foreign Key | Extra                           |
+|---------------|---------------|-------------|-------------|---------------------------------|
+| schedule_uuid | varchar(32)    | Yes         | No          | not null                        |
+| user_uuid     | varchar(36)    | No          | Yes         |                                 |
+| group_uuid    | varchar(32)    | No          | Yes         |                                 |
+| name          | varchar(64)    | No          | No          | not null                        |
+| description   | varchar        | No          | No          |                                 |
+| start_time    | timestamp      | No          | No          | not null                        |
+| end_time      | timestamp      | No          | No          | not null                        |
+| 列_name_2     | integer        | No          | No          |                                 |
+| type          | smallint       | No          | No          | default 0, not null             |
+| loop_type     | smallint       | No          | No          |                                 |
+| custom_loop   | integer        | No          | No          |                                 |
+| tags          | jsonb          | No          | No          | default '[]'::jsonb, not null   |
+| priority      | smallint       | No          | No          | default 1, not null             |
+| resources     | jsonb          | No          | No          |                                 |
+| created_at    | timestamp      | No          | No          | default now(), not null         |
+| updated_at    | timestamp      | No          | No          |                                 |
+
+### Foreign Keys
+
+| Column    | References Table | References Column |
+|-----------|------------------|-------------------|
+| user_uuid | xf_user          | uuid              |
+| group_uuid| xf_group         | group_uuid        |
+
+### Comments
+
+- Table: 日程表
+- Column `schedule_uuid`: 日程主键
+- Column `user_uuid`: 用户主键
+- Column `group_uuid`: 小组主键
+- Column `name`: 日程名字
+- Column `description`: 描述
+- Column `start_time`: 开始时间
+- Column `end_time`: 结束时间
+- Column `type`: 类型（0: 单次任务，1: 循环任务，2: 一日任务）
+- Column `loop_type`: 循环类型（1: 每天登录，2: 每周, 3: 每个工作日, 4: 每个月 1 号，5: 每个月 14号，0: 自定义）
+- Column `custom_loop`: 自定义天数（多少天循环一次）
+- Column `tags`: 标签
+- Column `priority`: 优先级（1,2,3,4: 较低，低，中，高）
+- Column `resources`: 导入资源
+- Column `created_at`: 创建时间
+- Column `updated_at`: 修改时间
+
 ## 建表文件
 
 [Github 建表文件](https://github.com/XiaoLFeng/schedule-planning-platform/tree/master/src/main/resources/templates/sql)

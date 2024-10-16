@@ -63,9 +63,6 @@ theme:
 plugins:
   - search
   - offline
-  - privacy:
-      links_attr_map:
-        target: _blank
 extra:
   social:
     - icon: fontawesome/brands/github
