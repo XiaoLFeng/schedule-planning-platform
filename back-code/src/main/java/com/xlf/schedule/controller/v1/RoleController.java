@@ -18,32 +18,27 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.vo;
+package com.xlf.schedule.controller.v1;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 授权注册值对象
+ * 角色控制器
  * <p>
- * 该类用于定义授权注册值对象;
+ * 该类用于定义角色控制器;
+ * 该类使用 {@link RestController} 注解标记;
+ * 该类使用 {@link RequestMapping} 注解标记;
  *
- * @since v1.0.0
  * @version v1.0.0
+ * @since v1.0.0
  * @author xiao_lfeng
  */
-@Getter
-@SuppressWarnings("unused")
-public class AuthRegisterVO {
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,36}$", message = "用户名格式错误")
-    private String username;
-    @Pattern(regexp = "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", message = "手机号格式不正确")
-    private String phone;
-    @NotBlank(message = "邮箱不能为空")
-    @Email(message = "邮箱格式不正确")
-    private String email;
-    @NotBlank(message = "密码不能为空")
-    private String password;
+@RestController
+@RequestMapping("/api/v1/role")
+@RequiredArgsConstructor
+public class RoleController {
+
+
 }

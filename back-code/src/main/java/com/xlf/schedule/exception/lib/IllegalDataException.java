@@ -18,32 +18,38 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.vo;
+package com.xlf.schedule.exception.lib;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.xlf.utility.ErrorCode;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * 授权注册值对象
+ * 非法数据异常
  * <p>
- * 该类用于定义授权注册值对象;
+ * 该类用于定义非法数据异常;
+ * 该类继承自 {@link RuntimeException} 类;
+ * 该类使用 {@link Getter} 注解标记;
+ * 该类使用 {@link ErrorCode}
  *
- * @since v1.0.0
  * @version v1.0.0
+ * @since v1.0.0
  * @author xiao_lfeng
  */
 @Getter
-@SuppressWarnings("unused")
-public class AuthRegisterVO {
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,36}$", message = "用户名格式错误")
-    private String username;
-    @Pattern(regexp = "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", message = "手机号格式不正确")
-    private String phone;
-    @NotBlank(message = "邮箱不能为空")
-    @Email(message = "邮箱格式不正确")
-    private String email;
-    @NotBlank(message = "密码不能为空")
-    private String password;
+public class IllegalDataException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    /**
+     * 构造函数
+     * <p>
+     * 该构造函数用于创建一个非法数据异常;
+     * 该构造函数使用 {@link ErrorCode} 作为参数;
+     *
+     * @param errorCode 错误码
+     */
+    public IllegalDataException(@NotNull ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
 }

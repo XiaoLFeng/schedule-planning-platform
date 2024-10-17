@@ -20,8 +20,14 @@
 
 package com.xlf.schedule.exception;
 
+import com.xlf.schedule.exception.lib.IllegalDataException;
+import com.xlf.utility.BaseResponse;
+import com.xlf.utility.ResultUtil;
 import com.xlf.utility.exception.PublicExceptionHandlerAbstract;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * 公共异常处理器
@@ -35,4 +41,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
  */
 @ControllerAdvice
 public class PublicExceptionHandler extends PublicExceptionHandlerAbstract {
+
+    /**
+     * 处理非法数据异常
+     * <p>
+     * 该方法用于处理非法数据异常;
+     * 该方法使用 {@link ExceptionHandler} 注解标记;
+     *
+     * @param e 非法数据异常
+     * @return {@link ResponseEntity}
+     */
+    @ExceptionHandler
+    public ResponseEntity<BaseResponse<Void>> handleIllegalDataException(@NotNull IllegalDataException e) {
+        return ResultUtil.error(e.getErrorCode(), "非法数据", null);
+    }
 }

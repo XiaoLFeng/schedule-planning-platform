@@ -22,6 +22,7 @@ package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.UserDO;
+import com.xlf.schedule.model.vo.UserEditVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -90,4 +91,26 @@ public interface UserService {
      * @return {@link UserDTO} 用户信息
      */
     UserDTO getUserByPhone(String phone);
+
+    /**
+     * 验证编辑用户数据
+     * <p>
+     * 该方法用于验证编辑用户数据；
+     * 如果是管理员，则验证是否有权限编辑。
+     *
+     * @param userEditVO 用户编辑VO
+     * @param isAdmin 是否是管理员
+     */
+    void verifyEditVoData(UserEditVO userEditVO, Boolean isAdmin);
+
+    /**
+     * 编辑用户
+     * <p>
+     * 该方法用于编辑用户；
+     * 编辑成功后，返回用户信息。
+     *
+     * @param userUuid 用户UUID
+     * @param userEditVO 用户编辑VO
+     */
+    void editUser(String userUuid, UserEditVO userEditVO);
 }

@@ -22,18 +22,22 @@ package com.xlf.schedule.logic;
 
 import com.xlf.schedule.dao.TokenDAO;
 import com.xlf.schedule.dao.UserDAO;
+import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.TokenDO;
 import com.xlf.schedule.model.entity.UserDO;
+import com.xlf.schedule.model.vo.UserEditVO;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.util.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -121,5 +125,35 @@ public class UserLogic implements UserService {
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
         return userDTO;
+    }
+
+    @Override
+    public void verifyEditVoData(UserEditVO userEditVO, @NotNull Boolean isAdmin) {
+        if (!isAdmin) {
+            if (userEditVO.getEmail() != null) {
+                if (userEditVO.getEmailCode() == null) {
+                    throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void editUser(String userUuid, UserEditVO userEditVO) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        if (userEditVO.getUsername() != null) {
+            userDO.setUsername(userEditVO.getUsername());
+        }
+        if (userEditVO.getPhone() != null) {
+            userDO.setPhone(userEditVO.getPhone());
+        }
+        if (userEditVO.getEmail() != null) {
+            userDO.setEmail(userEditVO.getEmail());
+        }
+        userDO.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        userDAO.updateById(userDO);
     }
 }

@@ -20,15 +20,13 @@
 
 package com.xlf.schedule.model.vo;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 /**
- * 授权注册值对象
+ * 用户编辑值对象
  * <p>
- * 该类用于定义授权注册值对象;
+ * 该类用于定义用户编辑值对象；
  *
  * @since v1.0.0
  * @version v1.0.0
@@ -36,14 +34,13 @@ import lombok.Getter;
  */
 @Getter
 @SuppressWarnings("unused")
-public class AuthRegisterVO {
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,36}$", message = "用户名格式错误")
+public class UserEditVO {
+    @Pattern(regexp = "^(|[a-zA-Z0-9_-]{4,36})$", message = "用户名格式错误")
     private String username;
-    @Pattern(regexp = "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", message = "手机号格式不正确")
+    @Pattern(regexp = "^(|(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8})$", message = "手机号格式不正确")
     private String phone;
-    @NotBlank(message = "邮箱不能为空")
-    @Email(message = "邮箱格式不正确")
+    @Pattern(regexp = "^(|\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*)$", message = "邮箱格式不正确")
     private String email;
-    @NotBlank(message = "密码不能为空")
-    private String password;
+    @Pattern(regexp = "^(|[0-9A-Za-z]{6})$", message = "邮箱验证码格式不正确")
+    private String emailCode;
 }

@@ -18,32 +18,18 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.vo;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
+package com.xlf.schedule.constant;
 
 /**
- * 授权注册值对象
+ * 正则表达式常量
  * <p>
- * 该类用于定义授权注册值对象;
+ * 该类用于定义正则表达式常量; 该类使用 final 修饰; 该类使用 static 修饰;
+ * 该类使用 public 修饰;
  *
- * @since v1.0.0
  * @version v1.0.0
+ * @since v1.0.0
  * @author xiao_lfeng
  */
-@Getter
-@SuppressWarnings("unused")
-public class AuthRegisterVO {
-    @Pattern(regexp = "^[a-zA-Z0-9_-]{4,36}$", message = "用户名格式错误")
-    private String username;
-    @Pattern(regexp = "^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", message = "手机号格式不正确")
-    private String phone;
-    @NotBlank(message = "邮箱不能为空")
-    @Email(message = "邮箱格式不正确")
-    private String email;
-    @NotBlank(message = "密码不能为空")
-    private String password;
+public class PatternConstant {
+    public final static String UUID = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 }

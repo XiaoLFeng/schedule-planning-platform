@@ -58,7 +58,7 @@ public class LogAspect extends BusinessLogAspect {
 
     @Override
     @Around("execution(* com.xlf.schedule.dao..*.*(..))")
-    public void beforeDaoLog(@NotNull ProceedingJoinPoint pjp) throws Throwable {
-        super.beforeDaoLog(pjp);
+    public Object beforeDaoLog(@NotNull ProceedingJoinPoint pjp) throws Throwable {
+        return super.beforeDaoLog(pjp);
     }
 }
