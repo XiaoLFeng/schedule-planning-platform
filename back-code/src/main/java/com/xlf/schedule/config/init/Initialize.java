@@ -22,6 +22,7 @@ package com.xlf.schedule.config.init;
 
 import com.xlf.schedule.constant.MailConstant;
 import com.xlf.schedule.constant.SystemConstant;
+import com.xlf.schedule.constant.WebConstant;
 import com.xlf.schedule.dao.InfoDAO;
 import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.dao.TableDAO;
@@ -90,7 +91,7 @@ public class Initialize {
                     \u001B[38;5;111m/____/\\___/_/ /_/\\___/\\__,_/\\__,_/_/\\___/\u001B[32m  /_/   /_/\\__,_/_/ /_/_/ /_/_/_/ /_/\\__, / \s
                                                                                    \u001B[32m              /____/  \s
                     """);
-            System.out.println("\t\t\t\u001B[33m::: " + SystemConstant.SYSTEM_AUTHOR + " :::\t\t\t\t\t\t\t ::: "+ SystemConstant.SYSTEM_VERSION +" :::\u001B[0m");
+            System.out.println("\t\t\t\u001B[33m::: " + SystemConstant.SYSTEM_AUTHOR + " :::\t\t\t\t\t\t\t ::: " + SystemConstant.SYSTEM_VERSION + " :::\u001B[0m");
         };
     }
 
@@ -116,10 +117,22 @@ public class Initialize {
     private void initInfoTableCheck() {
         log.info("[INIT] 数据表 xf_info 缺陷检查...");
 
+        // 基础配置
         prepare.checkInfoTableFields("system_initial_mode", "true");
         prepare.checkInfoTableFields("system_debug_mode", "true");
         prepare.checkInfoTableFields("system_super_admin_uuid", null);
         prepare.checkInfoTableFields("system_test_user_uuid", null);
+        prepare.checkInfoTableFields("system_author", "xiao_lfeng");
+        prepare.checkInfoTableFields("system_version", "v1.0.0");
+        prepare.checkInfoTableFields("system_license", "MIT");
+        prepare.checkInfoTableFields("system_copyright", "Copyright (c) 2016-2024 XiaoLFeng All rights reserved.");
+
+        // Web 配置
+        prepare.checkInfoTableFields("web_title", "学生日程规划平台");
+        prepare.checkInfoTableFields("web_description", "学生日程规划平台旨在为学生提供一个全面、高效的日程管理工具，帮助他们合理规划学习与生活，提高时间管理能力。通过该平台，学生可以轻松创建和管理个人日程、添加和查看课程表，同时与好友建立联系，互相查询彼此的空闲时间。平台具备用户友好的界面和强大的功能，满足学生在学习期间的多样化需求，助力他们实现自我管理和高效学习。");
+        prepare.checkInfoTableFields("web_keywords", "学生,日程,规划,平台,学习,生活,时间管理,课程表,空闲时间,好友,联系,自我管理,高效学习");
+        prepare.checkInfoTableFields("web_icp", "粤ICP备2021000000号");
+        prepare.checkInfoTableFields("web_record", "粤公网安备 31000002000001号");
     }
 
     /**
@@ -128,13 +141,27 @@ public class Initialize {
     private void initGlobalVariableAssignment() {
         log.info("[INIT] 全局变量初始化...");
 
+        // 系统配置
         SystemConstant.isInitialMode = prepare.initGetGlobalVariable("system_initial_mode");
         SystemConstant.isDebugMode = Boolean.parseBoolean(prepare.initGetGlobalVariable("system_debug_mode"));
         SystemConstant.superAdminUUID = prepare.initGetGlobalVariable("system_super_admin_uuid");
         SystemConstant.testUserUUID = prepare.initGetGlobalVariable("system_test_user_uuid");
+
+        // 邮件配置
         MailConstant.MailUsername = environment.getProperty("xutil.mail.username");
         MailConstant.MailNickName = environment.getProperty("xutil.mail.nickname");
         MailConstant.MailDefaultEncoding = environment.getProperty("xutil.mail.default-encoding");
+
+        // Web 配置
+        WebConstant.name = prepare.initGetGlobalVariable("web_title");
+        WebConstant.description = prepare.initGetGlobalVariable("web_description");
+        WebConstant.keywords = prepare.initGetGlobalVariable("web_keywords");
+        WebConstant.author = prepare.initGetGlobalVariable("system_author");
+        WebConstant.version = prepare.initGetGlobalVariable("system_version");
+        WebConstant.icp = prepare.initGetGlobalVariable("web_icp");
+        WebConstant.record = prepare.initGetGlobalVariable("web_record");
+        WebConstant.license = prepare.initGetGlobalVariable("system_license");
+        WebConstant.copyright = prepare.initGetGlobalVariable("system_copyright");
     }
 
     /**
