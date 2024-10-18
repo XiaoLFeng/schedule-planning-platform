@@ -37,5 +37,5 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DataWranglingDebug {
+public @interface DataWrangling {
 }

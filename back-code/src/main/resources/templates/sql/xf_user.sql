@@ -56,7 +56,8 @@ create table xf_user
     created_at   timestamp default now() not null,
     updated_at   timestamp default now() not null,
     enable       boolean   default true  not null,
-    banned_at    timestamp
+    banned_at    timestamp,
+    ban_reason   varchar(1024)
 );
 
 comment on table xf_user is '用户表';
@@ -70,6 +71,7 @@ comment on column xf_user.created_at is '创建时间';
 comment on column xf_user.updated_at is '修改时间';
 comment on column xf_user.enable is '用户是否开启';
 comment on column xf_user.banned_at is '封禁到';
+comment on column xf_user.ban_reason is '封禁原因';
 
 create index xf_user_email_index
     on xf_user (email);

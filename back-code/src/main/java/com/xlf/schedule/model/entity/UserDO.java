@@ -90,4 +90,8 @@ public class UserDO {
      * 封禁到
      */
     private Timestamp bannedAt;
+    /**
+     * 封禁原因
+     */
+    private String banReason;
 }

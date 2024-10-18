@@ -54,7 +54,7 @@ public class DataWranglingAspect {
      *
      * @param joinPoint 连接点
      */
-    @Before("@annotation(com.xlf.schedule.annotations.DataWranglingDebug)")
+    @Before("@annotation(com.xlf.schedule.annotations.DataWrangling)")
     public void dataReadsBeforeAccess(@NotNull JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Parameter[] parameters = signature.getMethod().getParameters();

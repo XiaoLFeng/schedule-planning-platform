@@ -70,7 +70,7 @@ public class PermissionAspect {
      * 该方法使用 {@link com.xlf.utility.annotations.HasAuthorize} 注解标记；
      */
     @Before("@annotation(com.xlf.utility.annotations.HasAuthorize)")
-    public void checkPermission() {
+    public void checkAuthorize() {
         // 截获 HttpServletRequest 对象
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (requestAttributes != null) {
@@ -79,6 +79,34 @@ public class PermissionAspect {
             // 获取请求头中的令牌
             UserDTO getUser = userService.getUserByToken(request);
             if (getUser == null) {
+                throw new UserAuthenticationException(UserAuthenticationException.ErrorType.USER_NOT_LOGIN, request);
+            }
+        } else {
+            throw new ServerInternalErrorException("无法获取请求对象");
+        }
+    }
+
+    /**
+     * 检查角色
+     * <p>
+     * 该方法用于检查角色；用于检查用户是否有权限访问；
+     * 即检查用户是否登录。
+     * 该方法使用 {@link com.xlf.utility.annotations.HasRole} 注解标记；
+     */
+    @Before("@annotation(com.xlf.utility.annotations.HasRole)")
+    public void checkRole() {
+        // 截获 HttpServletRequest 对象
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes != null) {
+            HttpServletRequest request = requestAttributes.getRequest();
+
+            // 获取请求头中的令牌
+            UserDTO getUser = userService.getUserByToken(request);
+            if (getUser != null) {
+                if (!roleService.checkRoleHasAdminByUuid(getUser.getRole())) {
+                    throw new UserAuthenticationException(UserAuthenticationException.ErrorType.PERMISSION_DENIED, request);
+                }
+            } else {
                 throw new UserAuthenticationException(UserAuthenticationException.ErrorType.USER_NOT_LOGIN, request);
             }
         } else {

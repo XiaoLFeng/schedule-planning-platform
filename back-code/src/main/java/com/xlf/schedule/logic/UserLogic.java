@@ -156,4 +156,26 @@ public class UserLogic implements UserService {
         userDO.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         userDAO.updateById(userDO);
     }
+
+    @Override
+    public void banUser(String userUuid, boolean isBan, String reason) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        userDO.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        if (isBan) {
+            userDO
+                    .setBannedAt(new Timestamp(System.currentTimeMillis()))
+                    .setBanReason(reason);
+        } else {
+            if (reason != null) {
+                throw new BusinessException("解封用户不需要原因", ErrorCode.OPERATION_DENIED);
+            }
+            userDO
+                    .setBanReason(null)
+                    .setBannedAt(null);
+        }
+        userDAO.updateById(userDO);
+    }
 }

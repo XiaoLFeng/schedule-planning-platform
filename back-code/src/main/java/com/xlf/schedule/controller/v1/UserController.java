@@ -21,7 +21,7 @@
 package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.annotations.CheckAccessToYourOwnUuidOrAdminUuid;
-import com.xlf.schedule.annotations.DataWranglingDebug;
+import com.xlf.schedule.annotations.DataWrangling;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.vo.UserEditVO;
@@ -31,6 +31,7 @@ import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
 import com.xlf.utility.annotations.HasAuthorize;
+import com.xlf.utility.annotations.HasRole;
 import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +67,7 @@ public class UserController {
      * @return 用户信息
      */
     @HasAuthorize
-    @DataWranglingDebug
+    @DataWrangling
     @CheckAccessToYourOwnUuidOrAdminUuid
     @GetMapping("/current/{userUuid}")
     public ResponseEntity<BaseResponse<UserDTO>> userCurrent(
@@ -82,9 +83,9 @@ public class UserController {
      * 该方法用于编辑用户; 根据用户uuid编辑用户信息;
      * 非管理员只能编辑自己的信息, 管理员可以编辑任何用户的信息。
      *
-     * @param userUuid 用户uuid
+     * @param userUuid   用户uuid
      * @param userEditVO 用户编辑信息
-     * @param isAdmin 是否为管理员
+     * @param isAdmin    是否为管理员
      * @return 编辑结果
      */
     @HasAuthorize
@@ -107,5 +108,27 @@ public class UserController {
         }
         userService.editUser(userUuid, userEditVO);
         return ResultUtil.success("修改成功");
+    }
+
+    /**
+     * 封禁用户
+     * <p>
+     * 该方法用于封禁用户; 根据用户uuid封禁用户;
+     * 只有管理员可以封禁用户。
+     *
+     * @param userUuid 用户uuid
+     * @param reason   封禁原因
+     * @param isBan    是否封禁
+     * @return 封禁结果
+     */
+    @HasRole({"ADMIN"})
+    @PatchMapping("/ban/{userUuid}")
+    public ResponseEntity<BaseResponse<Void>> userBan(
+            @PathVariable String userUuid,
+            @RequestParam String reason,
+            @RequestParam("is_ban") boolean isBan
+    ) {
+        userService.banUser(userUuid, isBan, reason);
+        return ResultUtil.success("封禁成功");
     }
 }

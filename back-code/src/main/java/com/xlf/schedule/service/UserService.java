@@ -99,7 +99,7 @@ public interface UserService {
      * 如果是管理员，则验证是否有权限编辑。
      *
      * @param userEditVO 用户编辑VO
-     * @param isAdmin 是否是管理员
+     * @param isAdmin    是否是管理员
      */
     void verifyEditVoData(UserEditVO userEditVO, Boolean isAdmin);
 
@@ -109,8 +109,20 @@ public interface UserService {
      * 该方法用于编辑用户；
      * 编辑成功后，返回用户信息。
      *
-     * @param userUuid 用户UUID
+     * @param userUuid   用户UUID
      * @param userEditVO 用户编辑VO
      */
     void editUser(String userUuid, UserEditVO userEditVO);
+
+    /**
+     * 封禁用户
+     * <p>
+     * 该方法用于封禁用户；
+     * 封禁成功后，返回用户信息。
+     *
+     * @param userUuid 用户UUID
+     * @param isBan    是否封禁
+     * @param reason   封禁原因
+     */
+    void banUser(String userUuid, boolean isBan, String reason);
 }
