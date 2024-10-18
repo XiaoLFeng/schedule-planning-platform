@@ -21,6 +21,7 @@
 package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.annotations.CheckAccessToYourOwnUuidOrAdminUuid;
+import com.xlf.schedule.annotations.DataWranglingDebug;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.vo.UserEditVO;
@@ -55,7 +56,17 @@ public class UserController {
     private final UserService userService;
     private final MailService mailService;
 
+    /**
+     * 获取当前用户
+     * <p>
+     * 该方法用于获取当前用户; 根据用户uuid获取用户信息;
+     * 非管理员只能获取自己的信息, 管理员可以获取任何用户的信息。
+     *
+     * @param userUuid 用户uuid
+     * @return 用户信息
+     */
     @HasAuthorize
+    @DataWranglingDebug
     @CheckAccessToYourOwnUuidOrAdminUuid
     @GetMapping("/current/{userUuid}")
     public ResponseEntity<BaseResponse<UserDTO>> userCurrent(
@@ -65,6 +76,17 @@ public class UserController {
         return ResultUtil.success("获取成功", getUser);
     }
 
+    /**
+     * 编辑用户
+     * <p>
+     * 该方法用于编辑用户; 根据用户uuid编辑用户信息;
+     * 非管理员只能编辑自己的信息, 管理员可以编辑任何用户的信息。
+     *
+     * @param userUuid 用户uuid
+     * @param userEditVO 用户编辑信息
+     * @param isAdmin 是否为管理员
+     * @return 编辑结果
+     */
     @HasAuthorize
     @CheckAccessToYourOwnUuidOrAdminUuid
     @PutMapping("/edit/{userUuid}")

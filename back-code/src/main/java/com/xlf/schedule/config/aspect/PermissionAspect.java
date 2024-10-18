@@ -108,7 +108,7 @@ public class PermissionAspect {
             UserDTO getUser = userService.getUserByToken(request);
             if (!getUser.getUuid().equals(userUuid)) {
                 // 检查是否是管理员
-                if (!roleService.checkRoleHasAdminByUuid(getUser.getUuid())) {
+                if (!roleService.checkRoleHasAdminByUuid(getUser.getRole())) {
                     throw new UserAuthenticationException(UserAuthenticationException.ErrorType.PERMISSION_DENIED, request);
                 }
                 Arrays.stream(args).filter(arg -> arg instanceof Boolean).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = true);
