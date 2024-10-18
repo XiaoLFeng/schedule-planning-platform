@@ -126,9 +126,29 @@ public class UserController {
     public ResponseEntity<BaseResponse<Void>> userBan(
             @PathVariable String userUuid,
             @RequestParam String reason,
-            @RequestParam("is_ban") boolean isBan
+            @RequestParam("ban") boolean isBan
     ) {
         userService.banUser(userUuid, isBan, reason);
-        return ResultUtil.success("封禁成功");
+        return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 启用用户
+     * <p>
+     * 该方法用于启用用户; 根据用户uuid启用用户;
+     * 只有管理员可以启用用户。
+     *
+     * @param userUuid 用户uuid
+     * @param isEnable 是否启用
+     * @return 启用结果
+     */
+    @HasRole({"ADMIN"})
+    @PatchMapping("/enable/{userUuid}")
+    public ResponseEntity<BaseResponse<Void>> userEnable(
+            @PathVariable String userUuid,
+            @RequestParam("enable") boolean isEnable
+    ) {
+        userService.enableUser(userUuid, isEnable);
+        return ResultUtil.success("操作成功");
     }
 }

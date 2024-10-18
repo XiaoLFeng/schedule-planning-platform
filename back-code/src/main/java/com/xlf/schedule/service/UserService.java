@@ -125,4 +125,15 @@ public interface UserService {
      * @param reason   封禁原因
      */
     void banUser(String userUuid, boolean isBan, String reason);
+
+    /**
+     * 启用用户
+     * <p>
+     * 该方法用于启用用户；
+     * 启用成功后，返回用户信息。
+     *
+     * @param userUuid 用户UUID
+     * @param isEnable 是否启用
+     */
+    void enableUser(String userUuid, boolean isEnable);
 }

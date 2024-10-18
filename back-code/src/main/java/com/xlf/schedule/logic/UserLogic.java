@@ -178,4 +178,16 @@ public class UserLogic implements UserService {
         }
         userDAO.updateById(userDO);
     }
+
+    @Override
+    public void enableUser(String userUuid, boolean isEnable) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        userDO
+                .setEnable(isEnable)
+                .setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        userDAO.updateById(userDO);
+    }
 }
