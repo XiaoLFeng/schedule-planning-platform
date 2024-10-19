@@ -3,7 +3,7 @@ import {BaseAuth} from "./pages/base_auth.tsx";
 import {BaseHome} from "./pages/base_home.tsx";
 import {useEffect} from "react";
 import Cookies from "js-cookie";
-import {WebInfoDTO} from "./models/entity/web_info_dto.ts";
+import {WebInfoEntity} from "./models/entity/web_info_entity.ts";
 import {GetWebInfoAPI} from "./interface/system_api.ts";
 import {useDispatch} from "react-redux";
 import {setWebInfo} from "./store/web_store.ts";
@@ -17,7 +17,7 @@ function App() {
             if (item) {
                 const getGlobalProperties = Cookies.get("X-GlobalProperties-ExpiresAt");
                 if (getGlobalProperties) {
-                    dispatch(setWebInfo(JSON.parse(item) as WebInfoDTO));
+                    dispatch(setWebInfo(JSON.parse(item) as WebInfoEntity));
                     return;
                 }
             }

@@ -18,7 +18,7 @@
  * ***************************************************************************************
  */
 
-import {WebInfoDTO} from "../models/entity/web_info_dto.ts";
+import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
 import {BaseResponse} from "../models/base_response.ts";
 import {BaseApi, MethodType} from "../assets/typescript/base_api.ts";
 
@@ -26,10 +26,10 @@ import {BaseApi, MethodType} from "../assets/typescript/base_api.ts";
  * # 获取网站信息
  * 获取网站信息，包含网站名称、版本、作者、许可、版权、ICP、备案、描述、关键字。
  *
- * @returns {Promise<BaseResponse<WebInfoDTO> | undefined>} 网站信息
+ * @returns {Promise<BaseResponse<WebInfoEntity> | undefined>} 网站信息
  */
-const GetWebInfoAPI = (): Promise<BaseResponse<WebInfoDTO> | undefined> => {
-    return BaseApi<WebInfoDTO>(
+const GetWebInfoAPI = (): Promise<BaseResponse<WebInfoEntity> | undefined> => {
+    return BaseApi<WebInfoEntity>(
         MethodType.GET,
         "/api/v1/web/info",
         null,

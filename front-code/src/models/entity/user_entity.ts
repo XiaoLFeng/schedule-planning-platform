@@ -19,20 +19,44 @@
  */
 
 /**
- * # 基本返回类型
- * 用于返回数据的基本类型，包含输出、状态码、消息、错误消息、数据；
- *
- * @template T 返回数据类型
- * @property {string} output 输出
- * @property {number} code 状态码
- * @property {string} message 消息
- * @property {string} errorMessage 错误消息
- * @property {T} data 数据
+ * # 用户实体
+ * 用户实体，包含用户邮箱、用户是否开启、手机号、角色、用户名、用户表主键、封禁到、创建时间、修改时间。
  */
-export type BaseResponse<T> = {
-    output: string;
-    code: number;
-    message: string;
-    error_message?: string;
-    data?: T;
+export type UserEntity = {
+    /**
+     * 封禁到
+     */
+    bannedAt: number;
+    /**
+     * 创建时间
+     */
+    createdAt: number;
+    /**
+     * 用户邮箱
+     */
+    email: string;
+    /**
+     * 用户是否开启
+     */
+    enable: boolean;
+    /**
+     * 手机号
+     */
+    phone: string;
+    /**
+     * 角色
+     */
+    role: string;
+    /**
+     * 修改时间
+     */
+    updatedAt: number;
+    /**
+     * 用户名
+     */
+    username: string;
+    /**
+     * 用户表主键
+     */
+    uuid: string;
 }

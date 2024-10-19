@@ -24,6 +24,7 @@ import com.xlf.schedule.config.filter.InitialModeFilter;
 import com.xlf.schedule.config.filter.RequestHeaderFilter;
 import com.xlf.utility.config.filter.AllowOptionFilter;
 import com.xlf.utility.config.filter.CorsAllAllowFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @version v1.0.0
  * @since v1.0.0
  */
+@Slf4j
 @Configuration
 public class SecurityConfig {
 
@@ -54,16 +56,21 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(@NotNull HttpSecurity security) throws Exception {
+        log.info("[INIT] SpringSecurity 配置初始化");
         return security
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new RequestHeaderFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new CorsAllAllowFilter(), RequestHeaderFilter.class)
-                .addFilterBefore(new AllowOptionFilter(), CorsAllAllowFilter.class)
-                .addFilterBefore(new InitialModeFilter(), AllowOptionFilter.class)
+                .addFilterBefore(new AllowOptionFilter(), RequestHeaderFilter.class)
+                .addFilterBefore(new CorsAllAllowFilter(), AllowOptionFilter.class)
+                .addFilterAfter(new InitialModeFilter(), CorsAllAllowFilter.class)
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().permitAll()
+                        authorizeRequests
+                                .requestMatchers("/**")
+                                .permitAll()
+                                .anyRequest()
+                                .permitAll()
                 )
                 .build();
     }

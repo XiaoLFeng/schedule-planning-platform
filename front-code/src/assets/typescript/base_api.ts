@@ -21,9 +21,8 @@
 import axios, {type AxiosResponse} from "axios";
 import type {BaseResponse} from "../../models/base_response";
 import Cookies from "js-cookie";
-import * as process from "node:process";
 
-const BASE_API_URL: string | undefined = process.env.APP_API_URL;
+const BASE_API_URL: string = import.meta.env.VITE_APP_API_URL;
 
 /**
  * Http 方法类型枚举

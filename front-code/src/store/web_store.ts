@@ -19,9 +19,9 @@
  */
 
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {WebInfoDTO} from "../models/entity/web_info_dto.ts";
+import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
 
-const initialState: WebInfoDTO = {
+const initialState: WebInfoEntity = {
     name: '',
     version: '',
     author: '',
@@ -31,16 +31,16 @@ const initialState: WebInfoDTO = {
     record: '',
     description: '',
     keywords: ''
-} as WebInfoDTO;
+} as WebInfoEntity;
 
 const webInfoSlice = createSlice({
     name: 'webInfo',
     initialState,
     reducers: {
-        setWebInfo: (state, action: PayloadAction<WebInfoDTO>) => {
+        setWebInfo: (state, action: PayloadAction<WebInfoEntity>) => {
             return {...state, ...action.payload};
         },
-        updateWebInfoField: (state, action: PayloadAction<{ key: keyof WebInfoDTO, value: string }>) => {
+        updateWebInfoField: (state, action: PayloadAction<{ key: keyof WebInfoEntity, value: string }>) => {
             state[action.payload.key] = action.payload.value;
         },
         resetWebInfo: () => initialState
