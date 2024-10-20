@@ -18,15 +18,33 @@
  * ***************************************************************************************
  */
 
-import { configureStore } from '@reduxjs/toolkit';
-import webInfoReducer from './web_store';
-import userCurrentReducer from './user_store';
+import {Route, Routes} from "react-router-dom";
+import {DashboardHome} from "./dashboard/dashboard_home.tsx";
+import {DashboardSideMenu} from "../components/dashboard/dashboard_side_menu.tsx";
+import {useSelector} from "react-redux";
+import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
 
-const store = configureStore({
-    reducer: {
-        webInfo: webInfoReducer,
-        userCurrent: userCurrentReducer,
-    }
-});
+/**
+ * # 基础仪表板
+ * 用于展示基础仪表板的页面；用于展示基础仪表板的页面。
+ *
+ * @since v1.0.0
+ * @version v1.0.0
+ * @author xiao_lfeng
+ */
+export function BaseDashboard() {
+    const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
-export default store;
+    return (
+        <div className={""}>
+            <div className={"min-h-dvh absolute left-0 top-0"}>
+                <DashboardSideMenu webInfo={webInfo} />
+            </div>
+            <div className={"px-72 p-8"}>
+                <Routes>
+                    <Route path={"/home"} element={<DashboardHome/>}/>
+                </Routes>
+            </div>
+        </div>
+    );
+}

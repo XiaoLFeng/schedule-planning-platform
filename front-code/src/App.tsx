@@ -7,7 +7,16 @@ import {WebInfoEntity} from "./models/entity/web_info_entity.ts";
 import {GetWebInfoAPI} from "./interface/system_api.ts";
 import {useDispatch} from "react-redux";
 import {setWebInfo} from "./store/web_store.ts";
+import {BaseDashboard} from "./pages/base_dashboard.tsx";
 
+/**
+ * # App
+ * The main entry of the application.
+ *
+ * @since v1.0.0
+ * @version v1.0.0
+ * @author xiao_lfeng
+ */
 function App() {
     const dispatch = useDispatch();
 
@@ -40,6 +49,7 @@ function App() {
             <Routes>
                 <Route path={"/"} element={<BaseHome/>}/>
                 <Route path={"/auth/*"} element={<BaseAuth/>}/>
+                <Route path={"/dashboard/*"} element={<BaseDashboard/>}/>
             </Routes>
         </BrowserRouter>
     )

@@ -18,15 +18,14 @@
  * ***************************************************************************************
  */
 
-import { configureStore } from '@reduxjs/toolkit';
-import webInfoReducer from './web_store';
-import userCurrentReducer from './user_store';
-
-const store = configureStore({
-    reducer: {
-        webInfo: webInfoReducer,
-        userCurrent: userCurrentReducer,
-    }
-});
-
-export default store;
+/**
+ * # 看板主页
+ * @constructor
+ */
+export function DashboardHome() {
+    return (
+        <div>
+            <h1>Dashboard Home</h1>
+        </div>
+    );
+}

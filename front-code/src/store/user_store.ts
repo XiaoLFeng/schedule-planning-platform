@@ -18,15 +18,34 @@
  * ***************************************************************************************
  */
 
-import { configureStore } from '@reduxjs/toolkit';
-import webInfoReducer from './web_store';
-import userCurrentReducer from './user_store';
+import {UserEntity} from "../models/entity/user_entity";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
-const store = configureStore({
-    reducer: {
-        webInfo: webInfoReducer,
-        userCurrent: userCurrentReducer,
+const initialState: UserEntity = {
+    bannedAt: 0,
+    createdAt: 0,
+    email: "",
+    enable: false,
+    phone: "",
+    role: "",
+    updatedAt: 0,
+    username: "",
+    uuid: ""
+} as UserEntity;
+
+const userCurrentSlice = createSlice({
+    name: 'userCurrent',
+    initialState,
+    reducers: {
+        setUser: (state, action: PayloadAction<UserEntity>) => {
+            return {...state, ...action.payload};
+        },
+        updateUserField: (state, action: PayloadAction<{ key: keyof UserEntity, value: never }>) => {
+            state[action.payload.key] = action.payload.value;
+        },
+        resetUser: () => initialState
     }
 });
 
-export default store;
+export const {setUser, updateUserField, resetUser} = userCurrentSlice.actions;
+export default userCurrentSlice.reducer;

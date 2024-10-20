@@ -35,6 +35,14 @@ import {LogoSVG} from "../../assets/icon/logo_svg.tsx";
 
 import indexStart from "../../assets/images/index-start.webp";
 
+/**
+ * # 首页
+ * 首页展示页面，展示网站的基本信息和功能介绍。
+ *
+ * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
+ */
 export function HomeIndex() {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
@@ -170,7 +178,6 @@ export function HomeIndex() {
                         </div>
                     </div>
                 </div>
-
                 <img
                     alt=""
                     src={indexStart}

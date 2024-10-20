@@ -40,7 +40,7 @@ const webInfoSlice = createSlice({
         setWebInfo: (state, action: PayloadAction<WebInfoEntity>) => {
             return {...state, ...action.payload};
         },
-        updateWebInfoField: (state, action: PayloadAction<{ key: keyof WebInfoEntity, value: string }>) => {
+        updateWebInfoField: (state, action: PayloadAction<{ key: keyof WebInfoEntity, value: never }>) => {
             state[action.payload.key] = action.payload.value;
         },
         resetWebInfo: () => initialState
