@@ -40,29 +40,29 @@ export function BaseDashboard() {
     const location = useLocation();
     const [header, setHeader] = useState<string>("");
     const transition = useTransition(location, {
-        from: {opacity: 0},
-        enter: {opacity: 1},
-        config: {duration: 200},
+        from: location.pathname.startsWith("/dashboard/view/") ? {opacity: 1} : {opacity: 0},
+        enter: location.pathname.startsWith("/dashboard/view/") ? {} : {opacity: 1},
+        config: location.pathname.startsWith("/dashboard/view/") ? {} : {duration: 200}
     });
 
     function handlerHeader(value: string) {
         setHeader(value);
     }
 
-    return transition((style, item) => (
+    return transition((style, items) => (
         <div className={"min-h-dvh bg-gray-100"}>
             <div className={"min-h-dvh fixed left-0 top-0"}>
                 <DashboardSideMenu webInfo={webInfo}/>
             </div>
-            <div className={"ps-72 p-9 h-dvh"}>
+            <div className={"ps-72 p-9 min-h-dvh grid"}>
                 <div className={"flex flex-col gap-3 h-full"}>
                     <div className={"flex-shrink-0 text-2xl font-bold"}>
                         {header}
                     </div>
                     <animated.div style={style} className={"flex-1"}>
-                        <Routes location={item}>
+                        <Routes location={items}>
                             <Route path={"/home"} element={<DashboardHome onHeaderHandler={handlerHeader}/>}/>
-                            <Route path={"/view"} element={<DashboardView onHeaderHandler={handlerHeader}/>}/>
+                            <Route path={"/view/*"} element={<DashboardView onHeaderHandler={handlerHeader}/>}/>
                         </Routes>
                     </animated.div>
                 </div>

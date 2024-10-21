@@ -27,7 +27,7 @@ import {
     SettingOutlined,
     SlidersOutlined
 } from "@ant-design/icons";
-import {JSX, useEffect, useState} from "react";
+import {JSX, useRef} from "react";
 
 import avatar1 from "../../assets/images/avatar_1.webp";
 import avatar2 from "../../assets/images/avatar_2.webp";
@@ -63,11 +63,11 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                     <SideMenuItem icon={<CalendarOutlined/>} title={"视图"} path={"/dashboard/view"}/>
                     <SideMenuItem icon={<PicLeftOutlined/>} title={"纪念日"} path={"/dashboard/anniversary"}/>
                     <SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>
-                    <SideMenuItem icon={<SlidersOutlined />} title={"管理"} path={"/admin/home"}/>
+                    <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/>
                 </div>
             </div>
             <div className={"flex-shrink-0 text-white"}>
-            <div className={"border-t p-4 border-gray-500"}>
+                <div className={"border-t p-4 border-gray-500"}>
                     <div className={"flex justify-center gap-1"}>
                         <div className={"size-12 flex-shrink-0"}>
                             <img src={handlerAvatar()} alt={webInfo.name} className={"rounded-xl"}/>
@@ -86,19 +86,19 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
 }
 
 function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, path: string }) {
-    const location = useLocation();
-    const [clazz, setClazz] = useState<string>("transition text-white flex gap-2 px-4 py-2 rounded-lg");
-
-    useEffect(() => {
-        if (location.pathname === path) {
-            setClazz("transition text-white flex gap-2 px-4 py-2 rounded-lg shadow bg-gray-700");
+    const getData = () => {
+        if (location.pathname.startsWith(path)) {
+            return "transition text-white flex gap-2 px-4 py-2 rounded-lg shadow bg-gray-700";
         } else {
-            setClazz("transition text-white flex gap-2 px-4 py-2 rounded-lg");
+            return "transition text-white flex gap-2 px-4 py-2 rounded-lg";
         }
-    }, [location.pathname, path]);
+    }
+
+    const location = useLocation();
+    const clazz = useRef<string>(getData());
 
     return (
-        <Link to={path} className={clazz}>
+        <Link to={path} className={clazz.current}>
             {icon}
             <span>{title}</span>
         </Link>

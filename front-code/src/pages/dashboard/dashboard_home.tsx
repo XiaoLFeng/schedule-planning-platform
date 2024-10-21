@@ -23,6 +23,7 @@ import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
 import {Timeline, TimelineItemProps} from "antd";
 import {useEffect, useState} from "react";
 import {BuildOutlined, CalendarOutlined, PlusOutlined} from "@ant-design/icons";
+import {RomanI, RomanII, RomanIII, RomanIV} from "../../assets/icon/roman_numerals_svg.tsx";
 
 /**
  * # 看板主页
@@ -51,16 +52,19 @@ export function DashboardHome({onHeaderHandler}: { onHeaderHandler: (header: str
     return (
         <div className={"flex-1 flex flex-col gap-3 h-full"}>
             <div className={"flex-shrink-0 col-span-2 flex justify-end"}>
-                <div className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
-                    <BuildOutlined />
+                <div
+                    className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
+                    <BuildOutlined/>
                     <span>课程</span>
                 </div>
-                <div className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 py-1.5"}>
-                    <CalendarOutlined />
+                <div
+                    className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 py-1.5"}>
+                    <CalendarOutlined/>
                     <span>特殊日</span>
                 </div>
-                <div className={"transition flex gap-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-r-lg px-4 py-1.5"}>
-                    <PlusOutlined />
+                <div
+                    className={"transition flex gap-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-r-lg px-4 py-1.5"}>
+                    <PlusOutlined/>
                     <span>日程</span>
                 </div>
             </div>
@@ -69,21 +73,33 @@ export function DashboardHome({onHeaderHandler}: { onHeaderHandler: (header: str
                     <div className={"grid gap-1 p-1 h-full"}>
                         <div className={"flex gap-1"}>
                             <div className="flex-1 bg-white rounded-tl-md">
-                                <div className={"bg-teal-400 rounded-tl-md ps-3 py-1 text-teal-900"}>内容1</div>
+                                <div className={"bg-red-400 rounded-tl-md ps-3 py-1 text-red-900 fill-red-900 flex gap-1 items-center"}>
+                                    <RomanI/>
+                                    <span>重要且紧急</span>
+                                </div>
                                 <div className={"p-3"}>内容1</div>
                             </div>
                             <div className="flex-1 bg-white rounded-tr-md">
-                                <div className={"bg-green-400 rounded-tr-md ps-3 py-1 text-green-900"}>内容1</div>
+                                <div className={"bg-yellow-400 rounded-tr-md ps-3 py-1 text-yellow-900 fill-yellow-900 flex gap-1 items-center"}>
+                                    <RomanII/>
+                                    <span>重要不紧急</span>
+                                </div>
                                 <div className={"p-3"}>内容1</div>
                             </div>
                         </div>
                         <div className={"flex gap-1"}>
                             <div className="flex-1 bg-white rounded-bl-md">
-                                <div className={"bg-yellow-400 ps-3 py-1 text-yellow-900"}>内容1</div>
+                                <div className={"bg-green-400 ps-3 py-1 text-green-900 fill-green-900 flex gap-1 items-center"}>
+                                    <RomanIII/>
+                                    <span>紧急不重要</span>
+                                </div>
                                 <div className={"p-3"}>内容1</div>
                             </div>
                             <div className="flex-1 bg-white rounded-br-md">
-                                <div className={"bg-red-400 ps-3 py-1 text-red-900"}>内容1</div>
+                                <div className={"bg-teal-400 ps-3 py-1 text-teal-900 fill-teal-900 flex gap-1 items-center"}>
+                                    <RomanIV/>
+                                    <span>不重要不紧急</span>
+                                </div>
                                 <div className={"p-3"}>内容1</div>
                             </div>
                         </div>
