@@ -74,8 +74,8 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                         </div>
                         <div className={"ml-2 flex-1 grid items-center"}>
                             <div className={"grid"}>
-                                <div className={"font-bold"}>用户</div>
-                                <div className={"text-sm"}>邮箱</div>
+                                <div className={"font-bold"}>XiaoLFeng</div>
+                                <div className={"text-sm text-gray-400"}>gm@x-lf.cn</div>
                             </div>
                         </div>
                     </div>
@@ -87,7 +87,7 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
 
 function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, path: string }) {
     const location = useLocation();
-    const [clazz, setClazz] = useState<string>();
+    const [clazz, setClazz] = useState<string>("transition text-white flex gap-2 px-4 py-2 rounded-lg");
 
     useEffect(() => {
         if (location.pathname === path) {

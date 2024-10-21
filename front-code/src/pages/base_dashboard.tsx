@@ -18,11 +18,14 @@
  * ***************************************************************************************
  */
 
-import {Route, Routes} from "react-router-dom";
+import {Route, Routes, useLocation} from "react-router-dom";
 import {DashboardHome} from "./dashboard/dashboard_home.tsx";
 import {DashboardSideMenu} from "../components/dashboard/dashboard_side_menu.tsx";
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
+import {useState} from "react";
+import {animated, useTransition} from "@react-spring/web";
+import {DashboardView} from "./dashboard/dashboard_view.tsx";
 
 /**
  * # 基础仪表板
@@ -34,17 +37,36 @@ import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
  */
 export function BaseDashboard() {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
+    const location = useLocation();
+    const [header, setHeader] = useState<string>("");
+    const transition = useTransition(location, {
+        from: {opacity: 0},
+        enter: {opacity: 1},
+        config: {duration: 200},
+    });
 
-    return (
-        <div className={""}>
-            <div className={"min-h-dvh absolute left-0 top-0"}>
-                <DashboardSideMenu webInfo={webInfo} />
+    function handlerHeader(value: string) {
+        setHeader(value);
+    }
+
+    return transition((style, item) => (
+        <div className={"min-h-dvh bg-gray-100"}>
+            <div className={"min-h-dvh fixed left-0 top-0"}>
+                <DashboardSideMenu webInfo={webInfo}/>
             </div>
-            <div className={"px-72 p-8"}>
-                <Routes>
-                    <Route path={"/home"} element={<DashboardHome/>}/>
-                </Routes>
+            <div className={"ps-72 p-9 h-dvh"}>
+                <div className={"flex flex-col gap-3 h-full"}>
+                    <div className={"flex-shrink-0 text-2xl font-bold"}>
+                        {header}
+                    </div>
+                    <animated.div style={style} className={"flex-1"}>
+                        <Routes location={item}>
+                            <Route path={"/home"} element={<DashboardHome onHeaderHandler={handlerHeader}/>}/>
+                            <Route path={"/view"} element={<DashboardView onHeaderHandler={handlerHeader}/>}/>
+                        </Routes>
+                    </animated.div>
+                </div>
             </div>
         </div>
-    );
+    ));
 }

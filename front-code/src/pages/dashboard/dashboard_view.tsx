@@ -18,29 +18,18 @@
  * ***************************************************************************************
  */
 
-import {BaseApi, MethodType} from "../assets/typescript/base_api.ts";
-import {AuthUserEntity} from "../models/entity/auth_user_entity.ts";
-import {AuthRegisterDTO} from "../models/dto/auth_register_dto.ts";
-import {BaseResponse} from "../models/base_response.ts";
+import {useSelector} from "react-redux";
+import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
 
-/**
- * # 用户注册
- * 用户注册，包含用户信息和令牌；该接口用于用户注册，注册成功后返回用户信息和令牌。
- *
- * @param getData 注册数据
- * @returns {Promise<BaseResponse<AuthUserEntity> | undefined>} 用户信息和令牌
- */
-const AuthRegisterAPI = (getData: AuthRegisterDTO): Promise<BaseResponse<AuthUserEntity> | undefined> => {
-    return BaseApi<AuthUserEntity>(
-        MethodType.POST,
-        "/api/v1/auth/register",
-        getData,
-        null,
-        null,
-        null
+export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
+    const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
+
+    document.title = `${webInfo.name} - 视图`;
+    onHeaderHandler("视图");
+
+    return (
+        <div>
+            <h1>Dashboard View</h1>
+        </div>
     );
-}
-
-export {
-    AuthRegisterAPI
 }

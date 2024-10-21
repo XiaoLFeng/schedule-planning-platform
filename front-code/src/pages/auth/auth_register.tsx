@@ -25,7 +25,7 @@ import backgroundImage from "../../assets/images/register-background.webp";
 import {Link, useNavigate} from "react-router-dom";
 import {RegisterInput} from "../../components/register/register_input.tsx";
 import React, {useRef, useState} from "react";
-import {AuthRegisterDTO} from "../../models/dto/auth_register_dto.tsx";
+import {AuthRegisterDTO} from "../../models/dto/auth_register_dto.ts";
 import {LogoSVG} from "../../assets/icon/logo_svg.tsx";
 import {message} from "antd";
 import {AuthRegisterAPI} from "../../interface/auth_api.ts";
