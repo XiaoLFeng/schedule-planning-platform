@@ -46,7 +46,9 @@ export function BaseDashboard() {
     });
 
     function handlerHeader(value: string) {
-        setHeader(value);
+        if (value) {
+            setHeader(value);
+        }
     }
 
     return transition((style, items) => (
