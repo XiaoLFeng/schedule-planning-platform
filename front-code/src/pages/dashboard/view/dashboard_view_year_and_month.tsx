@@ -35,33 +35,35 @@ export function DashboardViewYearAndMonth() {
 
     const getListData = (value: Dayjs) => {
         let listData: { content: React.ReactElement | string }[] = []; // Specify the type of listData
-        switch (value.date()) {
-            case 8:
-                listData = [
-                    {
-                        content: (
-                            <div className={"flex gap-1 text-sm whitespace-nowrap"}>
-                                <div className={"px-1 bg-red-400 fill-red-900 rounded text-white flex items-center"}>
-                                    <RomanI/></div>
-                                <div className={"px-1 bg-teal-500 rounded text-white"}>课程</div>
-                                <div>物理课</div>
-                            </div>
-                        )
-                    },
-                    {
-                        content: (
-                            <div className={"flex gap-1 text-sm whitespace-nowrap"}>
-                                <div
-                                    className={"px-1 bg-green-400 fill-green-900 rounded text-white flex items-center"}>
-                                    <RomanIII/></div>
-                                <div className={"px-1 bg-sky-500 rounded text-white"}>日程</div>
-                                <div>学习 SpringMVC 设计原理</div>
-                            </div>
-                        )
-                    },
-                ];
-                break;
-            default:
+        if (value.month() === 9) {
+            switch (value.date()) {
+                case 8:
+                    listData = [
+                        {
+                            content: (
+                                <div className={"flex gap-1 text-sm whitespace-nowrap"}>
+                                    <div className={"px-1 bg-red-400 fill-red-900 rounded text-white flex items-center"}>
+                                        <RomanI/></div>
+                                    <div className={"px-1 bg-teal-500 rounded text-white"}>课程</div>
+                                    <div>物理课</div>
+                                </div>
+                            )
+                        },
+                        {
+                            content: (
+                                <div className={"flex gap-1 text-sm whitespace-nowrap"}>
+                                    <div
+                                        className={"px-1 bg-green-400 fill-green-900 rounded text-white flex items-center"}>
+                                        <RomanIII/></div>
+                                    <div className={"px-1 bg-sky-500 rounded text-white"}>日程</div>
+                                    <div>学习 SpringMVC 设计原理</div>
+                                </div>
+                            )
+                        },
+                    ];
+                    break;
+                default:
+            }
         }
         return listData || [];
     };
@@ -80,8 +82,8 @@ export function DashboardViewYearAndMonth() {
         const listData = getListData(value);
         return (
             <ul className="events grid gap-1">
-                {listData.map((item) => (
-                    <li key={item.content.toString()}>
+                {listData.map((item, index) => (
+                    <li key={index}>
                         {item.content}
                     </li>
                 ))}

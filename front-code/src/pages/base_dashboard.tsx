@@ -23,7 +23,7 @@ import {DashboardHome} from "./dashboard/dashboard_home.tsx";
 import {DashboardSideMenu} from "../components/dashboard/dashboard_side_menu.tsx";
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
-import {useState} from "react";
+import {useRef} from "react";
 import {animated, useTransition} from "@react-spring/web";
 import {DashboardView} from "./dashboard/dashboard_view.tsx";
 
@@ -38,7 +38,7 @@ import {DashboardView} from "./dashboard/dashboard_view.tsx";
 export function BaseDashboard() {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
     const location = useLocation();
-    const [header, setHeader] = useState<string>("");
+    const header = useRef<string>("");
     const transition = useTransition(location, {
         from: location.pathname.startsWith("/dashboard/view/") ? {opacity: 1} : {opacity: 0},
         enter: location.pathname.startsWith("/dashboard/view/") ? {} : {opacity: 1},
@@ -47,7 +47,7 @@ export function BaseDashboard() {
 
     function handlerHeader(value: string) {
         if (value) {
-            setHeader(value);
+            header.current = value;
         }
     }
 
@@ -59,7 +59,7 @@ export function BaseDashboard() {
             <div className={"ps-72 p-9 min-h-dvh grid"}>
                 <div className={"flex flex-col gap-3 h-full"}>
                     <div className={"flex-shrink-0 text-2xl font-bold"}>
-                        {header}
+                        {header.current}
                     </div>
                     <animated.div style={style} className={"flex-1"}>
                         <Routes location={items}>

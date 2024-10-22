@@ -10,7 +10,11 @@ import 'dayjs/locale/zh-cn';
 
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
-        <ConfigProvider locale={zhCN}>
+        <ConfigProvider locale={zhCN} theme={{
+            components: {
+                Timeline: {itemPaddingBottom: 10}
+            },
+        }}>
             <StrictMode>
                 <App/>
             </StrictMode>
