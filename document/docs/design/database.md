@@ -134,19 +134,21 @@
 
 ### xf_user
 
-| Column Name  | Data Type    | Primary Key | Foreign Key | Extra                   |
-| ------------ | ------------ | ----------- | ----------- | ----------------------- |
-| uuid         | varchar(36)  | Yes         | No          | not null                |
-| username     | varchar(36)  | No          | No          |                         |
-| phone        | varchar(11)  | No          | No          | not null                |
-| email        | varchar(254) | No          | No          |                         |
-| password     | char(60)     | No          | No          | not null                |
-| old_password | char(60)     | No          | No          |                         |
-| role         | varchar(36)  | No          | Yes         | not null                |
-| created_at   | timestamp    | No          | No          | default now(), not null |
-| updated_at   | timestamp    | No          | No          | default now(), not null |
-| enable       | boolean      | No          | No          | default true, not null  |
-| banned_at    | timestamp    | No          | No          |                         |
+| Column Name  | Data Type     | Primary Key | Foreign Key | Extra                   |
+| ------------ | ------------- | ----------- | ----------- | ----------------------- |
+| uuid         | varchar(36)   | Yes         | No          | not null                |
+| username     | varchar(36)   | No          | No          |                         |
+| phone        | varchar(11)   | No          | No          | not null                |
+| email        | varchar(254)  | No          | No          |                         |
+| email_verify | boolean       | No          | No          | default false, not null |
+| password     | char(60)      | No          | No          | not null                |
+| old_password | char(60)      | No          | No          |                         |
+| role         | varchar(36)   | No          | Yes         | not null                |
+| created_at   | timestamp     | No          | No          | default now(), not null |
+| updated_at   | timestamp     | No          | No          | default now(), not null |
+| enable       | boolean       | No          | No          | default true, not null  |
+| banned_at    | timestamp     | No          | No          |                         |
+| ban_reason   | varchar(1024) | No          | No          |                         |
 
 #### Foreign Keys
 
@@ -162,21 +164,23 @@
 | xf_user_phone_uindex    | phone    | unique |
 | xf_user_username_uindex | username | unique |
 
-#### Comments
+### Comments
 
 - Table: 用户表
 - Column `uuid`: 角色主键
 - Column `username`: 用户名
 - Column `phone`: 手机号
 - Column `email`: 用户邮箱
+- Column `email_verify`: 邮箱是否验证
 - Column `password`: 用户当前密码
 - Column `old_password`: 用户旧密码
 - Column `created_at`: 创建时间
 - Column `updated_at`: 修改时间
 - Column `enable`: 用户是否开启
 - Column `banned_at`: 封禁到
+- Column `ban_reason`: 封禁原因
 
-## xf_group
+### xf_group
 
 | Column Name | Data Type   | Primary Key | Foreign Key | Extra                         |
 | ----------- | ----------- | ----------- | ----------- | ----------------------------- |
@@ -188,13 +192,13 @@
 | updated_at  | timestamp   | No          | No          |                               |
 | deleted_at  | timestamp   | No          | No          |                               |
 
-### Foreign Keys
+#### Foreign Keys
 
 | Column | References Table | References Column |
 | ------ | ---------------- | ----------------- |
 | master | xf_user          | uuid              |
 
-### Comments
+#### Comments
 
 - Table: 分组
 - Column `group_uuid`: 小组主键
@@ -205,7 +209,7 @@
 - Column `updated_at`: 更新时间
 - Column `deleted_at`: 删除时间
 
-## xf_group_member
+### xf_group_member
 
 | Column Name       | Data Type   | Primary Key | Foreign Key | Extra                   |
 | ----------------- | ----------- | ----------- | ----------- | ----------------------- |
@@ -216,14 +220,14 @@
 | created_at        | timestamp   | No          | No          | default now(), not null |
 | updated_at        | timestamp   | No          | No          |                         |
 
-### Foreign Keys
+#### Foreign Keys
 
 | Column     | References Table | References Column |
 | ---------- | ---------------- | ----------------- |
 | group_uuid | xf_group         | group_uuid        |
 | user_uuid  | xf_user          | uuid              |
 
-### Comments
+#### Comments
 
 - Table: 小组成员
 - Column `group_member_uuid`: 小组成员主键
@@ -233,35 +237,35 @@
 - Column `created_at`: 创建时间
 - Column `updated_at`: 更新时间
 
-## xf_schedule
+### xf_schedule
 
-| Column Name   | Data Type     | Primary Key | Foreign Key | Extra                           |
-|---------------|---------------|-------------|-------------|---------------------------------|
-| schedule_uuid | varchar(32)    | Yes         | No          | not null                        |
-| user_uuid     | varchar(36)    | No          | Yes         |                                 |
-| group_uuid    | varchar(32)    | No          | Yes         |                                 |
-| name          | varchar(64)    | No          | No          | not null                        |
-| description   | varchar        | No          | No          |                                 |
-| start_time    | timestamp      | No          | No          | not null                        |
-| end_time      | timestamp      | No          | No          | not null                        |
-| 列_name_2     | integer        | No          | No          |                                 |
-| type          | smallint       | No          | No          | default 0, not null             |
-| loop_type     | smallint       | No          | No          |                                 |
-| custom_loop   | integer        | No          | No          |                                 |
-| tags          | jsonb          | No          | No          | default '[]'::jsonb, not null   |
-| priority      | smallint       | No          | No          | default 1, not null             |
-| resources     | jsonb          | No          | No          |                                 |
-| created_at    | timestamp      | No          | No          | default now(), not null         |
-| updated_at    | timestamp      | No          | No          |                                 |
+| Column Name   | Data Type   | Primary Key | Foreign Key | Extra                         |
+| ------------- | ----------- | ----------- | ----------- | ----------------------------- |
+| schedule_uuid | varchar(32) | Yes         | No          | not null                      |
+| user_uuid     | varchar(36) | No          | Yes         |                               |
+| group_uuid    | varchar(32) | No          | Yes         |                               |
+| name          | varchar(64) | No          | No          | not null                      |
+| description   | varchar     | No          | No          |                               |
+| start_time    | timestamp   | No          | No          | not null                      |
+| end_time      | timestamp   | No          | No          | not null                      |
+| 列_name_2     | integer     | No          | No          |                               |
+| type          | smallint    | No          | No          | default 0, not null           |
+| loop_type     | smallint    | No          | No          |                               |
+| custom_loop   | integer     | No          | No          |                               |
+| tags          | jsonb       | No          | No          | default '[]'::jsonb, not null |
+| priority      | smallint    | No          | No          | default 1, not null           |
+| resources     | jsonb       | No          | No          |                               |
+| created_at    | timestamp   | No          | No          | default now(), not null       |
+| updated_at    | timestamp   | No          | No          |                               |
 
-### Foreign Keys
+#### Foreign Keys
 
-| Column    | References Table | References Column |
-|-----------|------------------|-------------------|
-| user_uuid | xf_user          | uuid              |
-| group_uuid| xf_group         | group_uuid        |
+| Column     | References Table | References Column |
+| ---------- | ---------------- | ----------------- |
+| user_uuid  | xf_user          | uuid              |
+| group_uuid | xf_group         | group_uuid        |
 
-### Comments
+#### Comments
 
 - Table: 日程表
 - Column `schedule_uuid`: 日程主键
@@ -279,6 +283,46 @@
 - Column `resources`: 导入资源
 - Column `created_at`: 创建时间
 - Column `updated_at`: 修改时间
+
+### xf_friend
+
+| Column Name       | Data Type    | Primary Key | Foreign Key | Extra                   |
+| ----------------- | ------------ | ----------- | ----------- | ----------------------- |
+| friend_uuid       | varchar(32)  | Yes         | No          | not null                |
+| sender_user_uuid  | varchar(36)  | No          | Yes         | not null                |
+| allower_user_uuid | varchar(36)  | No          | Yes         | not null                |
+| sender_remarks    | varchar(128) | No          | No          |                         |
+| allower_remarks   | varchar(128) | No          | No          |                         |
+| is_friend         | smallint     | No          | No          | default 0, not null     |
+| sent_at           | timestamp    | No          | No          | default now(), not null |
+| created_at        | timestamp    | No          | No          | default now(), not null |
+| updated_at        | timestamp    | No          | No          |                         |
+
+#### Foreign Keys
+
+| Column            | References Table | References Column |
+| ----------------- | ---------------- | ----------------- |
+| sender_user_uuid  | xf_user          | uuid              |
+| allower_user_uuid | xf_user          | uuid              |
+
+### Indexes
+
+| Index Name                                          | Column Combination                  | Type   |
+| --------------------------------------------------- | ----------------------------------- | ------ |
+| xf_friend_sender_user_uuid_allower_user_uuid_uindex | sender_user_uuid, allower_user_uuid | unique |
+
+#### Comments
+
+- Table: 好友信息
+- Column `friend_uuid`: 好友主键
+- Column `sender_user_uuid`: 发送好友请求用户主键
+- Column `allower_user_uuid`: 接受好友主键
+- Column `sender_remarks`: 发送请求用户对接受用户的好友名字备注
+- Column `allower_remarks`: 接受方对请求方的好友备注
+- Column `is_friend`: 成为了好友(0: 等待审核, 1: 成为了好友, 2: 好友申请被拒绝)
+- Column `sent_at`: 发送时间
+- Column `created_at`: 创建时间
+- Column `updated_at`: 更新时间
 
 ## 建表文件
 
