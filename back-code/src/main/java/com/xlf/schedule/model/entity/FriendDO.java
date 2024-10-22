@@ -31,35 +31,64 @@ import lombok.experimental.Accessors;
 import java.sql.Timestamp;
 
 /**
- * 信息表实体
+ * 好友表实体
  * <p>
- * 该类用于定义信息表实体;
+ * 该类用于定义好友表实体;
  *
- * @author xiao_lfeng
- * @version v1.0.0
  * @since v1.0.0
+ * @version v1.0.0
+ * @author xiao_lfeng
  */
 @Data
-@TableName("xf_info")
+@TableName("xf_friend")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class InfoDO {
+public class FriendDO {
+
     /**
-     * 信息表主键
+     * 好友主键
      */
     @TableId(type = IdType.ASSIGN_UUID)
-    private String infoUuid;
+    private String friendUuid;
+
     /**
-     * 信息表键
+     * 发送好友请求用户主键
      */
-    private String key;
+    private String senderUserUuid;
+
     /**
-     * 信息表值
+     * 接受好友请求用户主键
      */
-    private String value;
+    private String allowerUserUuid;
+
     /**
-     * 信息表更新时间
+     * 发送方备注
+     */
+    private String senderRemarks;
+
+    /**
+     * 接收方备注
+     */
+    private String allowerRemarks;
+
+    /**
+     * 好友状态 (0: 等待审核, 1: 成为了好友, 2: 好友申请被拒绝)
+     */
+    private Integer isFriend;
+
+    /**
+     * 发送时间
+     */
+    private Timestamp sentAt;
+
+    /**
+     * 创建时间
+     */
+    private Timestamp createdAt;
+
+    /**
+     * 更新时间
      */
     private Timestamp updatedAt;
 }

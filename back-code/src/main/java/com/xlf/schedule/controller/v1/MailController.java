@@ -20,22 +20,23 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.MailCodeDO;
 import com.xlf.schedule.model.vo.MailSendVO;
 import com.xlf.schedule.service.MailService;
+import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
+import com.xlf.utility.annotations.HasAuthorize;
 import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.util.RandomUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 邮件控制器
@@ -53,6 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MailController {
     private final MailService mailService;
+    private final UserService userService;
 
     /**
      * 发送邮件
@@ -78,6 +80,21 @@ public class MailController {
             }
         }
         return ResultUtil.success("发送成功");
+    }
+
+    /**
+     * 验证邮件
+     * <p>
+     * 该方法用于检查此用户的邮箱是否已经验证，如果没有进行验证将返回 {@code false}，否则返回 {@code true}。
+     *
+     * @return {@link BaseResponse}<{@link Void}> 邮件验证结果
+     */
+    @HasAuthorize
+    @GetMapping("/verify")
+    public ResponseEntity<BaseResponse<Boolean>> isVerify(HttpServletRequest request) {
+        UserDTO getUser = userService.getUserByToken(request);
+        assert getUser != null;
+        return ResultUtil.success("获取成功", getUser.getEmailVerify());
     }
 
     /**

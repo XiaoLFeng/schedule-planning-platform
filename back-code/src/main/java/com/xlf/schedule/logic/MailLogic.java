@@ -23,8 +23,10 @@ package com.xlf.schedule.logic;
 import com.xlf.schedule.constant.MailConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.MailCodeDAO;
+import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.entity.MailCodeDO;
 import com.xlf.schedule.service.MailService;
+import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.config.UtilConfiguration;
 import com.xlf.utility.exception.BusinessException;
@@ -63,6 +65,8 @@ public class MailLogic implements MailService {
     private final UtilConfiguration utilConfig;
     private final SpringTemplateEngine templateEngine;
     private final MailCodeDAO mailCodeDAO;
+    private final UserDAO userDAO;
+    private final UserService userService;
 
     @Override
     public void sendMail(String mail, String template, String subject, Map<String, String> parameters) {

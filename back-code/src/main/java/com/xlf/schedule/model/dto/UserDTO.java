@@ -58,6 +58,10 @@ public class UserDTO {
      */
     private String email;
     /**
+     * 用户邮箱验证
+     */
+    private Boolean emailVerify;
+    /**
      * 角色
      */
     private String role;

@@ -18,48 +18,24 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.entity;
+package com.xlf.schedule.dao;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import java.sql.Timestamp;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xlf.schedule.mapper.FriendMapper;
+import com.xlf.schedule.model.entity.FriendDO;
+import org.springframework.stereotype.Repository;
 
 /**
- * 信息表实体
+ * 朋友表数据访问对象
  * <p>
- * 该类用于定义信息表实体;
+ * 该类用于定义朋友表数据访问对象;
+ * 该类使用 {@link Repository} 注解标记;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Data
-@TableName("xf_info")
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class InfoDO {
-    /**
-     * 信息表主键
-     */
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String infoUuid;
-    /**
-     * 信息表键
-     */
-    private String key;
-    /**
-     * 信息表值
-     */
-    private String value;
-    /**
-     * 信息表更新时间
-     */
-    private Timestamp updatedAt;
+@Repository
+public class FriendDAO extends ServiceImpl<FriendMapper, FriendDO> implements IService<FriendDO> {
 }
