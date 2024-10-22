@@ -30,6 +30,7 @@ import {LogoSVG} from "../../assets/icon/logo_svg.tsx";
 import {message} from "antd";
 import {AuthRegisterAPI} from "../../interface/auth_api.ts";
 import Cookies from "js-cookie";
+import {animated, useSpring} from "@react-spring/web";
 
 /**
  * # 注册页面
@@ -44,6 +45,12 @@ export function AuthRegister() {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
     const [authRegister, setAuthRegister] = useState<AuthRegisterDTO>({} as AuthRegisterDTO);
     const confirmPassword = useRef<string>("");
+
+    const prop = useSpring({
+        from: {opacity: 0},
+        to: {opacity: 1},
+        config: {duration: 200}
+    });
 
     document.title = `${webInfo.name} - 注册`;
 
@@ -109,7 +116,7 @@ export function AuthRegister() {
     }
 
     return (
-        <section className="bg-white">
+        <animated.section style={prop} className="bg-white">
             <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
                 <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
                     <img alt="backgroundImage"
@@ -197,6 +204,6 @@ export function AuthRegister() {
                     </div>
                 </main>
             </div>
-        </section>
+        </animated.section>
     );
 }

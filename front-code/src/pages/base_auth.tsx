@@ -52,6 +52,9 @@ export function BaseAuth() {
                             if (getResp?.output === "Success") {
                                 message.info("您已登录，正在跳转到首页");
                                 navigate("/dashboard/home");
+                            } else {
+                                Cookies.remove("X-User-UUID");
+                                Cookies.remove("Authorization");
                             }
                         }
                     }

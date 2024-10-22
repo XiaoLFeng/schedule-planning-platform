@@ -27,6 +27,7 @@ import {AuthLoginAPI} from "../../interface/auth_api.ts";
 import {AuthLoginDTO} from "../../models/dto/auth_login_dto.ts";
 import {message} from "antd";
 import Cookies from "js-cookie";
+import {animated, useSpring} from "@react-spring/web";
 
 /**
  * # 认证登录
@@ -41,6 +42,12 @@ export function AuthLogin() {
 
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
     const [authLogin, setAuthLogin] = useState<AuthLoginDTO>({} as AuthLoginDTO);
+
+    const props = useSpring({
+        from: {opacity: 0},
+        to: {opacity: 1},
+        config: {duration: 200}
+    });
 
     document.title = `${webInfo.name} - 登录`;
 
@@ -91,7 +98,7 @@ export function AuthLogin() {
     }
 
     return (
-        <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+        <animated.div style={props} className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-lg">
                 <h1 className="text-center text-2xl font-bold text-cyan-600 sm:text-3xl">开始使用</h1>
                 <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
@@ -135,6 +142,6 @@ export function AuthLogin() {
                     </p>
                 </form>
             </div>
-        </div>
+        </animated.div>
     );
 }

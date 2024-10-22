@@ -64,9 +64,11 @@ export function BaseDashboard() {
             } else {
                 if (!checkLoginTimeout.current) {
                     checkLoginTimeout.current = setTimeout(() => {
-                        navigate("/auth/login");
+                        Cookies.remove("X-User-UUID");
+                        Cookies.remove("Authorization");
                         message.warning("登录已过期，请重新登录！");
-                    })
+                        navigate("/auth/login");
+                    });
                 }
             }
         }
