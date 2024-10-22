@@ -89,7 +89,11 @@ async function BaseApi<E>(
  */
 const makeURL = (url: string, pathData: string | null): string => {
     if (pathData) {
-        return `${BASE_API_URL}${url}/${pathData}`;
+        if (url.endsWith("/")) {
+            return `${BASE_API_URL}${url}${pathData}`;
+        } else {
+            return `${BASE_API_URL}${url}/${pathData}`;
+        }
     } else {
         return `${BASE_API_URL}${url}`;
     }
@@ -123,7 +127,7 @@ const pushHeader = (headers: Record<string, string> | null): Record<string, stri
 }
 
 function GetAuthorizationToken(): string {
-    const token = Cookies.get("authorization-token");
+    const token = Cookies.get("Authorization");
     if (token) {
         return "Bearer " + token;
     } else {

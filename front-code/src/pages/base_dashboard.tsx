@@ -18,14 +18,19 @@
  * ***************************************************************************************
  */
 
-import {Route, Routes, useLocation} from "react-router-dom";
+import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {DashboardHome} from "./dashboard/dashboard_home.tsx";
 import {DashboardSideMenu} from "../components/dashboard/dashboard_side_menu.tsx";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
-import {useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {animated, useTransition} from "@react-spring/web";
 import {DashboardView} from "./dashboard/dashboard_view.tsx";
+import {UserCurrentAPI} from "../interface/user_api.ts";
+import Cookies from "js-cookie";
+import {UserEntity} from "../models/entity/user_entity.ts";
+import {setUser} from "../store/user_store.ts";
+import {message} from "antd";
 
 /**
  * # 基础仪表板
@@ -36,20 +41,44 @@ import {DashboardView} from "./dashboard/dashboard_view.tsx";
  * @author xiao_lfeng
  */
 export function BaseDashboard() {
-    const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
     const location = useLocation();
-    const header = useRef<string>("");
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch();
+    const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
+    const [header, setHeader] = useState<string>("");
     const transition = useTransition(location, {
         from: location.pathname.startsWith("/dashboard/view/") ? {opacity: 1} : {opacity: 0},
         enter: location.pathname.startsWith("/dashboard/view/") ? {} : {opacity: 1},
         config: location.pathname.startsWith("/dashboard/view/") ? {} : {duration: 200}
     });
 
-    function handlerHeader(value: string) {
-        if (value) {
-            header.current = value;
+    const checkLoginTimeout = useRef<number>(0);
+
+    // 获取当前用户信息
+    useEffect(() => {
+        const func = async () => {
+            const getResp = await UserCurrentAPI(Cookies.get("X-User-UUID")!);
+            if (getResp?.output === "Success") {
+                dispatch(setUser(getResp.data! as UserEntity));
+            } else {
+                if (!checkLoginTimeout.current) {
+                    checkLoginTimeout.current = setTimeout(() => {
+                        navigate("/auth/login");
+                        message.warning("登录已过期，请重新登录！");
+                    })
+                }
+            }
         }
-    }
+        func().then();
+    }, [dispatch, navigate]);
+
+    // 路由重定向
+    useEffect(() => {
+        if (location.pathname === "/dashboard") {
+            navigate("/dashboard/home");
+        }
+    }, [location.pathname, navigate]);
 
     return transition((style, items) => (
         <div className={"min-h-dvh bg-gray-100"}>
@@ -59,12 +88,12 @@ export function BaseDashboard() {
             <div className={"ps-72 p-9 min-h-dvh grid"}>
                 <div className={"flex flex-col gap-3 h-full"}>
                     <div className={"flex-shrink-0 text-2xl font-bold"}>
-                        {header.current}
+                        {header}
                     </div>
                     <animated.div style={style} className={"flex-1"}>
                         <Routes location={items}>
-                            <Route path={"/home"} element={<DashboardHome onHeaderHandler={handlerHeader}/>}/>
-                            <Route path={"/view/*"} element={<DashboardView onHeaderHandler={handlerHeader}/>}/>
+                            <Route path={"/home"} element={<DashboardHome onHeaderHandler={setHeader}/>}/>
+                            <Route path={"/view/*"} element={<DashboardView onHeaderHandler={setHeader}/>}/>
                         </Routes>
                     </animated.div>
                 </div>

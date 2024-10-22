@@ -19,9 +19,12 @@
  */
 
 import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {AuthLogin} from "./auth/auth_login.tsx";
 import {AuthRegister} from "./auth/auth_register.tsx";
+import {UserCurrentAPI} from "../interface/user_api.ts";
+import Cookies from "js-cookie";
+import {message} from "antd";
 
 /**
  * # 基本认证页面
@@ -35,9 +38,26 @@ export function BaseAuth() {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const jumpTimeout = useRef<number>(0);
+
     useEffect(() => {
         if (location.pathname === "/auth") {
             navigate("/auth/login");
+        } else {
+            if (jumpTimeout.current === 0) {
+                jumpTimeout.current = setTimeout(async () => {
+                    if (location.pathname === "/auth/login" || location.pathname === "/auth/register") {
+                        if (Cookies.get("X-User-UUID") && Cookies.get("X-User-UUID") != null) {
+                            const getResp = await UserCurrentAPI(Cookies.get("X-User-UUID")!);
+                            if (getResp?.output === "Success") {
+                                message.info("您已登录，正在跳转到首页");
+                                navigate("/dashboard/home");
+                            }
+                        }
+                    }
+                    clearTimeout(jumpTimeout.current);
+                });
+            }
         }
     }, [location.pathname, navigate]);
 

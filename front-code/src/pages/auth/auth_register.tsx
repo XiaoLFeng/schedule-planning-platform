@@ -98,6 +98,7 @@ export function AuthRegister() {
             message.info(`欢迎您 ${getResp.data!.user.username} 使用${webInfo.name}`);
             // 存储 Token 信息
             Cookies.set("Authorization", getResp.data!.token, {expires: 1});
+            Cookies.set("X-User-UUID", getResp.data!.user.uuid, {expires: 1});
             // 跳转到登录
             setTimeout(() => {
                 navigate("/dashboard/home");

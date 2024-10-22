@@ -18,7 +18,7 @@
  * ***************************************************************************************
  */
 
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
 import {
     CalendarOutlined,
@@ -27,12 +27,16 @@ import {
     SettingOutlined,
     SlidersOutlined
 } from "@ant-design/icons";
-import {JSX, useRef} from "react";
+import {JSX, useEffect, useRef, useState} from "react";
 
 import avatar1 from "../../assets/images/avatar_1.webp";
 import avatar2 from "../../assets/images/avatar_2.webp";
 import avatar3 from "../../assets/images/avatar_3.webp";
 import avatar4 from "../../assets/images/avatar_4.webp";
+import {useSelector} from "react-redux";
+import {UserEntity} from "../../models/entity/user_entity.ts";
+import {message, Modal} from "antd";
+import {AuthLogoutAPI} from "../../interface/auth_api.ts";
 
 /**
  * # 仪表板侧边菜单
@@ -43,10 +47,30 @@ import avatar4 from "../../assets/images/avatar_4.webp";
  * @author xiao_lfeng
  */
 export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
+    const userEntity = useSelector((state: { userCurrent: UserEntity }) => state.userCurrent);
+
+    const navigate = useNavigate();
 
     function handlerAvatar() {
         const avatars = [avatar1, avatar2, avatar3, avatar4];
         return avatars[Math.floor(Math.random() * avatars.length)];
+    }
+
+    const [openModal, setOpenModal] = useState(false);
+
+    async function handleOk() {
+        const getResp = await AuthLogoutAPI();
+        if (getResp?.output === "Success") {
+            navigate("/auth/login");
+            message.success("登出成功");
+        } else {
+            message.warning(getResp?.error_message);
+        }
+        setOpenModal(false);
+    }
+
+    function handleCancel() {
+        setOpenModal(false);
     }
 
     return (
@@ -67,24 +91,62 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                 </div>
             </div>
             <div className={"flex-shrink-0 text-white"}>
-                <div className={"border-t p-4 border-gray-500"}>
+                <button type={"button"} className={"border-t p-4 border-gray-500 w-full text-left"}
+                        onClick={() => setOpenModal(true)}>
                     <div className={"flex justify-center gap-1"}>
                         <div className={"size-12 flex-shrink-0"}>
                             <img src={handlerAvatar()} alt={webInfo.name} className={"rounded-xl"}/>
                         </div>
                         <div className={"ml-2 flex-1 grid items-center"}>
                             <div className={"grid"}>
-                                <div className={"font-bold"}>XiaoLFeng</div>
-                                <div className={"text-sm text-gray-400"}>gm@x-lf.cn</div>
+                                <div className={"font-bold"}>{userEntity.username}</div>
+                                <div className={"text-sm text-gray-400"}>{userEntity.email}</div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </button>
             </div>
+            <Modal
+                open={openModal}
+                title="确认登出"
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={
+                    <div className={"flex gap-3 justify-end"}>
+                        <button type={"button"}
+                                className={"transition border border-gray-200 shadow-sm hover:bg-gray-200 px-4 py-1.5 rounded-lg"}
+                                onClick={handleCancel}>
+                            取消
+                        </button>
+                        <button type={"button"}
+                                className={"transition border border-gray-200 shadow-sm bg-red-500 hover:bg-red-600 px-4 py-1.5 text-white rounded-lg"}
+                                onClick={handleOk}>
+                            确定
+                        </button>
+                    </div>
+                }
+            >
+                <div className={"grid gap-1"}>
+                    <div className={"flex"}>
+                        <span>是否退出当前</span>
+                        <span className={"text-red-500 font-bold"}>「{userEntity.username}」</span>
+                        <span>账号</span>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }
 
+/**
+ * # 侧边菜单项
+ * 用于展示侧边菜单项的页面；用于展示侧边菜单项的页面。
+ *
+ * @param icon 图标
+ * @param title 标题
+ * @param path 路径
+ * @returns {JSX.Element} 侧边菜单项
+ */
 function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, path: string }) {
     const getData = () => {
         if (location.pathname.startsWith(path)) {
@@ -96,11 +158,36 @@ function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, p
 
     const location = useLocation();
     const clazz = useRef<string>(getData());
-
-    return (
+    const [element, setElement] = useState<JSX.Element>(
         <Link to={path} className={clazz.current}>
             {icon}
             <span>{title}</span>
         </Link>
+    );
+
+    useEffect(() => {
+        if (location.pathname === path) {
+            setElement(
+                <div className={clazz.current}>
+                    {icon}
+                    <span>{title}</span>
+                </div>
+            );
+        } else {
+            setElement(
+                <Link to={path} className={clazz.current}>
+                    {icon}
+                    <span>{title}</span>
+                </Link>
+            );
+        }
+    }, [icon, location.pathname, path, title]);
+
+    function Element() {
+        return element;
+    }
+
+    return (
+        <Element/>
     );
 }

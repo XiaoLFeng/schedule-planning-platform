@@ -18,10 +18,11 @@
  * ***************************************************************************************
  */
 
-import {BaseApi, MethodType} from "../assets/typescript/base_api.ts";
+import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/base_api.ts";
 import {AuthUserEntity} from "../models/entity/auth_user_entity.ts";
 import {AuthRegisterDTO} from "../models/dto/auth_register_dto.ts";
 import {BaseResponse} from "../models/base_response.ts";
+import {AuthLoginDTO} from "../models/dto/auth_login_dto.ts";
 
 /**
  * # 用户注册
@@ -41,6 +42,43 @@ const AuthRegisterAPI = (getData: AuthRegisterDTO): Promise<BaseResponse<AuthUse
     );
 }
 
+/**
+ * # 用户登录
+ * 用户登录，包含用户信息和令牌；该接口用于用户登录，登录成功后返回用户信息和令牌。
+ *
+ * @param getData 登录数据
+ * @returns {Promise<BaseResponse<AuthUserEntity> | undefined>} 用户信息和令牌
+ */
+const AuthLoginAPI = (getData: AuthLoginDTO): Promise<BaseResponse<AuthUserEntity> | undefined> => {
+    return BaseApi<AuthUserEntity>(
+        MethodType.POST,
+        "/api/v1/auth/login",
+        getData,
+        null,
+        null,
+        null
+    );
+}
+
+/**
+ * # 用户登出
+ * 用户登出，不包含数据；该接口用于用户登出，登出成功后不返回数据。
+ *
+ * @returns {Promise<BaseResponse<void> | undefined>} 无数据
+ */
+const AuthLogoutAPI = (): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.GET,
+        "/api/v1/auth/logout",
+        null,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
-    AuthRegisterAPI
+    AuthRegisterAPI,
+    AuthLoginAPI,
+    AuthLogoutAPI
 }
