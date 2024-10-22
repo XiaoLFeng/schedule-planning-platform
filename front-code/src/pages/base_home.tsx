@@ -18,8 +18,10 @@
  * ***************************************************************************************
  */
 
-import {Route, Routes} from "react-router-dom";
+import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {HomeIndex} from "./home/home_index.tsx";
+import {useEffect} from "react";
+import {IsInitAPI} from "../interface/init_api.ts";
 
 /**
  * # 基本主页
@@ -30,6 +32,22 @@ import {HomeIndex} from "./home/home_index.tsx";
  * @author xiao_lfeng
  */
 export function BaseHome() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const checkIsInitMode = async () => {
+            if (location.pathname !== "/init") {
+                const getResp = await IsInitAPI();
+                if (getResp?.output === "Success") {
+                    if (getResp.data!) {
+                        navigate("/init");
+                    }
+                }
+            }
+        }
+        checkIsInitMode().then();
+    }, [location.pathname, navigate]);
 
     return (
         <Routes>

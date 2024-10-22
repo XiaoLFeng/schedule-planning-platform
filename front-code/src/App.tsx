@@ -8,6 +8,7 @@ import {GetWebInfoAPI} from "./interface/system_api.ts";
 import {useDispatch} from "react-redux";
 import {setWebInfo} from "./store/web_store.ts";
 import {BaseDashboard} from "./pages/base_dashboard.tsx";
+import {BaseInitial} from "./pages/base_initial.tsx";
 
 /**
  * # App
@@ -48,6 +49,7 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path={"/"} element={<BaseHome/>}/>
+                <Route path={"/init"} element={<BaseInitial/>}/>
                 <Route path={"/auth/*"} element={<BaseAuth/>}/>
                 <Route path={"/dashboard/*"} element={<BaseDashboard/>}/>
             </Routes>

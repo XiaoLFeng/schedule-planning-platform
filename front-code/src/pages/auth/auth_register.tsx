@@ -23,7 +23,7 @@ import {useSelector} from "react-redux";
 
 import backgroundImage from "../../assets/images/register-background.webp";
 import {Link, useNavigate} from "react-router-dom";
-import {RegisterInput} from "../../components/register/register_input.tsx";
+import {InputLabel} from "../../components/input_label.tsx";
 import React, {useRef, useState} from "react";
 import {AuthRegisterDTO} from "../../models/dto/auth_register_dto.ts";
 import {LogoSVG} from "../../assets/icon/logo_svg.tsx";
@@ -153,29 +153,29 @@ export function AuthRegister() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-6 gap-6">
-                            <RegisterInput type={"email"} name={"email"} display={"邮箱"}
-                                           className={"col-span-6 sm:col-span-3"}
-                                           mapping={(event) => {
+                            <InputLabel type={"email"} name={"email"} display={"邮箱"}
+                                        className={"col-span-6 sm:col-span-3"}
+                                        mapping={(event) => {
                                                setAuthRegister({...authRegister, email: event.currentTarget.value});
                                            }}/>
-                            <RegisterInput type={"text"} name={"phone"} display={"手机"}
-                                           className={"col-span-6 sm:col-span-3"}
-                                           mapping={(event) => {
+                            <InputLabel type={"text"} name={"phone"} display={"手机"}
+                                        className={"col-span-6 sm:col-span-3"}
+                                        mapping={(event) => {
                                                setAuthRegister({...authRegister, phone: event.currentTarget.value});
                                            }}/>
-                            <RegisterInput type={"text"} name={"username"} display={"用户名"}
-                                           className={"col-span-6"}
-                                           mapping={(event) => {
+                            <InputLabel type={"text"} name={"username"} display={"用户名"}
+                                        className={"col-span-6"}
+                                        mapping={(event) => {
                                                setAuthRegister({...authRegister, username: event.currentTarget.value});
                                            }}/>
-                            <RegisterInput type={"password"} name={"password"} display={"密码"}
-                                           className={"col-span-6 sm:col-span-3"}
-                                           mapping={(event) => {
+                            <InputLabel type={"password"} name={"password"} display={"密码"}
+                                        className={"col-span-6 sm:col-span-3"}
+                                        mapping={(event) => {
                                                setAuthRegister({...authRegister, password: event.currentTarget.value});
                                            }}/>
-                            <RegisterInput type={"password"} name={"password_confirmation"} display={"确认密码"}
-                                           className={"col-span-6 sm:col-span-3"}
-                                           mapping={(event) => {
+                            <InputLabel type={"password"} name={"password_confirmation"} display={"确认密码"}
+                                        className={"col-span-6 sm:col-span-3"}
+                                        mapping={(event) => {
                                                confirmPassword.current = event.currentTarget.value;
                                            }}/>
                             <div className="col-span-6">

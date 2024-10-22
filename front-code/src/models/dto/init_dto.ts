@@ -18,14 +18,9 @@
  * ***************************************************************************************
  */
 
-/**
- * # AuthRegisterDTO
- * 用户注册数据传输对象
- */
-export type AuthRegisterDTO = {
+export type InitDTO = {
     email: string;
     password: string;
     phone: string;
     username: string;
-    code: string;
 }

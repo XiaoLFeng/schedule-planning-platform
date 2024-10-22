@@ -24,7 +24,7 @@ import {DashboardSideMenu} from "../components/dashboard/dashboard_side_menu.tsx
 import {useDispatch, useSelector} from "react-redux";
 import {WebInfoEntity} from "../models/entity/web_info_entity.ts";
 import {useEffect, useRef, useState} from "react";
-import {animated, useTransition} from "@react-spring/web";
+import {animated, useSpring, useTransition} from "@react-spring/web";
 import {DashboardView} from "./dashboard/dashboard_view.tsx";
 import {UserCurrentAPI} from "../interface/user_api.ts";
 import Cookies from "js-cookie";
@@ -51,6 +51,11 @@ export function BaseDashboard() {
         from: location.pathname.startsWith("/dashboard/view/") ? {opacity: 1} : {opacity: 0},
         enter: location.pathname.startsWith("/dashboard/view/") ? {} : {opacity: 1},
         config: location.pathname.startsWith("/dashboard/view/") ? {} : {duration: 200}
+    });
+    const spring = useSpring({
+        from: {opacity: 0},
+        to: {opacity: 1},
+        config: {duration: 200}
     });
 
     const checkLoginTimeout = useRef<number>(0);
@@ -89,6 +94,9 @@ export function BaseDashboard() {
             </div>
             <div className={"ps-72 p-9 min-h-dvh grid"}>
                 <div className={"flex flex-col gap-3 h-full"}>
+                    <animated.div style={spring} className={"flex gap-3"}>
+
+                    </animated.div>
                     <div className={"flex-shrink-0 text-2xl font-bold"}>
                         {header}
                     </div>

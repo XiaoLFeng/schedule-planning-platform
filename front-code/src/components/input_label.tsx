@@ -31,7 +31,7 @@ import {FormEventHandler, HTMLInputTypeAttribute, useEffect} from "react";
  * @param mapping 映射事件
  * @constructor
  */
-export function RegisterInput(
+export function InputLabel(
     {type, name, display, className, mapping}: {
         type: HTMLInputTypeAttribute,
         name: string,
