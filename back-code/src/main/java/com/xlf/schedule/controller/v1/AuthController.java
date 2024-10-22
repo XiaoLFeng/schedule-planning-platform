@@ -70,7 +70,7 @@ public class AuthController {
      *
      * @return {@link AuthLoginVO} 登录信息
      */
-    @PostMapping
+    @PostMapping("/login")
     @Transactional
     public ResponseEntity<BaseResponse<AuthUserDTO>> login(
             @Validated @RequestBody AuthLoginVO authLoginVO,

@@ -30,9 +30,9 @@ import java.util.List;
  * <p>
  * 该接口用于定义令牌服务;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public interface TokenService {
 
@@ -41,9 +41,9 @@ public interface TokenService {
      * <p>
      * 该方法用于创建令牌。
      *
-     * @param userUuid 用户UUID
+     * @param userUuid        用户UUID
      * @param expiredHourTime 有效时间（小时）
-     * @param request 请求
+     * @param request         请求
      * @return {@link String} 令牌
      */
     String createToken(String userUuid, Long expiredHourTime, HttpServletRequest request);
@@ -53,9 +53,10 @@ public interface TokenService {
      * <p>
      * 该方法用于检查令牌。
      *
-     * @param token 令牌
+     * @param token   令牌
+     * @param request 请求
      */
-    void deleteToken(String token);
+    void deleteToken(String token, HttpServletRequest request);
 
     /**
      * 删除令牌

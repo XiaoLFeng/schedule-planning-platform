@@ -69,9 +69,9 @@ public class UserController {
     @HasAuthorize
     @DataWrangling
     @CheckAccessToYourOwnUuidOrAdminUuid
-    @GetMapping("/current/{userUuid}")
+    @GetMapping("/current/{user_uuid}")
     public ResponseEntity<BaseResponse<UserDTO>> userCurrent(
-            @PathVariable String userUuid
+            @PathVariable("user_uuid") String userUuid
     ) {
         UserDTO getUser = userService.getUserByUuid(userUuid);
         return ResultUtil.success("获取成功", getUser);
@@ -90,9 +90,9 @@ public class UserController {
      */
     @HasAuthorize
     @CheckAccessToYourOwnUuidOrAdminUuid
-    @PutMapping("/edit/{userUuid}")
+    @PutMapping("/edit/{user_uuid}")
     public ResponseEntity<BaseResponse<Void>> userEdit(
-            @PathVariable String userUuid,
+            @PathVariable("user_uuid") String userUuid,
             @RequestBody @Validated UserEditVO userEditVO,
             @NotNull Boolean isAdmin
     ) {
@@ -122,9 +122,9 @@ public class UserController {
      * @return 封禁结果
      */
     @HasRole({"ADMIN"})
-    @PatchMapping("/ban/{userUuid}")
+    @PatchMapping("/ban/{user_uuid}")
     public ResponseEntity<BaseResponse<Void>> userBan(
-            @PathVariable String userUuid,
+            @PathVariable("user_uuid") String userUuid,
             @RequestParam String reason,
             @RequestParam("ban") boolean isBan
     ) {
@@ -143,9 +143,9 @@ public class UserController {
      * @return 启用结果
      */
     @HasRole({"ADMIN"})
-    @PatchMapping("/enable/{userUuid}")
+    @PatchMapping("/enable/{user_uuid}")
     public ResponseEntity<BaseResponse<Void>> userEnable(
-            @PathVariable String userUuid,
+            @PathVariable("user_uuid") String userUuid,
             @RequestParam("enable") boolean isEnable
     ) {
         userService.enableUser(userUuid, isEnable);

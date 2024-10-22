@@ -30,6 +30,7 @@ import com.xlf.schedule.model.vo.UserEditVO;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.exception.library.UserAuthenticationException;
 import com.xlf.utility.util.HeaderUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -96,11 +97,16 @@ public class UserLogic implements UserService {
     public UserDTO getUserByToken(HttpServletRequest request) {
         UUID getUserUuid = HeaderUtil.getAuthorizeUserUuid(request);
         if (getUserUuid == null) {
-            throw new BusinessException("令牌不存在", ErrorCode.NOT_EXIST);
+            throw new UserAuthenticationException(UserAuthenticationException.ErrorType.TOKEN_EXPIRED, request);
         }
         TokenDO getTokenDO = tokenDAO.lambdaQuery().eq(TokenDO::getTokenUuid, getUserUuid.toString()).one();
         if (getTokenDO == null) {
-            throw new BusinessException("令牌不存在", ErrorCode.NOT_EXIST);
+            throw new UserAuthenticationException(UserAuthenticationException.ErrorType.TOKEN_EXPIRED, request);
+        }
+        // 检查令牌是否过期
+        if (getTokenDO.getExpiredAt().before(new Timestamp(System.currentTimeMillis()))) {
+            tokenDAO.removeById(getTokenDO);
+            throw new UserAuthenticationException(UserAuthenticationException.ErrorType.TOKEN_EXPIRED, request);
         }
         return this.getUserByUuid(getTokenDO.getUserUuid());
     }
