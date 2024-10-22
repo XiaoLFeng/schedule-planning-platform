@@ -109,6 +109,7 @@ public class Initialize {
         prepare.checkTable("xf_mail_code");
         prepare.checkTable("xf_group");
         prepare.checkTable("xf_group_member");
+        prepare.checkTable("xf_friend");
     }
 
     /**
