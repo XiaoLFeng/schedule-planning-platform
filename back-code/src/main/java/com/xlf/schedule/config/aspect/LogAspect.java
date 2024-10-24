@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
  * 该类使用 {@link Component} 注解标记;
  * 该类继承 {@link BusinessLogAspect} 类;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Aspect
 @Component

@@ -28,9 +28,9 @@ import jakarta.servlet.http.HttpServletRequest;
  * <br/>
  * 授权服务，用于授权相关操作。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public interface AuthService {
 
@@ -43,7 +43,7 @@ public interface AuthService {
      *
      * @param userUuid 用户UUID
      * @param password 密码
-     * @param request 请求
+     * @param request  请求
      */
     void checkUserAndPassword(String userUuid, String password, HttpServletRequest request);
 

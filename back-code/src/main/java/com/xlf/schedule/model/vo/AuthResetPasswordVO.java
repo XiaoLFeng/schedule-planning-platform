@@ -30,9 +30,9 @@ import lombok.Getter;
  * 该类包含 {@code 邮箱}、{@code 验证码}、{@code 密码} 三个属性；
  * 该类用于接收授权重置密码请求参数。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Getter
 @SuppressWarnings("unused")

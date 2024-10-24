@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
  * 该类使用 {@link RestController} 注解标记;
  * 该类使用 {@link RequestMapping} 注解标记;
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @RestController
 @RequestMapping("/api/v1/role")

@@ -43,7 +43,7 @@ public class LogsDAO extends ServiceImpl<LogsMapper, LogsDO> implements IService
     /**
      * 保存日志
      *
-     * @param type    日志类型
+     * @param type     日志类型
      * @param business 业务
      * @param user     用户
      * @param content  内容

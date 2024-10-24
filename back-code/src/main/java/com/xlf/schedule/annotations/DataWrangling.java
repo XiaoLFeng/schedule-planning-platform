@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
  * 该注解用于标记数据处理调试；
  * 如果需要调试数据处理，则使用该注解。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

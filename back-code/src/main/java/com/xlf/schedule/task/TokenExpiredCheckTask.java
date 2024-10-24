@@ -39,9 +39,9 @@ import java.util.List;
  * 该类使用 {@link RequiredArgsConstructor} 注解标记;
  * 该类使用 {@link Scheduled} 注解标记;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Slf4j
 @Component

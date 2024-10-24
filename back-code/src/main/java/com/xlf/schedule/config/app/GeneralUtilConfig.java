@@ -34,9 +34,9 @@ import org.springframework.core.env.Environment;
  * 该类用于配置通用工具相关配置;
  * 该类使用 {@link Configuration} 注解标记;
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @Configuration
 @RequiredArgsConstructor

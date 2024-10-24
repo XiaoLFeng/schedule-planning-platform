@@ -29,9 +29,9 @@ import org.apache.ibatis.annotations.Mapper;
  * <p>
  * 该类用于定义朋友表Mapper。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Mapper
 public interface FriendMapper extends BaseMapper<FriendDO> {

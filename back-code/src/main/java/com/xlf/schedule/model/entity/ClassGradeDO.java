@@ -28,39 +28,55 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * 邮箱验证码表实体
- * <p>
- * 该类用于定义邮箱验证码表实体;
+ * 课程表学年实体
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
 @Data
-@TableName("xf_mail_code")
+@TableName("xf_class_grade")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class MailCodeDO {
+public class ClassGradeDO {
     /**
-     * 验证码UUID
+     * 课程学年主键
      */
     @TableId(type = IdType.ASSIGN_UUID)
-    private String codeUuid;
+    private String classGradeUuid;
+
     /**
-     * 邮箱
+     * 用户主键 (此字段为 varchar(36) 手动生成 UUID)
      */
-    private String mail;
+    private String userUuid;
+
     /**
-     * 验证码
+     * 学期开始时间
      */
-    private String code;
+    private Date semesterBegin;
+
+    /**
+     * 学期结束时间
+     */
+    private Date semesterEnd;
+
+    /**
+     * 学年别名
+     */
+    private String nickname;
+
     /**
      * 创建时间
      */
     private Timestamp createdAt;
-    private Timestamp expiredAt;
+
+    /**
+     * 更新时间
+     */
+    private Timestamp updatedAt;
 }

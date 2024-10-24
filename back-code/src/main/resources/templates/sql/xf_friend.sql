@@ -35,7 +35,7 @@ create table xf_friend
     sender_remarks    varchar(128),
     allower_remarks   varchar(128),
     is_friend         smallint  default 0     not null,
-    sent_at         timestamp default now() not null,
+    sent_at           timestamp default now() not null,
     created_at        timestamp default now() not null,
     updated_at        timestamp
 );

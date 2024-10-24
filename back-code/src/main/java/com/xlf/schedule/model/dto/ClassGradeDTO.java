@@ -18,19 +18,35 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.constant;
+package com.xlf.schedule.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
- * 邮件常量
+ * 班级年级数据传输对象
  * <p>
- * 该类用于定义邮件常量信息;
+ * 该类用于定义班级年级数据传输对象；
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-public class MailConstant {
-    public static String MailUsername;
-    public static String MailNickName;
-    public static String MailDefaultEncoding;
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClassGradeDTO {
+    private String classGradeUuid;
+    private String userUuid;
+    private Date semesterBegin;
+    private Date semesterEnd;
+    private String nickname;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

@@ -43,9 +43,9 @@ import java.nio.charset.StandardCharsets;
  * 该类用于准备算法;
  * 该类使用 {@link PrepareAlgorithm} 注解标记;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -84,7 +84,7 @@ public class PrepareAlgorithm {
      * <p>
      * 该方法用于检查信息表字段，当字段不存在时，创建字段；若字段存在，忽略数据库的检查。
      *
-     * @param key 键
+     * @param key   键
      * @param value 值
      */
     public void checkInfoTableFields(String key, String value) {

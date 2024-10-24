@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
  * 该类用于处理公共异常;
  * 该类使用 {@link ControllerAdvice} 注解标记;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @ControllerAdvice
 public class PublicExceptionHandler extends PublicExceptionHandlerAbstract {
@@ -53,6 +53,6 @@ public class PublicExceptionHandler extends PublicExceptionHandlerAbstract {
      */
     @ExceptionHandler
     public ResponseEntity<BaseResponse<Void>> handleIllegalDataException(@NotNull IllegalDataException e) {
-        return ResultUtil.error(e.getErrorCode(), "非法数据", null);
+        return ResultUtil.error(e.getErrorCode(), e.getMessage(), null);
     }
 }

@@ -30,9 +30,9 @@ import lombok.Getter;
  * <p>
  * 该类用于定义初始化设置值对象;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Getter
 @SuppressWarnings("unused")

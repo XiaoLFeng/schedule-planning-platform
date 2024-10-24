@@ -26,9 +26,9 @@ package com.xlf.schedule.constant;
  * 该类用于定义正则表达式常量; 该类使用 final 修饰; 该类使用 static 修饰;
  * 该类使用 public 修饰;
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 public class PatternConstant {
     public final static String UUID = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";

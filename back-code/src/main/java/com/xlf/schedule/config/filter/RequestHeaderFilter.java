@@ -38,9 +38,9 @@ import java.io.IOException;
  * <p>
  * 该类用于过滤请求头；
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public class RequestHeaderFilter extends OncePerRequestFilter {
     @Override

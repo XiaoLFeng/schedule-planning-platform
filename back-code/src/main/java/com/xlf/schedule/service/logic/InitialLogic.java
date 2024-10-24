@@ -18,7 +18,7 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.logic;
+package com.xlf.schedule.service.logic;
 
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.InfoDAO;

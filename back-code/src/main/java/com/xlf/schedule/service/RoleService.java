@@ -26,9 +26,9 @@ package com.xlf.schedule.service;
  * 该接口用于定义角色服务;
  * 该接口使用 public 修饰;
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 public interface RoleService {
 
@@ -40,5 +40,5 @@ public interface RoleService {
      *
      * @param roleUuid 角色UUID
      */
-    boolean checkRoleHasAdminByUuid(String roleUuid);
+    boolean checkRoleHasAdmin(String roleUuid);
 }

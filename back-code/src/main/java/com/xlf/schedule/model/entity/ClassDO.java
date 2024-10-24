@@ -23,44 +23,74 @@ package com.xlf.schedule.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
- * 邮箱验证码表实体
+ * 课程表实体
  * <p>
- * 该类用于定义邮箱验证码表实体;
+ * 该类用于定义课程表实体;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
 @Data
-@TableName("xf_mail_code")
+@TableName("xf_class")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class MailCodeDO {
+public class ClassDO {
+
     /**
-     * 验证码UUID
+     * 课程表主键
      */
     @TableId(type = IdType.ASSIGN_UUID)
-    private String codeUuid;
+    private String classUuid;
+
     /**
-     * 邮箱
+     * 课程学年主键
      */
-    private String mail;
+    private String classGradeUuid;
+
     /**
-     * 验证码
+     * 课程学期
      */
-    private String code;
+    private String semester;
+
+    /**
+     * 开始时间
+     */
+    private Date startTime;
+
+    /**
+     * 结束时间
+     */
+    private Date endTime;
+
+    /**
+     * 课程信息 (JSONB 类型)
+     */
+    private JsonNode curriculum;
+
     /**
      * 创建时间
      */
     private Timestamp createdAt;
-    private Timestamp expiredAt;
+
+    /**
+     * 更新时间
+     */
+    private Timestamp updatedAt;
+
+    /**
+     * 删除时间
+     */
+    private Timestamp deletedAt;
 }

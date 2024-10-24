@@ -32,9 +32,9 @@ import org.jetbrains.annotations.NotNull;
  * 该类使用 {@link Getter} 注解标记;
  * 该类使用 {@link ErrorCode}
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @Getter
 public class IllegalDataException extends RuntimeException {
@@ -49,7 +49,11 @@ public class IllegalDataException extends RuntimeException {
      * @param errorCode 错误码
      */
     public IllegalDataException(@NotNull ErrorCode errorCode) {
-        super(errorCode.getMessage());
+        this(errorCode, errorCode.getMessage());
+    }
+
+    public IllegalDataException(@NotNull ErrorCode errorCode, String message) {
+        super(message);
         this.errorCode = errorCode;
     }
 }

@@ -31,9 +31,9 @@ import java.lang.annotation.Target;
  * 该注解用于检查访问自己的UUID；
  * 如果访问的UUID不是自己的，则抛出异常。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

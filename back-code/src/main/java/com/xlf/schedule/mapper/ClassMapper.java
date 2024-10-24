@@ -18,19 +18,21 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.constant;
+package com.xlf.schedule.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xlf.schedule.model.entity.ClassDO;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 邮件常量
+ * 课程表映射器
  * <p>
- * 该类用于定义邮件常量信息;
+ * 该类用于定义课程表映射器;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-public class MailConstant {
-    public static String MailUsername;
-    public static String MailNickName;
-    public static String MailDefaultEncoding;
+@Mapper
+public interface ClassMapper extends BaseMapper<ClassDO> {
 }

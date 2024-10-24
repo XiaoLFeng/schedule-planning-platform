@@ -21,68 +21,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title th:text="${title}">验证码邮件</title>
-  <style>
-    /* TailwindCSS-like minimal inline styles */
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 1rem;
-      font-family: Arial, sans-serif;
-      background-color: #f9fafb;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-    .content {
-      margin-bottom: 2rem;
-      line-height: 1.6;
-      color: #555;
-    }
-    .code-container {
-      text-align: center;
-      margin: 1rem 0;
-    }
-    .code {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      background-color: #e2e8f0;
-      border-radius: 4px;
-      font-size: 1.25rem;
-      font-weight: bold;
-      color: #1a202c;
-    }
-    .footer {
-      text-align: center;
-      font-size: 0.875rem;
-      color: #888;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title th:text="${title}">验证码邮件</title>
+    <style>
+        /* TailwindCSS-like minimal inline styles */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .content {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .code-container {
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .code {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-  <div class="header" th:text="${title}">[title]</div>
-  <div class="content">
-    <p>你好，<span th:text="${mail}">[mail]</span>:</p>
-    <p>您于
-    <span th:text="${now_time}">[now_time]</span> 请求了验证码。</p>
-    <p>您的验证码是：</p>
-    <div class="code-container">
-      <p class="code" th:text="${code}">[code]</p>
+    <div class="header" th:text="${title}">[title]</div>
+    <div class="content">
+        <p>你好，<span th:text="${mail}">[mail]</span>:</p>
+        <p>您于
+            <span th:text="${now_time}">[now_time]</span> 请求了验证码。</p>
+        <p>您的验证码是：</p>
+        <div class="code-container">
+            <p class="code" th:text="${code}">[code]</p>
+        </div>
+        <p>请尽快使用此验证码。</p>
     </div>
-    <p>请尽快使用此验证码。</p>
-  </div>
-  <div class="footer" th:text="${copyright}">
-    &copy; 2016-2024 XiaoLFeng. All rights reserved.
-  </div>
+    <div class="footer" th:text="${copyright}">
+        &copy; 2016-2024 XiaoLFeng. All rights reserved.
+    </div>
 </div>
 </body>
 </html>

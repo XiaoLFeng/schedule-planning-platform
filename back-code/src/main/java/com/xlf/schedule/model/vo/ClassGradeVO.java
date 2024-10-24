@@ -18,19 +18,29 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.constant;
+package com.xlf.schedule.model.vo;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
 /**
- * 邮件常量
+ * 班级年级创建值对象
  * <p>
- * 该类用于定义邮件常量信息;
+ * 该类用于定义班级年级创建值对象;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-public class MailConstant {
-    public static String MailUsername;
-    public static String MailNickName;
-    public static String MailDefaultEncoding;
+@Getter
+@SuppressWarnings("unused")
+public class ClassGradeVO {
+    @NotBlank(message = "年级名称不能为空")
+    private String gradeName;
+    @NotBlank(message = "学期开始不能为空")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "学期开始格式错误")
+    private String semesterBegin;
+    @Pattern(regexp = "^(|\\d{4}-\\d{2}-\\d{2})$", message = "学期结束格式错误")
+    private String semesterEnd;
 }

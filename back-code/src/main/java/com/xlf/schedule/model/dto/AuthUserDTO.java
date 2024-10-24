@@ -36,9 +36,9 @@ import lombok.experimental.Accessors;
  * </ul>
  * 该类用于授权登录后返回用户信息和token。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Data
 @Accessors(chain = true)

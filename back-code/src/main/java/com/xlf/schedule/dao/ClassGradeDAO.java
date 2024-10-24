@@ -18,19 +18,24 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.constant;
+package com.xlf.schedule.dao;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xlf.schedule.mapper.ClassGradeMapper;
+import com.xlf.schedule.model.entity.ClassGradeDO;
+import org.springframework.stereotype.Repository;
 
 /**
- * 邮件常量
+ * 班级年级表数据访问对象
  * <p>
- * 该类用于定义邮件常量信息;
+ * 该类用于定义班级年级表数据访问对象;
+ * 该类使用 {@link Repository} 注解标记;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-public class MailConstant {
-    public static String MailUsername;
-    public static String MailNickName;
-    public static String MailDefaultEncoding;
+@Repository
+public class ClassGradeDAO extends ServiceImpl<ClassGradeMapper, ClassGradeDO> implements IService<ClassGradeDO> {
 }

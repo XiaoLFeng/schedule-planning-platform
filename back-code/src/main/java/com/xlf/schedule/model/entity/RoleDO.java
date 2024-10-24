@@ -35,9 +35,9 @@ import java.sql.Timestamp;
  * <p>
  * 该类用于定义用户角色表实体;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Data
 @TableName("xf_role")

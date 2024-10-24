@@ -37,9 +37,9 @@ import org.springframework.web.bind.annotation.*;
  * <p>
  * 该类用于初始化控制器，主要用于初始化项目使用。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @RestController
 @RequestMapping("/api/v2/initial")
@@ -51,7 +51,6 @@ public class InitialController {
      * 初始化设置
      * <p>
      * 该方法用于初始化设置，主要用于初始化项目使用；当项目启动时，调用该接口进行初始化。
-     *
      *
      * @return {@link Void} 无返回值
      */

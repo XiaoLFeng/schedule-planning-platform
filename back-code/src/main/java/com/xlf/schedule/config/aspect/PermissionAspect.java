@@ -51,9 +51,9 @@ import java.util.regex.Pattern;
  * 该类使用 {@link Component} 注解标记;
  * 该类使用 {@link RequiredArgsConstructor} 注解标记;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Aspect
 @Component
@@ -103,7 +103,7 @@ public class PermissionAspect {
             // 获取请求头中的令牌
             UserDTO getUser = userService.getUserByToken(request);
             if (getUser != null) {
-                if (!roleService.checkRoleHasAdminByUuid(getUser.getRole())) {
+                if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
                     throw new UserAuthenticationException(UserAuthenticationException.ErrorType.PERMISSION_DENIED, request);
                 }
             } else {
@@ -136,7 +136,7 @@ public class PermissionAspect {
             UserDTO getUser = userService.getUserByToken(request);
             if (!getUser.getUuid().equals(userUuid)) {
                 // 检查是否是管理员
-                if (!roleService.checkRoleHasAdminByUuid(getUser.getRole())) {
+                if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
                     throw new UserAuthenticationException(UserAuthenticationException.ErrorType.PERMISSION_DENIED, request);
                 }
                 Arrays.stream(args).filter(arg -> arg instanceof Boolean).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = true);

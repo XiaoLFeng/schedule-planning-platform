@@ -32,9 +32,9 @@ import org.springframework.stereotype.Repository;
  * 该类用于定义表数据访问对象;
  * 该类使用 {@link Repository} 注解标记;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 @Repository
 public class TableDAO extends ServiceImpl<TableMapper, TableDO> implements IService<TableDO> {

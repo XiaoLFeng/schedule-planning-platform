@@ -110,6 +110,8 @@ public class Initialize {
         prepare.checkTable("xf_group");
         prepare.checkTable("xf_group_member");
         prepare.checkTable("xf_friend");
+        prepare.checkTable("xf_class_grade");
+        prepare.checkTable("xf_class");
     }
 
     /**
@@ -130,7 +132,7 @@ public class Initialize {
 
         // Web 配置
         prepare.checkInfoTableFields("web_title", "学生日程规划平台");
-        prepare.checkInfoTableFields("web_description", "学生日程规划平台旨在为学生提供一个全面、高效的日程管理工具，帮助他们合理规划学习与生活，提高时间管理能力。通过该平台，学生可以轻松创建和管理个人日程、添加和查看课程表，同时与好友建立联系，互相查询彼此的空闲时间。平台具备用户友好的界面和强大的功能，满足学生在学习期间的多样化需求，助力他们实现自我管理和高效学习。");
+        prepare.checkInfoTableFields("web_description", "学生日程规划平台旨在为学生提供一个全面、高效的日程管理工具，帮助他们合理规划学习与生活，提高时间管理能力。");
         prepare.checkInfoTableFields("web_keywords", "学生,日程,规划,平台,学习,生活,时间管理,课程表,空闲时间,好友,联系,自我管理,高效学习");
         prepare.checkInfoTableFields("web_icp", "粤ICP备2021000000号");
         prepare.checkInfoTableFields("web_record", "粤公网安备 31000002000001号");

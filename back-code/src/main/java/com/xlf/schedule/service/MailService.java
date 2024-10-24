@@ -29,9 +29,9 @@ import java.util.Map;
  * <br/>
  * 邮件服务，用于邮件相关操作。
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public interface MailService {
     /**
@@ -41,9 +41,9 @@ public interface MailService {
      * 发送邮件时，需要提供 {@code 邮箱}、{@code 模板}、{@code 主题}、{@code 参数}；
      * 发送成功后，返回发送结果。
      *
-     * @param mail 邮箱
-     * @param template 模板
-     * @param subject 主题
+     * @param mail       邮箱
+     * @param template   模板
+     * @param subject    主题
      * @param parameters 参数
      */
     void sendMail(String mail, String template, String subject, Map<String, String> parameters);

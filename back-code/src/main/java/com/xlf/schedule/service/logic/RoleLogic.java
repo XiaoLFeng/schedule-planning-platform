@@ -18,7 +18,7 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.logic;
+package com.xlf.schedule.service.logic;
 
 import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.model.entity.RoleDO;
@@ -47,7 +47,7 @@ public class RoleLogic implements RoleService {
     private final RoleDAO roleDAO;
 
     @Override
-    public boolean checkRoleHasAdminByUuid(String roleUuid) {
+    public boolean checkRoleHasAdmin(String roleUuid) {
         RoleDO getRole = roleDAO.lambdaQuery()
                 .eq(RoleDO::getRoleUuid, roleUuid)
                 .one();

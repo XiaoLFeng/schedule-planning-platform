@@ -25,9 +25,9 @@ package com.xlf.schedule.constant;
  * <p>
  * 该类用于定义系统中的常量信息;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public class SystemConstant {
     /**

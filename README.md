@@ -5,6 +5,8 @@
 > 开发文档：https://schedule-planning-platform.pages.dev/
 > 接口文档：https://schedule-planning-platform.apifox.cn
 
+![Alt](https://repobeats.axiom.co/api/embed/e2ee20c8a5dc11d8d665a835c5eb857a92aa2a57.svg "Repobeats analytics image")
+
 ## 简介
 
 ### 文档目的

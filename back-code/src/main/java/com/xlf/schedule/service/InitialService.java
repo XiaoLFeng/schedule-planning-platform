@@ -28,9 +28,9 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * 该类用于定义初始化服务;
  *
- * @since v1.0.0
- * @version v1.0.0
  * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
  */
 public interface InitialService {
     /**

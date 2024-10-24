@@ -324,6 +324,68 @@
 - Column `created_at`: 创建时间
 - Column `updated_at`: 更新时间
 
+### xf_class
+
+| Column Name      | Data Type   | Primary Key | Foreign Key | Extra                         |
+| ---------------- | ----------- | ----------- | ----------- | ----------------------------- |
+| class_uuid       | varchar(32) | Yes         | No          | not null                      |
+| class_grade_uuid | varchar(32) | No          | Yes         | not null                      |
+| semester         | varchar(48) | No          | No          | not null                      |
+| start_time       | date        | No          | No          | default now(), not null       |
+| end_time         | date        | No          | No          | not null                      |
+| curriculum       | jsonb       | No          | No          | default '[]'::jsonb, not null |
+| created_at       | timestamp   | No          | No          | default now(), not null       |
+| updated_at       | timestamp   | No          | No          |                               |
+| deleted_at       | timestamp   | No          | No          |                               |
+
+#### Foreign Keys
+
+| Column           | References Table | References Column |
+| ---------------- | ---------------- | ----------------- |
+| class_grade_uuid | xf_class_grade   | uuid              |
+
+#### Comments
+
+- Table: 课程表
+- Column `class_uuid`: 课程表主键
+- Column `class_grade_uuid`: 用户主键
+- Column `semester`: 课程学期（名字）
+- Column `start_time`: 开始时间
+- Column `end_time`: 结束时间
+- Column `curriculum`: 课程信息
+- Column `created_at`: 创建时间
+- Column `updated_at`: 更新时间
+- Column `deleted_at`: 删除时间
+
+### xf_class_grade
+
+| Column Name      | Data Type   | Primary Key | Foreign Key | Extra                   |
+| ---------------- | ----------- | ----------- | ----------- | ----------------------- |
+| class_grade_uuid | varchar(32) | Yes         | No          | not null                |
+| user_uuid        | varchar(36) | No          | Yes         | not null                |
+| semester_begin   | date        | No          | No          | not null                |
+| semester_end     | date        | No          | No          |                         |
+| nickname         | varchar(64) | No          | No          | not null                |
+| created_at       | timestamp   | No          | No          | default now(), not null |
+| updated_at       | timestamp   | No          | No          |                         |
+
+#### Foreign Keys
+
+| Column    | References Table | References Column |
+| --------- | ---------------- | ----------------- |
+| user_uuid | xf_user          | uuid              |
+
+#### Comments
+
+- Table: 课程表学年
+- Column `class_grade_uuid`: 课程表学年主键
+- Column `user_uuid`: 用户主键
+- Column `semester_begin`: 学期开始（需要存储时间为第一周的周一）
+- Column `semester_end`: 学期结束
+- Column `nickname`: 别名
+- Column `created_at`: 创建时间
+- Column `updated_at`: 更新时间
+
 ## 建表文件
 
 [Github 建表文件](https://github.com/XiaoLFeng/schedule-planning-platform/tree/master/src/main/resources/templates/sql)
