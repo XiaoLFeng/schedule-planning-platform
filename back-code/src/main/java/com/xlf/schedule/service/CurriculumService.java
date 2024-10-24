@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
+import com.xlf.schedule.model.vo.ClassTimeVO;
 
 import java.util.Date;
 
@@ -38,6 +39,12 @@ import java.util.Date;
  * @since v1.0.0
  */
 public interface CurriculumService {
+
+    /*
+     * ***************************************************************************************
+     * 课程表服务
+     * ***************************************************************************************
+     */
 
     /**
      * 创建课程表
@@ -107,4 +114,35 @@ public interface CurriculumService {
      * @return 课程表列表
      */
     Page<ClassGradeDO> getClassGradeList(UserDTO userDTO, Integer page, Integer size);
+
+    /*
+     * ***************************************************************************************
+     * 课程表时间服务
+     * ***************************************************************************************
+     */
+
+    /**
+     * 创建课程时间
+     * <p>
+     * 该方法用于创建课程时间；
+     * 创建课程时间时，需要提供 {@code 用户信息}、{@code 课程时间值对象}；
+     * 创建成功后，返回创建结果。
+     *
+     * @param userDTO     用户信息
+     * @param classTimeVO 课程时间值对象
+     */
+    void createClassTime(UserDTO userDTO, ClassTimeVO classTimeVO);
+
+    /**
+     * 获取课程时间
+     * <p>
+     * 该方法用于获取课程时间；
+     * 获取课程时间时，需要提供 {@code 课程时间UUID}；
+     * 获取成功后，返回课程时间信息。
+     *
+     * @param userDTO       用户信息
+     * @param classTimeUuid 课程时间UUID
+     * @param classTimeVO   课程时间值对象
+     */
+    void editClassTime(UserDTO userDTO, String classTimeUuid, ClassTimeVO classTimeVO);
 }

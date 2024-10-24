@@ -40,9 +40,9 @@ create table xf_schedule
     type          smallint  default 0           not null,
     loop_type     smallint,
     custom_loop   integer,
-    tags          jsonb     default '[]'::jsonb not null,
+    tags          varchar default '[]' not null,
     priority      smallint  default 1           not null,
-    resources     jsonb,
+    resources     varchar,
     created_at    timestamp default now()       not null,
     updated_at    timestamp
 );

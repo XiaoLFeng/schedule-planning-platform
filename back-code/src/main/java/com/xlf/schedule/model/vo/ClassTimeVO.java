@@ -18,28 +18,37 @@
  * ***************************************************************************************
  */
 
--- auto-generated definition
-create table xf_group
-(
-    group_uuid varchar(32)                   not null
-        constraint xf_group_pk
-            primary key,
-    name       varchar(30)                   not null,
-    master     varchar(36)                   not null
-        constraint xf_group_xf_user_uuid_fk
-            references xf_user
-            on update cascade on delete cascade,
-    tags       varchar   default '[]' not null,
-    created_at timestamp default now()       not null,
-    updated_at timestamp,
-    deleted_at timestamp
-);
+package com.xlf.schedule.model.vo;
 
-comment on table xf_group is '分组';
-comment on column xf_group.group_uuid is '小组主键';
-comment on column xf_group.name is '小组名字';
-comment on column xf_group.master is '小组队长';
-comment on column xf_group.tags is '类型（自定义输入，便于区分）';
-comment on column xf_group.created_at is '创建时间';
-comment on column xf_group.updated_at is '更新时间';
-comment on column xf_group.deleted_at is '删除时间';
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+
+import java.util.List;
+
+/**
+ * 课程时间创建值对象
+ * <p>
+ * 该类用于定义课程时间创建值对象;
+ *
+ * @author xiao_lfeng
+ * @version v1.0.0
+ * @since v1.0.0
+ */
+@Getter
+@SuppressWarnings("unused")
+public class ClassTimeVO {
+    @NotBlank(message = "课程时间名称不能为空")
+    private String name;
+    private Boolean isPublic;
+    private List<TimeAble> timeAble;
+
+    @Getter
+    @SuppressWarnings("unused")
+    public static class TimeAble {
+        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间开始时间格式错误")
+        private String startTime;
+        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间结束时间格式错误")
+        private String endTime;
+    }
+}

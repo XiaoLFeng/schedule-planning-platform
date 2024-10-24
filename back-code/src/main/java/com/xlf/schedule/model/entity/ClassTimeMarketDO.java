@@ -57,6 +57,11 @@ public class ClassTimeMarketDO {
     private String name;
 
     /**
+     * 用户UUID
+     */
+    private String userUuid;
+
+    /**
      * 时间表
      */
     private String timetable;

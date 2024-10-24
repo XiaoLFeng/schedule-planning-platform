@@ -27,6 +27,7 @@ import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.vo.ClassGradeVO;
+import com.xlf.schedule.model.vo.ClassTimeVO;
 import com.xlf.schedule.service.CurriculumService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.schedule.util.CopyUtil;
@@ -39,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -196,5 +198,47 @@ public class CurriculumController {
         UserDTO getUser = userService.getUserByToken(request);
         ClassGradeDTO classGrade = curriculumService.getClassGrade(getUser, classGradeUuid);
         return ResultUtil.success("操作成功", classGrade);
+    }
+
+    /**
+     * 创建课程时间
+     * <p>
+     * 用于创建一个课程时间，可以在该课程时间中创建课程信息。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @Transactional
+    @PostMapping("/time")
+    public ResponseEntity<BaseResponse<Void>> createClassTime(
+            @RequestBody @Validated ClassTimeVO classTimeVO,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.createClassTime(getUser, classTimeVO);
+        return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 修改课程时间
+     * <p>
+     * 用于修改一个课程时间，可以修改课程时间的名称、是否公开、时间列表。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @Transactional
+    @PutMapping("/time/{class_time_uuid}")
+    public ResponseEntity<BaseResponse<Void>> editClassTime(
+            @PathVariable("class_time_uuid") String classTimeUuid,
+            @RequestBody @Validated ClassTimeVO classTimeVO,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.editClassTime(getUser, classTimeUuid, classTimeVO);
+        return ResultUtil.success("操作成功");
     }
 }

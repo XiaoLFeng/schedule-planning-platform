@@ -22,10 +22,12 @@ package com.xlf.schedule.exception;
 
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.utility.BaseResponse;
+import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
 import com.xlf.utility.exception.PublicExceptionHandlerAbstract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -51,8 +53,13 @@ public class PublicExceptionHandler extends PublicExceptionHandlerAbstract {
      * @param e 非法数据异常
      * @return {@link ResponseEntity}
      */
-    @ExceptionHandler
+    @ExceptionHandler(IllegalDataException.class)
     public ResponseEntity<BaseResponse<Void>> handleIllegalDataException(@NotNull IllegalDataException e) {
         return ResultUtil.error(e.getErrorCode(), e.getMessage(), null);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<BaseResponse<Void>> handleHttpMessageNotReadableException(@NotNull HttpMessageNotReadableException ignored) {
+        return ResultUtil.error(ErrorCode.BODY_ERROR, "消息不可读", null);
     }
 }

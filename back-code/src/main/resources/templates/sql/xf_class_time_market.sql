@@ -21,22 +21,27 @@
 -- auto-generated definition
 create table xf_class_time_market
 (
-    class_time_market_uuid varchar(32)                   not null
+    class_time_market_uuid varchar(32)             not null
         constraint xf_class_time_market_pk
             primary key,
-    name                   varchar(64)                   not null,
-    timetable              jsonb     default '[]'::jsonb not null,
-    public                 boolean   default true        not null,
-    official               boolean   default false       not null,
-    created_at             timestamp default now()       not null,
+    user_uuid              varchar(36)
+        constraint xf_class_time_my_xf_user_uuid_fk
+            references xf_user
+            on update cascade on delete cascade,
+    name                   varchar(64)             not null,
+    timetable              varchar   default '[]'  not null,
+    is_public              boolean   default true  not null,
+    is_official            boolean   default false not null,
+    created_at             timestamp default now() not null,
     updated_at             timestamp
 );
 
 comment on table xf_class_time_market is '课表时间市场';
 comment on column xf_class_time_market.class_time_market_uuid is '课表时间市场主键';
+comment on column xf_class_time_market.user_uuid is '用户主键';
 comment on column xf_class_time_market.name is '显示名字';
 comment on column xf_class_time_market.timetable is '时间表';
-comment on column xf_class_time_market.public is '是否公开';
-comment on column xf_class_time_market.official is '该课表时间是否是官方可认证课表';
+comment on column xf_class_time_market.is_public is '是否公开';
+comment on column xf_class_time_market.is_official is '该课表时间是否是官方可认证课表';
 comment on column xf_class_time_market.created_at is '创建时间';
 comment on column xf_class_time_market.updated_at is '修改时间';

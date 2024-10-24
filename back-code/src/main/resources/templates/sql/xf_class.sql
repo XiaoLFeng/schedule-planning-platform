@@ -21,18 +21,18 @@
 -- auto-generated definition
 create table xf_class
 (
-    class_uuid       varchar(32)                   not null
+    class_uuid       varchar(32)             not null
         constraint xf_class_pk
             primary key,
-    class_grade_uuid varchar(32)                   not null
+    class_grade_uuid varchar(32)             not null
         constraint xf_class_xf_class_grade_uuid_fk
             references xf_class_grade
             on update cascade on delete cascade,
-    semester         varchar(48)                   not null,
-    start_time       date      default now()       not null,
-    end_time         date                          not null,
-    curriculum       jsonb     default '[]'::jsonb not null,
-    created_at       timestamp default now()       not null,
+    semester         varchar(48)             not null,
+    start_time       date      default now() not null,
+    end_time         date                    not null,
+    curriculum       varchar   default '[]'  not null,
+    created_at       timestamp default now() not null,
     updated_at       timestamp,
     deleted_at       timestamp
 );

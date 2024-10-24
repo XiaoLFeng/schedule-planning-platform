@@ -110,6 +110,8 @@ public class Initialize {
         prepare.checkTable("xf_group");
         prepare.checkTable("xf_group_member");
         prepare.checkTable("xf_friend");
+        prepare.checkTable("xf_class_time_market");
+        prepare.checkTable("xf_class_time_my");
         prepare.checkTable("xf_class_grade");
         prepare.checkTable("xf_class");
     }

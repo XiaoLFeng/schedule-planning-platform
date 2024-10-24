@@ -21,10 +21,16 @@
 package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.xlf.schedule.dao.ClassGradeDAO;
+import com.xlf.schedule.dao.ClassTimeMarketDAO;
+import com.xlf.schedule.dao.ClassTimeMyDAO;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
+import com.xlf.schedule.model.entity.ClassTimeMyDO;
+import com.xlf.schedule.model.vo.ClassTimeVO;
 import com.xlf.schedule.service.CurriculumService;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.utility.ErrorCode;
@@ -35,10 +41,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 课程表逻辑
@@ -58,6 +66,9 @@ public class CurriculumLogic implements CurriculumService {
 
     private final ClassGradeDAO classGradeDAO;
     private final RoleService roleService;
+    private final Gson gson;
+    private final ClassTimeMarketDAO classTimeMarketDAO;
+    private final ClassTimeMyDAO classTimeMyDAO;
 
     @Override
     public String createClassGrade(String name, Date begin, Date end, String userUuid) {
@@ -96,7 +107,7 @@ public class CurriculumLogic implements CurriculumService {
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限查看", ErrorCode. OPERATION_DENIED);
+                throw new BusinessException("您没有权限查看", ErrorCode.OPERATION_DENIED);
             }
         }
         ClassGradeDTO classGradeDTO = new ClassGradeDTO();
@@ -112,7 +123,7 @@ public class CurriculumLogic implements CurriculumService {
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限删除", ErrorCode. OPERATION_DENIED);
+                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
             }
         }
         classGradeDAO.lambdaUpdate().eq(ClassGradeDO::getUserUuid, userDTO).remove();
@@ -126,7 +137,7 @@ public class CurriculumLogic implements CurriculumService {
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限编辑", ErrorCode. OPERATION_DENIED);
+                throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
             }
         }
         Calendar calendar = Calendar.getInstance();
@@ -149,5 +160,70 @@ public class CurriculumLogic implements CurriculumService {
         return classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getUserUuid, userDTO.getUuid())
                 .page(new Page<>(page, size));
+    }
+
+    @Override
+    @Transactional
+    public void createClassTime(@NotNull UserDTO userDTO, @NotNull ClassTimeVO classTimeVO) {
+        checkTimeAbleUseful(classTimeVO);
+        String timeAble = gson.toJson(classTimeVO.getTimeAble());
+        String classTimeUuid = UuidUtil.generateUuidNoDash();
+        ClassTimeMarketDO classTimeMarketDO = new ClassTimeMarketDO();
+        classTimeMarketDO
+                .setClassTimeMarketUuid(classTimeUuid)
+                .setUserUuid(userDTO.getUuid())
+                .setName(classTimeVO.getName())
+                .setTimetable(timeAble)
+                .setIsPublic(classTimeVO.getIsPublic());
+        ClassTimeMyDO classTimeMyDO = new ClassTimeMyDO();
+        classTimeMyDO
+                .setClassTimeMyUuid(UuidUtil.generateUuidNoDash())
+                .setTimeMarketUuid(classTimeUuid)
+                .setUserUuid(userDTO.getUuid());
+        classTimeMarketDAO.save(classTimeMarketDO);
+        classTimeMyDAO.save(classTimeMyDO);
+    }
+
+    @Override
+    public void editClassTime(@NotNull UserDTO userDTO, String classTimeUuid, ClassTimeVO classTimeVO) {
+        ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+        if (classTimeMarketDO.getIsOfficial()) {
+            throw new BusinessException("录入官方课程时间不允许修改", ErrorCode.OPERATION_DENIED);
+        }
+        if (!classTimeMarketDO.getUserUuid().equals(userDTO.getUuid())) {
+            if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+            }
+        }
+        checkTimeAbleUseful(classTimeVO);
+        String timeAble = gson.toJson(classTimeVO.getTimeAble());
+        classTimeMarketDO
+                .setName(classTimeVO.getName())
+                .setTimetable(timeAble)
+                .setIsPublic(classTimeVO.getIsPublic())
+                .setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        classTimeMarketDAO.updateById(classTimeMarketDO);
+    }
+
+    /**
+     * 检查时间是否有效
+     *
+     * @param classTimeVO 课程时间值对象
+     */
+    private void checkTimeAbleUseful(@NotNull ClassTimeVO classTimeVO) {
+        // 时间格式为 24 小时，格式为 00:00，检查列表时间是否是顺序
+        AtomicReference<String> lastEndTime = new AtomicReference<>("00:00");
+        classTimeVO.getTimeAble().forEach(timeAble -> {
+            if (timeAble.getStartTime().compareTo(timeAble.getEndTime()) >= 0) {
+                throw new BusinessException("课程时间开始时间不能大于等于结束时间", ErrorCode.BODY_INVALID);
+            }
+            if (timeAble.getStartTime().compareTo(lastEndTime.get()) < 0) {
+                throw new BusinessException("课程时间列表时间不是顺序", ErrorCode.BODY_INVALID);
+            }
+            lastEndTime.set(timeAble.getEndTime());
+        });
     }
 }
