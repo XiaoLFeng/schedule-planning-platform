@@ -20,12 +20,16 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.exception.lib.IllegalDataException;
+import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.vo.ClassGradeVO;
 import com.xlf.schedule.service.CurriculumService;
 import com.xlf.schedule.service.UserService;
+import com.xlf.schedule.util.CopyUtil;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
@@ -41,6 +45,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * 课程表控制器
@@ -91,7 +96,7 @@ public class CurriculumController {
                     endTime,
                     getUser.getUuid()
             );
-            ClassGradeDTO classGrade = curriculumService.getClassGrade(classGradeUuid);
+            ClassGradeDTO classGrade = curriculumService.getClassGrade(getUser, classGradeUuid);
             return ResultUtil.success("操作成功", classGrade);
         } catch (ParseException e) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "时间格式非法");
@@ -111,6 +116,9 @@ public class CurriculumController {
             @PathVariable("class_grade_uuid") String classGradeUuid,
             @NotNull HttpServletRequest request
     ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.deleteClassGrade(getUser, classGradeUuid);
         return ResultUtil.success("操作成功");
@@ -130,6 +138,9 @@ public class CurriculumController {
             @RequestBody @Validated @NotNull ClassGradeVO classGradeVO,
             @NotNull HttpServletRequest request
     ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        }
         try {
             UserDTO getUser = userService.getUserByToken(request);
             curriculumService.editClassGrade(
@@ -143,5 +154,47 @@ public class CurriculumController {
         } catch (ParseException e) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL);
         }
+    }
+
+    /**
+     * 获取课程表列表
+     * <p>
+     * 用于获取年度学期列表，可以查看所有年度学期的基本信息。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassGradeDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/grade")
+    public ResponseEntity<BaseResponse<CustomPage<ClassGradeDTO>>> getClassGradeList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO getUser = userService.getUserByToken(request);
+        Page<ClassGradeDO> classGradeList = curriculumService.getClassGradeList(getUser, page, size);
+        CustomPage<ClassGradeDTO> newClassGradeList = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(classGradeList, newClassGradeList, ClassGradeDTO.class);
+        return ResultUtil.success("操作成功", newClassGradeList);
+    }
+
+    /**
+     * 获取课程表
+     * <p>
+     * 用于获取一个年度学期的详细信息。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassGradeDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/grade/{class_grade_uuid}")
+    public ResponseEntity<BaseResponse<ClassGradeDTO>> getClassGrade(
+            @PathVariable("class_grade_uuid") String classGradeUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        ClassGradeDTO classGrade = curriculumService.getClassGrade(getUser, classGradeUuid);
+        return ResultUtil.success("操作成功", classGrade);
     }
 }

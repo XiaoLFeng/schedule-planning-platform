@@ -21,8 +21,10 @@
 package com.xlf.schedule.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.ClassGradeDO;
 
 import java.util.Date;
 
@@ -59,10 +61,11 @@ public interface CurriculumService {
      * 获取课程表时，需要提供 {@code UUID}；
      * 获取成功后，返回课程表信息。
      *
-     * @param uuid 课程表UUID
+     * @param userDTO 用户信息
+     * @param uuid    课程表UUID
      * @return 课程表信息
      */
-    ClassGradeDTO getClassGrade(String uuid);
+    ClassGradeDTO getClassGrade(UserDTO userDTO, String uuid);
 
     /**
      * 删除课程表
@@ -90,4 +93,18 @@ public interface CurriculumService {
      * @param userDTO 用户信息
      */
     void editClassGrade(String uuid, String name, Date begin, Date end, UserDTO userDTO);
+
+    /**
+     * 获取课程表列表
+     * <p>
+     * 该方法用于获取课程表列表；
+     * 获取课程表列表时，需要提供 {@code 用户信息}、{@code 页码}、{@code 每页数量}；
+     * 获取成功后，返回课程表列表。
+     *
+     * @param userDTO 用户信息
+     * @param page    页码
+     * @param size    每页数量
+     * @return 课程表列表
+     */
+    Page<ClassGradeDO> getClassGradeList(UserDTO userDTO, Integer page, Integer size);
 }

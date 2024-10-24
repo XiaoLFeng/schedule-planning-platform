@@ -68,7 +68,8 @@ public class PublicController {
                 .setSystemAbout(SystemConstant.SYSTEM_ABOUT)
                 .setSystemChineseAbout(SystemConstant.SYSTEM_CHINESE_ABOUT)
                 .setSystemLicenseStatement(SystemConstant.SYSTEM_LICENSE_STATEMENT)
-                .setSystemChineseLicenseStatement(SystemConstant.SYSTEM_CHINESE_LICENSE_STATEMENT);
+                .setSystemChineseLicenseStatement(SystemConstant.SYSTEM_CHINESE_LICENSE_STATEMENT)
+                .setSystemCopyright(SystemConstant.SYSTEM_COPYRIGHT);
         return ResultUtil.success("成功", systemInfoDTO);
     }
 }

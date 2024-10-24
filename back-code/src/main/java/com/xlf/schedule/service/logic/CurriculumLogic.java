@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.service.logic;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
@@ -88,13 +89,18 @@ public class CurriculumLogic implements CurriculumService {
     }
 
     @Override
-    public ClassGradeDTO getClassGrade(String uuid) {
-        ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
+    public ClassGradeDTO getClassGrade(@NotNull UserDTO userDTO, String uuid) {
+        ClassGradeDO getClassGrade = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getClassGradeUuid, uuid)
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+        if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
+            if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                throw new BusinessException("您没有权限查看", ErrorCode. OPERATION_DENIED);
+            }
+        }
         ClassGradeDTO classGradeDTO = new ClassGradeDTO();
-        BeanUtils.copyProperties(classGradeDO, classGradeDTO);
+        BeanUtils.copyProperties(getClassGrade, classGradeDTO);
         return classGradeDTO;
     }
 
@@ -136,5 +142,12 @@ public class CurriculumLogic implements CurriculumService {
             classGradeDO.setSemesterEnd(new java.sql.Date(end.getTime()));
         }
         classGradeDAO.updateById(classGradeDO);
+    }
+
+    @Override
+    public Page<ClassGradeDO> getClassGradeList(@NotNull UserDTO userDTO, Integer page, Integer size) {
+        return classGradeDAO.lambdaQuery()
+                .eq(ClassGradeDO::getUserUuid, userDTO.getUuid())
+                .page(new Page<>(page, size));
     }
 }
