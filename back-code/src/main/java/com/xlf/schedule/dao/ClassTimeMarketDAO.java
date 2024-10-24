@@ -18,36 +18,24 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.dto;
+package com.xlf.schedule.dao;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import java.sql.Date;
-import java.sql.Timestamp;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xlf.schedule.mapper.ClassTimeMarketMapper;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
+import org.springframework.stereotype.Repository;
 
 /**
- * 班级年级数据传输对象
+ * 课表时间市场数据访问对象
  * <p>
- * 该类用于定义班级年级数据传输对象；
+ * 该类用于定义课表时间市场数据访问对象;
+ * 该类使用 {@link Repository} 注解标记;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Data
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class ClassGradeDTO {
-    private String classGradeUuid;
-    private String userUuid;
-    private String classTimeUuid;
-    private Date semesterBegin;
-    private Date semesterEnd;
-    private String nickname;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+@Repository
+public class ClassTimeMarketDAO extends ServiceImpl<ClassTimeMarketMapper, ClassTimeMarketDO> implements IService<ClassTimeMarketDO> {
 }

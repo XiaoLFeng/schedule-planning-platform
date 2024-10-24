@@ -18,36 +18,21 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.dto;
+package com.xlf.schedule.mapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import java.sql.Date;
-import java.sql.Timestamp;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.xlf.schedule.model.entity.ClassTimeMyDO;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 班级年级数据传输对象
+ * 我的课表时间映射器
  * <p>
- * 该类用于定义班级年级数据传输对象；
+ * 该类用于定义我的课表时间表映射器;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Data
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class ClassGradeDTO {
-    private String classGradeUuid;
-    private String userUuid;
-    private String classTimeUuid;
-    private Date semesterBegin;
-    private Date semesterEnd;
-    private String nickname;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+@Mapper
+public interface ClassTimeMyMapper extends BaseMapper<ClassTimeMyDO> {
 }

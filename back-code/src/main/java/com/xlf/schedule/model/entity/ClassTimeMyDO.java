@@ -28,60 +28,41 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * 课程表学年实体
+ * 我的课表时间实体
+ * <p>
+ * 该类用于定义我的课表时间表实体;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
 @Data
-@TableName("xf_class_grade")
+@TableName("xf_class_time_my")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassGradeDO {
+public class ClassTimeMyDO {
     /**
-     * 课程学年主键
+     * 我的课表主键
      */
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String classGradeUuid;
+    @TableId(type = IdType.NONE)
+    private String classTimeMyUuid;
 
     /**
-     * 用户主键 (此字段为 varchar(36) 手动生成 UUID)
+     * 用户主键
      */
     private String userUuid;
 
     /**
-     * 使用的时间表
+     * 课表市场主键
      */
-    private String classTimeUuid;
+    private String timeMarketUuid;
 
     /**
-     * 学期开始时间
-     */
-    private Date semesterBegin;
-
-    /**
-     * 学期结束时间
-     */
-    private Date semesterEnd;
-
-    /**
-     * 学年别名
-     */
-    private String nickname;
-
-    /**
-     * 创建时间
+     * 添加时间
      */
     private Timestamp createdAt;
-
-    /**
-     * 更新时间
-     */
-    private Timestamp updatedAt;
 }

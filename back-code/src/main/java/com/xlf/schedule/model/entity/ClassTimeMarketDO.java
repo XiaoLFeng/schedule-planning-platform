@@ -28,52 +28,48 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * 课程表学年实体
+ * 课表时间市场实体
+ * <p>
+ * 该类用于定义课表时间市场实体;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
 @Data
-@TableName("xf_class_grade")
+@TableName("xf_class_time_market")
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassGradeDO {
+public class ClassTimeMarketDO {
     /**
-     * 课程学年主键
+     * 课表时间市场主键
      */
     @TableId(type = IdType.ASSIGN_UUID)
-    private String classGradeUuid;
+    private String classTimeMarketUuid;
 
     /**
-     * 用户主键 (此字段为 varchar(36) 手动生成 UUID)
+     * 显示名字
      */
-    private String userUuid;
+    private String name;
 
     /**
-     * 使用的时间表
+     * 时间表
      */
-    private String classTimeUuid;
+    private String timetable;
 
     /**
-     * 学期开始时间
+     * 是否公开
      */
-    private Date semesterBegin;
+    private Boolean isPublic;
 
     /**
-     * 学期结束时间
+     * 是否官方认证课表
      */
-    private Date semesterEnd;
-
-    /**
-     * 学年别名
-     */
-    private String nickname;
+    private Boolean isOfficial;
 
     /**
      * 创建时间
@@ -81,7 +77,7 @@ public class ClassGradeDO {
     private Timestamp createdAt;
 
     /**
-     * 更新时间
+     * 修改时间
      */
     private Timestamp updatedAt;
 }
