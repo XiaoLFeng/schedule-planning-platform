@@ -18,40 +18,27 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.vo;
+package com.xlf.schedule.model.dto.json;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
- * 课程时间创建值对象
+ * 课程时间可用数据传输对象
  * <p>
- * 该类用于定义课程时间创建值对象;
+ * 该类用于定义课程时间可用数据传输对象；
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Getter
-@Setter
-@SuppressWarnings("unused")
-public class ClassTimeVO {
-    @NotBlank(message = "课程时间名称不能为空")
-    private String name;
-    private Boolean isPublic;
-    private List<TimeAble> timeAble;
-
-    @Getter
-    @Setter
-    @SuppressWarnings("unused")
-    public static class TimeAble {
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间开始时间格式错误")
-        private String startTime;
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间结束时间格式错误")
-        private String endTime;
-    }
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClassTimeAbleDTO {
+    private String startTime;
+    private String endTime;
 }

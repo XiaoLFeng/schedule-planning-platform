@@ -23,8 +23,10 @@ package com.xlf.schedule.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
+import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
 
 import java.util.Date;
@@ -145,4 +147,41 @@ public interface CurriculumService {
      * @param classTimeVO   课程时间值对象
      */
     void editClassTime(UserDTO userDTO, String classTimeUuid, ClassTimeVO classTimeVO);
+
+    /**
+     * 删除课程时间
+     * <p>
+     * 该方法用于删除课程时间；
+     * 删除课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
+     * 删除成功后，返回删除结果。
+     *
+     * @param userDTO     用户信息
+     * @param classTimeUuid 课程时间UUID
+     */
+    void deleteClassTime(UserDTO userDTO, String classTimeUuid);
+
+    /**
+     * 获取课程时间列表
+     * <p>
+     * 该方法用于获取课程时间列表；
+     * 获取课程时间列表时，需要提供 {@code 页码}、{@code 每页数量}；
+     * 获取成功后，返回课程时间列表。
+     *
+     * @param page 页码
+     * @param size 每页数量
+     * @return 课程时间列表
+     */
+    Page<ClassTimeMarketDO> getClassTimeMarketList(Integer page, Integer size);
+
+    /**
+     * 获取课程时间
+     * <p>
+     * 该方法用于获取课程时间；
+     * 获取课程时间时，需要提供 {@code 课程时间UUID}；
+     * 获取成功后，返回课程时间信息。
+     *
+     * @param classTimeMarketUuid 课程时间UUID
+     * @return 课程时间信息
+     */
+    ClassTimeMarketDTO getClassTimeMarket(String classTimeMarketUuid);
 }

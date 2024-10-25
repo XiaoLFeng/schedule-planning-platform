@@ -22,11 +22,15 @@ package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.dao.ClassTimeMarketDAO;
 import com.xlf.schedule.dao.ClassTimeMyDAO;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
+import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.entity.ClassTimeMyDO;
@@ -46,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -206,6 +211,51 @@ public class CurriculumLogic implements CurriculumService {
                 .setIsPublic(classTimeVO.getIsPublic())
                 .setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         classTimeMarketDAO.updateById(classTimeMarketDO);
+    }
+
+    @Override
+    @Transactional
+    public void deleteClassTime(UserDTO userDTO, String classTimeUuid) {
+        ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+        if (classTimeMarketDO.getIsOfficial()) {
+            throw new BusinessException("录入官方课程时间不允许删除", ErrorCode.OPERATION_DENIED);
+        }
+        if (classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.defaultClassTimeUUID)) {
+            throw new BusinessException("默认课程时间不允许删除", ErrorCode.OPERATION_DENIED);
+        }
+        if (!classTimeMarketDO.getUserUuid().equals(userDTO.getUuid())) {
+            if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+            }
+        }
+        // TODO[241025001] - 添加邮件发送通知
+        // 配置原有课表时间转为默认时间
+        classGradeDAO.lambdaUpdate().eq(ClassGradeDO::getClassTimeUuid, classTimeUuid)
+                .set(ClassGradeDO::getClassTimeUuid, SystemConstant.defaultClassTimeUUID)
+                .update();
+        classTimeMyDAO.lambdaUpdate().eq(ClassTimeMyDO::getTimeMarketUuid, classTimeUuid).remove();
+        classTimeMarketDAO.lambdaUpdate().eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid).remove();
+    }
+
+    @Override
+    public Page<ClassTimeMarketDO> getClassTimeMarketList(Integer page, Integer size) {
+        return classTimeMarketDAO.lambdaQuery().page(new Page<>(page, size));
+    }
+
+    @Override
+    public ClassTimeMarketDTO getClassTimeMarket(String classTimeMarketUuid) {
+        ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+        ClassTimeMarketDTO classTimeMarketDTO = new ClassTimeMarketDTO();
+        BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+        List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>(){}.getType());
+        classTimeMarketDTO.setTimetable(timeAble);
+        return classTimeMarketDTO;
     }
 
     /**

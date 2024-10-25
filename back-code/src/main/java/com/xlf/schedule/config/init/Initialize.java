@@ -20,12 +20,16 @@
 
 package com.xlf.schedule.config.init;
 
+import com.google.gson.Gson;
 import com.xlf.schedule.constant.MailConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.constant.WebConstant;
 import com.xlf.schedule.dao.InfoDAO;
 import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.dao.TableDAO;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
+import com.xlf.schedule.model.vo.ClassTimeVO;
+import com.xlf.utility.util.UuidUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +38,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.ArrayList;
 
 /**
  * 初始化类
@@ -71,6 +77,7 @@ public class Initialize {
         this.initSqlCheck();
         this.initInfoTableCheck();
         this.initGlobalVariableAssignment();
+        this.initClassDefaultCheck();
         this.initRole();
     }
 
@@ -167,6 +174,35 @@ public class Initialize {
         WebConstant.record = prepare.initGetGlobalVariable("web_record");
         WebConstant.license = prepare.initGetGlobalVariable("system_license");
         WebConstant.copyright = prepare.initGetGlobalVariable("system_copyright");
+    }
+
+    /**
+     * 初始化课表类型检查
+     */
+    private void initClassDefaultCheck() {
+        log.info("[INIT] 检查默认课表时间信息");
+        if (prepare.initGetGlobalVariable("system_default_class_time_uuid") == null) {
+            String newTimeMarketUuid = UuidUtil.generateUuidNoDash();
+            ArrayList<ClassTimeVO.TimeAble> timeAble = new ArrayList<>();
+            ClassTimeMarketDO classTimeMarketDO = new ClassTimeMarketDO();
+            classTimeMarketDO
+                    .setClassTimeMarketUuid(newTimeMarketUuid)
+                    .setName("默认课表时间")
+                    .setTimetable(new Gson().toJson(timeAble))
+                    .setIsPublic(true)
+                    .setIsOfficial(true);
+            jdbcTemplate.update("INSERT INTO xf_class_time_market (class_time_market_uuid, name, timetable, is_public, is_official) VALUES (?, ?, ?, ?, ?)",
+                    classTimeMarketDO.getClassTimeMarketUuid(),
+                    classTimeMarketDO.getName(),
+                    classTimeMarketDO.getTimetable(),
+                    classTimeMarketDO.getIsPublic(),
+                    classTimeMarketDO.getIsOfficial()
+            );
+            prepare.checkInfoTableFields("system_default_class_time_uuid", newTimeMarketUuid);
+            SystemConstant.defaultClassTimeUUID = newTimeMarketUuid;
+        } else {
+            SystemConstant.defaultClassTimeUUID = prepare.initGetGlobalVariable("system_default_class_time_uuid");
+        }
     }
 
     /**

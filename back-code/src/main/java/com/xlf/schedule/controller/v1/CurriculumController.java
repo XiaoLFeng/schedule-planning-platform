@@ -21,11 +21,16 @@
 package com.xlf.schedule.controller.v1;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
+import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassGradeVO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
 import com.xlf.schedule.service.CurriculumService;
@@ -47,6 +52,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -67,6 +73,7 @@ import java.util.regex.Pattern;
 public class CurriculumController {
     private final UserService userService;
     private final CurriculumService curriculumService;
+    private final Gson gson;
 
     /**
      * 创建课程表
@@ -240,5 +247,74 @@ public class CurriculumController {
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.editClassTime(getUser, classTimeUuid, classTimeVO);
         return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 删除课程时间
+     * <p>
+     * 用于删除一个课程时间，删除后，该课程时间中的课程信息也会被删除。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @Transactional
+    @DeleteMapping("/time/{class_time_uuid}")
+    public ResponseEntity<BaseResponse<Void>> deleteClassTime(
+            @PathVariable("class_time_uuid") String classTimeUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.deleteClassTime(getUser, classTimeUuid);
+        return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 获取课程时间市场列表
+     * <p>
+     * 用于获取一个课程时间的市场列表。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/time")
+    public ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> getClassTimeMarketList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size
+    ) {
+        Page<ClassTimeMarketDO> classTimeMarketList = curriculumService.getClassTimeMarketList(page, size);
+        CustomPage<ClassTimeMarketDTO> newClassTimeMarketList = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(classTimeMarketList, newClassTimeMarketList, ClassTimeMarketDTO.class);
+        classTimeMarketList.getRecords().forEach(classTimeMarketDTO -> {
+            List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(classTimeMarketDTO.getTimetable(), new TypeToken<>() {
+            }.getType());
+            newClassTimeMarketList.getRecords().forEach(newClassTimeMarketDTO -> {
+                if (newClassTimeMarketDTO.getClassTimeMarketUuid().equals(classTimeMarketDTO.getClassTimeMarketUuid())) {
+                    newClassTimeMarketDTO.setTimetable(classTimeAbleList);
+                }
+            });
+        });
+        return ResultUtil.success("操作成功", newClassTimeMarketList);
+    }
+
+    /**
+     * 获取课程时间市场
+     * <p>
+     * 用于获取一个课程时间的市场信息。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/time/{class_time_market_uuid}")
+    public ResponseEntity<BaseResponse<ClassTimeMarketDTO>> getClassTimeMarket(
+            @PathVariable("class_time_market_uuid") String classTimeMarketUuid
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+        }
+        ClassTimeMarketDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
+        return ResultUtil.success("操作成功", classTimeMarket);
     }
 }

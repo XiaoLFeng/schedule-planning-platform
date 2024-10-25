@@ -18,40 +18,37 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.vo;
+package com.xlf.schedule.model.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.Setter;
+import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * 课程时间创建值对象
+ * 课程时间市场数据传输对象
  * <p>
- * 该类用于定义课程时间创建值对象;
+ * 该类用于定义课程时间市场数据传输对象；
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Getter
-@Setter
-@SuppressWarnings("unused")
-public class ClassTimeVO {
-    @NotBlank(message = "课程时间名称不能为空")
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClassTimeMarketDTO {
+    private String classTimeMarketUuid;
     private String name;
+    private String userUuid;
+    private List<ClassTimeAbleDTO> timetable;
     private Boolean isPublic;
-    private List<TimeAble> timeAble;
-
-    @Getter
-    @Setter
-    @SuppressWarnings("unused")
-    public static class TimeAble {
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间开始时间格式错误")
-        private String startTime;
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间结束时间格式错误")
-        private String endTime;
-    }
+    private Boolean isOfficial;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }

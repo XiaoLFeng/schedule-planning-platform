@@ -114,4 +114,6 @@ public class SystemConstant {
      * 测试用户UUID
      */
     public static String testUserUUID;
+
+    public static String defaultClassTimeUUID;
 }
