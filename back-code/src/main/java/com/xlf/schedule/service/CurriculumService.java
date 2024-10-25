@@ -155,7 +155,7 @@ public interface CurriculumService {
      * 删除课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
      * 删除成功后，返回删除结果。
      *
-     * @param userDTO     用户信息
+     * @param userDTO       用户信息
      * @param classTimeUuid 课程时间UUID
      */
     void deleteClassTime(UserDTO userDTO, String classTimeUuid);
@@ -184,4 +184,61 @@ public interface CurriculumService {
      * @return 课程时间信息
      */
     ClassTimeMarketDTO getClassTimeMarket(String classTimeMarketUuid);
+
+    /*
+     * ***************************************************************************************
+     * 我的课程表时间服务
+     * ***************************************************************************************
+     */
+
+    /**
+     * 添加我的课程时间
+     * <p>
+     * 该方法用于添加我的课程时间；
+     * 添加我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
+     * 添加成功后，返回添加结果。
+     *
+     * @param userDTO          用户信息
+     * @param classTimeMarketUuid 课程时间UUID
+     */
+    void addMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
+
+    /**
+     * 删除我的课程时间
+     * <p>
+     * 该方法用于删除我的课程时间；
+     * 删除我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
+     * 删除成功后，返回删除结果。
+     *
+     * @param userDTO          用户信息
+     * @param classTimeMarketUuid 课程时间UUID
+     */
+    void deleteMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
+
+    /**
+     * 获取我的课程时间列表
+     * <p>
+     * 该方法用于获取我的课程时间列表；
+     * 获取我的课程时间列表时，需要提供 {@code 用户信息}、{@code 页码}、{@code 每页数量}；
+     * 获取成功后，返回我的课程时间列表。
+     *
+     * @param userDTO 用户信息
+     * @param page    页码
+     * @param size    每页数量
+     * @return 我的课程时间列表
+     */
+    Page<ClassTimeMarketDO> getMyClassTimeList(UserDTO userDTO, Integer page, Integer size);
+
+    /**
+     * 获取我的课程时间
+     * <p>
+     * 该方法用于获取我的课程时间；
+     * 获取我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
+     * 获取成功后，返回我的课程时间信息。
+     *
+     * @param userDTO 用户信息
+     * @param classTimeMarketUuid 课程时间UUID
+     * @return 我的课程时间信息
+     */
+    ClassTimeMarketDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
 }

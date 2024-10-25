@@ -317,4 +317,97 @@ public class CurriculumController {
         ClassTimeMarketDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
         return ResultUtil.success("操作成功", classTimeMarket);
     }
+
+    /**
+     * 添加我的课程时间
+     * <p>
+     * 用于添加一个课程时间到我的课程时间中。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @PostMapping("/my-time/{class_time_market_uuid}")
+    public ResponseEntity<BaseResponse<Void>> addMyClassTime(
+            @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.addMyClassTime(getUser, classTimeMarketUuid);
+        return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 删除我的课程时间
+     * <p>
+     * 用于删除一个课程时间从我的课程时间中。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @DeleteMapping("/my-time/{class_time_market_uuid}")
+    public ResponseEntity<BaseResponse<Void>> deleteMyClassTime(
+            @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.deleteMyClassTime(getUser, classTimeMarketUuid);
+        return ResultUtil.success("操作成功");
+    }
+
+    /**
+     * 获取我的课程时间列表
+     * <p>
+     * 用于获取我的课程时间列表。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/my-time")
+    public ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> getMyClassTimeList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO getUser = userService.getUserByToken(request);
+        Page<ClassTimeMarketDO> myClassTimeList = curriculumService.getMyClassTimeList(getUser, page, size);
+        CustomPage<ClassTimeMarketDTO> newMyClassTimeList = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(myClassTimeList, newMyClassTimeList, ClassTimeMarketDTO.class);
+        myClassTimeList.getRecords().forEach(myClassTimeDTO -> {
+            List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(myClassTimeDTO.getTimetable(), new TypeToken<>() {
+            }.getType());
+            newMyClassTimeList.getRecords().forEach(newMyClassTimeDTO -> {
+                if (newMyClassTimeDTO.getClassTimeMarketUuid().equals(myClassTimeDTO.getClassTimeMarketUuid())) {
+                    newMyClassTimeDTO.setTimetable(classTimeAbleList);
+                }
+            });
+        });
+        return ResultUtil.success("操作成功", newMyClassTimeList);
+    }
+
+    /**
+     * 获取我的课程时间
+     * <p>
+     * 用于获取一个课程时间的详细信息。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     */
+    @HasAuthorize
+    @GetMapping("/my-time/{class_time_market_uuid}")
+    public ResponseEntity<BaseResponse<ClassTimeMarketDTO>> getMyClassTime(
+            @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        ClassTimeMarketDTO myClassTime = curriculumService.getMyClassTime(getUser, classTimeMarketUuid);
+        return ResultUtil.success("操作成功", myClassTime);
+    }
 }

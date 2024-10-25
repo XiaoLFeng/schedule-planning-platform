@@ -253,8 +253,88 @@ public class CurriculumLogic implements CurriculumService {
                 .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
         ClassTimeMarketDTO classTimeMarketDTO = new ClassTimeMarketDTO();
         BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
-        List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>(){}.getType());
+        List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
+        }.getType());
         classTimeMarketDTO.setTimetable(timeAble);
+        return classTimeMarketDTO;
+    }
+
+    @Override
+    public void addMyClassTime(@NotNull UserDTO userDTO, String classTimeMarketUuid) {
+        classTimeMarketDAO.lambdaQuery()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+        classTimeMyDAO.lambdaQuery()
+                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                .eq(ClassTimeMyDO::getTimeMarketUuid, classTimeMarketUuid)
+                .oneOpt()
+                .ifPresentOrElse(classTimeMyDO -> {
+                    throw new BusinessException("您已添加该课程时间", ErrorCode.EXISTED);
+                }, () -> {
+                    ClassTimeMyDO classTimeMyDO = new ClassTimeMyDO();
+                    classTimeMyDO
+                            .setClassTimeMyUuid(UuidUtil.generateUuidNoDash())
+                            .setTimeMarketUuid(classTimeMarketUuid)
+                            .setUserUuid(userDTO.getUuid());
+                    classTimeMyDAO.save(classTimeMyDO);
+                });
+    }
+
+    @Override
+    public void deleteMyClassTime(@NotNull UserDTO userDTO, String classTimeMarketUuid) {
+        classTimeMyDAO.lambdaQuery()
+                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                .eq(ClassTimeMyDO::getTimeMarketUuid, classTimeMarketUuid)
+                .oneOpt()
+                .ifPresentOrElse(classTimeMyDAO::removeById, () -> {
+                    throw new BusinessException("您未添加该课程时间", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public Page<ClassTimeMarketDO> getMyClassTimeList(@NotNull UserDTO userDTO, Integer page, Integer size) {
+        return classTimeMarketDAO.lambdaQuery()
+                .in(ClassTimeMarketDO::getClassTimeMarketUuid,
+                        classTimeMyDAO.lambdaQuery()
+                                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                                .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList()
+                )
+                .or()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                .page(new Page<>(page, size));
+    }
+
+    @Override
+    public ClassTimeMarketDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid) {
+        ClassTimeMarketDTO classTimeMarketDTO = new ClassTimeMarketDTO();
+        classTimeMarketDAO.lambdaQuery()
+                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
+                .oneOpt()
+                .ifPresentOrElse(classTimeMarketDO -> {
+                    if (!classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.defaultClassTimeUUID)) {
+                        classTimeMyDAO.lambdaQuery()
+                                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                                .eq(ClassTimeMyDO::getTimeMarketUuid, classTimeMarketUuid)
+                                .or()
+                                .oneOpt()
+                                .ifPresentOrElse(classTimeMyDO -> {
+                                    BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+                                    List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
+                                    }.getType());
+                                    classTimeMarketDTO.setTimetable(timeAble);
+                                }, () -> {
+                                    throw new BusinessException("您未添加该课程时间", ErrorCode.NOT_EXIST);
+                                });
+                    } else {
+                        BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+                        List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
+                        }.getType());
+                        classTimeMarketDTO.setTimetable(timeAble);
+                    }
+                }, () -> {
+                    throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
+                });
         return classTimeMarketDTO;
     }
 
