@@ -28,6 +28,7 @@ import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
+import com.xlf.schedule.model.vo.ClassVO;
 
 import java.util.Date;
 
@@ -195,10 +196,9 @@ public interface CurriculumService {
      * 添加我的课程时间
      * <p>
      * 该方法用于添加我的课程时间；
-     * 添加我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
-     * 添加成功后，返回添加结果。
+     * 添加我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}。
      *
-     * @param userDTO          用户信息
+     * @param userDTO             用户信息
      * @param classTimeMarketUuid 课程时间UUID
      */
     void addMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
@@ -207,10 +207,9 @@ public interface CurriculumService {
      * 删除我的课程时间
      * <p>
      * 该方法用于删除我的课程时间；
-     * 删除我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
-     * 删除成功后，返回删除结果。
+     * 删除我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}。
      *
-     * @param userDTO          用户信息
+     * @param userDTO             用户信息
      * @param classTimeMarketUuid 课程时间UUID
      */
     void deleteMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
@@ -236,9 +235,38 @@ public interface CurriculumService {
      * 获取我的课程时间时，需要提供 {@code 用户信息}、{@code 课程时间UUID}；
      * 获取成功后，返回我的课程时间信息。
      *
-     * @param userDTO 用户信息
+     * @param userDTO             用户信息
      * @param classTimeMarketUuid 课程时间UUID
      * @return 我的课程时间信息
      */
     ClassTimeMarketDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
+
+    /*
+     * ***************************************************************************************
+     * 课程服务
+     * ***************************************************************************************
+     */
+
+    /**
+     * 添加课程
+     * <p>
+     * 该方法用于添加课程；添加课程时，需要提供 {@code 用户信息}、{@code 课程值对象}。
+     *
+     * @param userDTO 用户信息
+     * @param classVO 课程值对象
+     */
+    void addClass(UserDTO userDTO, ClassVO classVO);
+
+    /**
+     * 删除课程
+     * <p>
+     * 该方法用于删除课程；删除课程时，需要提供 {@code 用户信息}、{@code 课程UUID}、{@code 第几周}、{@code 第几节}、{@code 第几节}。
+     *
+     * @param userDTO   用户信息
+     * @param classUuid 课程UUID
+     * @param week      第几周
+     * @param startTick 第几节
+     * @param endTick   第几节
+     */
+    void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick);
 }

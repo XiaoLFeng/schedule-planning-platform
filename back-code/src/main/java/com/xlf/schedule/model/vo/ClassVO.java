@@ -18,82 +18,36 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.model.entity;
+package com.xlf.schedule.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
-import java.sql.Timestamp;
+import java.util.List;
 
 /**
- * 课程表实体
+ * 班级创建值对象
  * <p>
- * 该类用于定义课程表实体;
+ * 该类用于定义班级创建值对象;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-@Data
-@TableName("xf_class")
-@Accessors(chain = true)
-@NoArgsConstructor
-@AllArgsConstructor
-public class ClassDO {
-
-    /**
-     * 课程表主键
-     */
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String classUuid;
-
-    /**
-     * 课程学年主键
-     */
-    private String classGradeUuid;
-
-    /**
-     * 课程名称
-     */
+@Getter
+@SuppressWarnings("unused")
+public class ClassVO {
+    @NotBlank(message = "课程名称不能为空")
     private String name;
-
-    /**
-     * 课程开始的节次编号
-     */
+    @Pattern(regexp = "^[0-9a-f]{32}$", message = "课程编号格式错误")
+    private String classGradeUuid;
+    @Min(value = 1, message = "开始节数不能小于1")
     private Short startTick;
-
-    /**
-     * 课程结束的节次编号
-     */
+    @Min(value = 1, message = "结束节数不能小于1")
     private Short endTick;
-
-    /**
-     * 课程周次信息
-     */
-    private Short week;
-
-    /**
-     * 授课老师的名字
-     */
+    private List<Short> weeks;
     private String teacher;
-
-    /**
-     * 上课地点
-     */
     private String location;
-
-    /**
-     * 记录创建时间
-     */
-    private Timestamp createdAt;
-
-    /**
-     * 记录更新时间
-     */
-    private Timestamp updatedAt;
 }

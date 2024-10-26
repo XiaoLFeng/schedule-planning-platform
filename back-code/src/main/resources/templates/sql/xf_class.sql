@@ -28,22 +28,24 @@ create table xf_class
         constraint xf_class_xf_class_grade_uuid_fk
             references xf_class_grade
             on update cascade on delete cascade,
-    semester         varchar(48)             not null,
-    start_time       date      default now() not null,
-    end_time         date                    not null,
-    curriculum       varchar   default '[]'  not null,
+    name             varchar(256)            not null,
+    start_tick       smallint  default 0     not null,
+    end_tick         smallint  default 1     not null,
+    week            smallint  default 1     not null,
+    teacher          varchar(128),
+    location         varchar(512),
     created_at       timestamp default now() not null,
-    updated_at       timestamp,
-    deleted_at       timestamp
+    updated_at       timestamp
 );
 
 comment on table xf_class is '课程表';
 comment on column xf_class.class_uuid is '课程表主键';
 comment on column xf_class.class_grade_uuid is '用户主键';
-comment on column xf_class.semester is '课程学期（名字）';
-comment on column xf_class.start_time is '开始时间';
-comment on column xf_class.end_time is '结束时间';
-comment on column xf_class.curriculum is '课程信息';
-comment on column xf_class.created_at is '创建时间';
-comment on column xf_class.updated_at is '更新时间';
-comment on column xf_class.deleted_at is '删除时间';
+COMMENT ON COLUMN xf_class.name IS '课程名称';
+COMMENT ON COLUMN xf_class.start_tick IS '课程开始的节次编号';
+COMMENT ON COLUMN xf_class.end_tick IS '课程结束的节次编号';
+COMMENT ON COLUMN xf_class.week IS '课程周次信息';
+COMMENT ON COLUMN xf_class.teacher IS '授课老师的名字';
+COMMENT ON COLUMN xf_class.location IS '上课地点';
+COMMENT ON COLUMN xf_class.created_at IS '记录创建时间';
+COMMENT ON COLUMN xf_class.updated_at IS '记录更新时间';

@@ -33,6 +33,7 @@ import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassGradeVO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
+import com.xlf.schedule.model.vo.ClassVO;
 import com.xlf.schedule.service.CurriculumService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.schedule.util.CopyUtil;
@@ -285,18 +286,7 @@ public class CurriculumController {
             @RequestParam(value = "size", defaultValue = "20") Integer size
     ) {
         Page<ClassTimeMarketDO> classTimeMarketList = curriculumService.getClassTimeMarketList(page, size);
-        CustomPage<ClassTimeMarketDTO> newClassTimeMarketList = new CustomPage<>();
-        CopyUtil.pageDoCopyToDTO(classTimeMarketList, newClassTimeMarketList, ClassTimeMarketDTO.class);
-        classTimeMarketList.getRecords().forEach(classTimeMarketDTO -> {
-            List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(classTimeMarketDTO.getTimetable(), new TypeToken<>() {
-            }.getType());
-            newClassTimeMarketList.getRecords().forEach(newClassTimeMarketDTO -> {
-                if (newClassTimeMarketDTO.getClassTimeMarketUuid().equals(classTimeMarketDTO.getClassTimeMarketUuid())) {
-                    newClassTimeMarketDTO.setTimetable(classTimeAbleList);
-                }
-            });
-        });
-        return ResultUtil.success("操作成功", newClassTimeMarketList);
+        return this.classTimeMarkCustomPage(classTimeMarketList);
     }
 
     /**
@@ -376,18 +366,7 @@ public class CurriculumController {
     ) {
         UserDTO getUser = userService.getUserByToken(request);
         Page<ClassTimeMarketDO> myClassTimeList = curriculumService.getMyClassTimeList(getUser, page, size);
-        CustomPage<ClassTimeMarketDTO> newMyClassTimeList = new CustomPage<>();
-        CopyUtil.pageDoCopyToDTO(myClassTimeList, newMyClassTimeList, ClassTimeMarketDTO.class);
-        myClassTimeList.getRecords().forEach(myClassTimeDTO -> {
-            List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(myClassTimeDTO.getTimetable(), new TypeToken<>() {
-            }.getType());
-            newMyClassTimeList.getRecords().forEach(newMyClassTimeDTO -> {
-                if (newMyClassTimeDTO.getClassTimeMarketUuid().equals(myClassTimeDTO.getClassTimeMarketUuid())) {
-                    newMyClassTimeDTO.setTimetable(classTimeAbleList);
-                }
-            });
-        });
-        return ResultUtil.success("操作成功", newMyClassTimeList);
+        return this.classTimeMarkCustomPage(myClassTimeList);
     }
 
     /**
@@ -401,6 +380,7 @@ public class CurriculumController {
     @GetMapping("/my-time/{class_time_market_uuid}")
     public ResponseEntity<BaseResponse<ClassTimeMarketDTO>> getMyClassTime(
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
+            @RequestHeader
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
@@ -409,5 +389,73 @@ public class CurriculumController {
         UserDTO getUser = userService.getUserByToken(request);
         ClassTimeMarketDTO myClassTime = curriculumService.getMyClassTime(getUser, classTimeMarketUuid);
         return ResultUtil.success("操作成功", myClassTime);
+    }
+
+    /**
+     * 添加课程
+     * <p>
+     * 用于添加一个课程到我的课程时间中。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @PostMapping("/class")
+    public ResponseEntity<BaseResponse<Void>> addClass(
+            @RequestBody @Validated ClassVO classVO,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.addClass(getUser, classVO);
+        return null;
+    }
+
+    /**
+     * 移动课程
+     * <p>
+     * 用于移动一个课程到指定周数以及节次位置
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @PatchMapping("/class/{class_uuid}")
+    public ResponseEntity<BaseResponse<Void>> moveClass(
+            @PathVariable("class_uuid") String classUuid,
+            @RequestParam("week") Short week,
+            @RequestParam("start_tick") Short startTick,
+            @RequestParam("end_tick") Short endTick,
+            @NotNull HttpServletRequest request
+    ) {
+        // 对数据进行验证
+        if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程UUID非法");
+        }
+        if (week < 1 || week > 53) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "周数非法");
+        }
+        if (startTick < 1) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+        }
+        if (endTick < 1 || endTick < startTick) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.moveClass(getUser, classUuid, week, startTick, endTick);
+        return null;
+    }
+
+    @NotNull
+    private ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> classTimeMarkCustomPage(Page<ClassTimeMarketDO> myClassTimeList) {
+        CustomPage<ClassTimeMarketDTO> newMyClassTimeList = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(myClassTimeList, newMyClassTimeList, ClassTimeMarketDTO.class);
+        myClassTimeList.getRecords().forEach(myClassTimeDTO -> {
+            List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(myClassTimeDTO.getTimetable(), new TypeToken<>() {
+            }.getType());
+            newMyClassTimeList.getRecords().forEach(newMyClassTimeDTO -> {
+                if (newMyClassTimeDTO.getClassTimeMarketUuid().equals(myClassTimeDTO.getClassTimeMarketUuid())) {
+                    newMyClassTimeDTO.setTimetable(classTimeAbleList);
+                }
+            });
+        });
+        return ResultUtil.success("操作成功", newMyClassTimeList);
     }
 }

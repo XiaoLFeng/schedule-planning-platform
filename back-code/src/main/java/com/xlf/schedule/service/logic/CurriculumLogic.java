@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.xlf.schedule.constant.SystemConstant;
+import com.xlf.schedule.dao.ClassDAO;
 import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.dao.ClassTimeMarketDAO;
 import com.xlf.schedule.dao.ClassTimeMyDAO;
@@ -31,10 +32,12 @@ import com.xlf.schedule.model.dto.ClassGradeDTO;
 import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
+import com.xlf.schedule.model.entity.ClassDO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.entity.ClassTimeMyDO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
+import com.xlf.schedule.model.vo.ClassVO;
 import com.xlf.schedule.service.CurriculumService;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.utility.ErrorCode;
@@ -74,6 +77,7 @@ public class CurriculumLogic implements CurriculumService {
     private final Gson gson;
     private final ClassTimeMarketDAO classTimeMarketDAO;
     private final ClassTimeMyDAO classTimeMyDAO;
+    private final ClassDAO classDAO;
 
     @Override
     public String createClassGrade(String name, Date begin, Date end, String userUuid) {
@@ -336,6 +340,59 @@ public class CurriculumLogic implements CurriculumService {
                     throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
                 });
         return classTimeMarketDTO;
+    }
+
+    @Override
+    @Transactional
+    public void addClass(@NotNull UserDTO userDTO, @NotNull ClassVO classVO) {
+        // 检查 classGradeUuid 是否存在
+        ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
+                .eq(ClassGradeDO::getClassGradeUuid, classVO.getClassGradeUuid())
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+        if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
+            if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                throw new BusinessException("您没有权限添加", ErrorCode.OPERATION_DENIED);
+            }
+        }
+        // 对 Week 进行遍历循环
+        classVO.getWeeks().forEach(week -> {
+            ClassDO newClass = new ClassDO();
+            newClass
+                    .setClassGradeUuid(classGradeDO.getClassGradeUuid())
+                    .setName(classVO.getName())
+                    .setStartTick(classVO.getStartTick())
+                    .setEndTick(classVO.getEndTick())
+                    .setWeek(week)
+                    .setTeacher(classVO.getTeacher())
+                    .setLocation(classVO.getLocation());
+            classDAO.save(newClass);
+        });
+    }
+
+    @Override
+    public void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick) {
+        classDAO.lambdaQuery()
+                .eq(ClassDO::getClassUuid, classUuid)
+                .oneOpt()
+                .ifPresentOrElse(classDO -> {
+                    ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
+                            .eq(ClassGradeDO::getClassGradeUuid, classDO.getClassGradeUuid())
+                            .oneOpt()
+                            .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                    if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    classDO
+                            .setWeek(week)
+                            .setStartTick(startTick)
+                            .setEndTick(endTick);
+                    classDAO.updateById(classDO);
+                }, () -> {
+                    throw new BusinessException("课程不存在", ErrorCode.NOT_EXIST);
+                });
     }
 
     /**

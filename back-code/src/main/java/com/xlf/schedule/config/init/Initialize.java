@@ -180,7 +180,7 @@ public class Initialize {
      * 初始化课表类型检查
      */
     private void initClassDefaultCheck() {
-        log.info("[INIT] 检查默认课表时间信息");
+        log.info("[INIT] 检查默认课表时间信息...");
         if (prepare.initGetGlobalVariable("system_default_class_time_uuid") == null) {
             String newTimeMarketUuid = UuidUtil.generateUuidNoDash();
             ArrayList<ClassTimeVO.TimeAble> timeAble = new ArrayList<>();

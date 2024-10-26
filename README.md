@@ -1,6 +1,6 @@
 # 学生日程规划平台
 
-> 本项目正在开发中，预计开发周期一个月（开发后视情况维护，主要为学校大作业使用）
+> 本项目正在开发中，预计开发周期一个月（开发后视情况维护，主要为学校大作业使用）<!--  -->
 > 
 > 开发文档：https://schedule-planning-platform.pages.dev/
 > 接口文档：https://schedule-planning-platform.apifox.cn
