@@ -269,4 +269,14 @@ public interface CurriculumService {
      * @param endTick   第几节
      */
     void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick);
+
+    /**
+     * 删除课程
+     * <p>
+     * 该方法用于删除课程；删除课程时，需要提供 {@code 用户信息}、{@code 课程UUID}。
+     *
+     * @param userDTO   用户信息
+     * @param classUuid 课程UUID
+     */
+    void deleteClass(UserDTO userDTO, String classUuid);
 }

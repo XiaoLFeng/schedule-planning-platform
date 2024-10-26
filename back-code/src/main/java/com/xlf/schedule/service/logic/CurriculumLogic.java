@@ -395,6 +395,27 @@ public class CurriculumLogic implements CurriculumService {
                 });
     }
 
+    @Override
+    public void deleteClass(UserDTO userDTO, String classUuid) {
+        classDAO.lambdaQuery()
+                .eq(ClassDO::getClassUuid, classUuid)
+                .oneOpt()
+                .ifPresentOrElse(classDO -> {
+                    ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
+                            .eq(ClassGradeDO::getClassGradeUuid, classDO.getClassGradeUuid())
+                            .oneOpt()
+                            .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                    if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
+                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    classDAO.removeById(classUuid);
+                }, () -> {
+                    throw new BusinessException("课程不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
     /**
      * 检查时间是否有效
      *

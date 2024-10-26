@@ -43,9 +43,9 @@ public class ClassVO {
     private String name;
     @Pattern(regexp = "^[0-9a-f]{32}$", message = "课程编号格式错误")
     private String classGradeUuid;
-    @Min(value = 1, message = "开始节数不能小于1")
+    @Min(value = 0, message = "开始节数不能小于1")
     private Short startTick;
-    @Min(value = 1, message = "结束节数不能小于1")
+    @Min(value = 0, message = "结束节数不能小于1")
     private Short endTick;
     private List<Short> weeks;
     private String teacher;

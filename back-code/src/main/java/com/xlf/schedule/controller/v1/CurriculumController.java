@@ -404,9 +404,15 @@ public class CurriculumController {
             @RequestBody @Validated ClassVO classVO,
             @NotNull HttpServletRequest request
     ) {
+        if (classVO.getStartTick() < 0) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+        }
+        if (classVO.getEndTick() < 0 || classVO.getEndTick() < classVO.getStartTick()) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+        }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.addClass(getUser, classVO);
-        return null;
+        return ResultUtil.success("操作成功");
     }
 
     /**
@@ -425,22 +431,42 @@ public class CurriculumController {
             @RequestParam("end_tick") Short endTick,
             @NotNull HttpServletRequest request
     ) {
-        // 对数据进行验证
         if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程UUID非法");
         }
         if (week < 1 || week > 53) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "周数非法");
         }
-        if (startTick < 1) {
+        if (startTick < 0) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
         }
-        if (endTick < 1 || endTick < startTick) {
+        if (endTick < 0 || endTick < startTick) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.moveClass(getUser, classUuid, week, startTick, endTick);
         return null;
+    }
+
+    /**
+     * 删除课程
+     * <p>
+     * 用于删除一个课程。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @DeleteMapping("/class/{class_uuid}")
+    public ResponseEntity<BaseResponse<Void>> deleteClass(
+            @PathVariable("class_uuid") String classUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程UUID非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.deleteClass(getUser, classUuid);
+        return ResultUtil.success("操作成功");
     }
 
     @NotNull
