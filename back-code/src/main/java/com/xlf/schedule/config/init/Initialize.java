@@ -121,6 +121,7 @@ public class Initialize {
         prepare.checkTable("xf_class_time_my");
         prepare.checkTable("xf_class_grade");
         prepare.checkTable("xf_class");
+        prepare.checkTable("xf_schedule");
     }
 
     /**

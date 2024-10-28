@@ -36,7 +36,6 @@ create table xf_schedule
     description   varchar,
     start_time    timestamp                     not null,
     end_time      timestamp                     not null,
-    列_name_2     integer,
     type          smallint  default 0           not null,
     loop_type     smallint,
     custom_loop   integer,
