@@ -33,7 +33,8 @@ import com.xlf.schedule.model.entity.GroupMemberDO;
 import com.xlf.schedule.model.entity.ScheduleDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.model.vo.GroupVO;
-import com.xlf.schedule.model.vo.ScheduleVO;
+import com.xlf.schedule.model.vo.ScheduleAddVO;
+import com.xlf.schedule.model.vo.ScheduleEditVO;
 import com.xlf.schedule.service.FileService;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.schedule.service.ScheduleService;
@@ -45,6 +46,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -282,12 +284,12 @@ public class ScheduleLogic implements ScheduleService {
     }
 
     @Override
-    public void addSchedule(UserDTO userDTO, @NotNull ScheduleVO scheduleVO) {
+    public void addSchedule(UserDTO userDTO, @NotNull ScheduleAddVO scheduleAddVO) {
         ScheduleDO newSchedule = new ScheduleDO();
         // 检查用户是否添加到小组内
-        if (scheduleVO.getAddLocation()) {
+        if (scheduleAddVO.getAddLocation()) {
             GroupDO getGroup = groupDAO.lambdaQuery()
-                    .eq(GroupDO::getGroupUuid, scheduleVO.getGroupUuid())
+                    .eq(GroupDO::getGroupUuid, scheduleAddVO.getGroupUuid())
                     .oneOpt()
                     .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
             if (!getGroup.getUserAbleAdd()) {
@@ -298,12 +300,12 @@ public class ScheduleLogic implements ScheduleService {
                     .eq(GroupMemberDO::getGroupUuid, getGroup.getGroupUuid())
                     .oneOpt()
                     .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
-            newSchedule.setGroupUuid(scheduleVO.getGroupUuid());
+            newSchedule.setGroupUuid(scheduleAddVO.getGroupUuid());
         }
         // 图片上传
-        if (scheduleVO.getResources() != null && !scheduleVO.getResources().isEmpty()) {
+        if (scheduleAddVO.getResources() != null && !scheduleAddVO.getResources().isEmpty()) {
             ArrayList<String> imageNameList = new ArrayList<>();
-            scheduleVO.getResources().forEach(resource -> imageNameList.add(fileService.uploadImage(resource)));
+            scheduleAddVO.getResources().forEach(resource -> imageNameList.add(fileService.uploadImage(resource)));
             newSchedule.setResources(gson.toJson(imageNameList));
         }
         // 添加日程
@@ -311,15 +313,84 @@ public class ScheduleLogic implements ScheduleService {
             newSchedule.setUserUuid(userDTO.getUuid());
         }
         newSchedule
-                .setName(scheduleVO.getName())
-                .setDescription(scheduleVO.getDescription())
-                .setStartTime(scheduleVO.getStartTime())
-                .setEndTime(scheduleVO.getEndTime())
-                .setType(scheduleVO.getType())
-                .setLoopType(scheduleVO.getLoopType())
-                .setCustomLoop(scheduleVO.getCustomLoop())
-                .setTags(gson.toJson(scheduleVO.getTags()))
-                .setPriority(scheduleVO.getPriority());
+                .setName(scheduleAddVO.getName())
+                .setDescription(scheduleAddVO.getDescription())
+                .setStartTime(scheduleAddVO.getStartTime())
+                .setEndTime(scheduleAddVO.getEndTime())
+                .setType(scheduleAddVO.getType())
+                .setLoopType(scheduleAddVO.getLoopType())
+                .setCustomLoop(scheduleAddVO.getCustomLoop())
+                .setTags(gson.toJson(scheduleAddVO.getTags()))
+                .setPriority(scheduleAddVO.getPriority());
         scheduleDAO.save(newSchedule);
+    }
+
+    @Override
+    public void editSchedule(UserDTO userDTO, String scheduleUuid, ScheduleEditVO scheduleEditVO) {
+        ScheduleDO scheduleDO = scheduleDAO.lambdaQuery().eq(ScheduleDO::getScheduleUuid, scheduleUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
+        if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
+            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+        }
+        if (scheduleDO.getGroupUuid() != null) {
+            GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+            if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                groupMemberDAO.lambdaQuery()
+                        .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                        .eq(GroupMemberDO::getGroupUuid, groupDO.getGroupUuid())
+                        .oneOpt()
+                        .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+            }
+            scheduleDO.setUserUuid(null);
+            scheduleDO.setGroupUuid(groupDO.getGroupUuid());
+        }
+        // 删除图片
+        if (scheduleEditVO.getDeleteResources() != null && !scheduleEditVO.getDeleteResources().isEmpty()) {
+            scheduleEditVO.getDeleteResources().forEach(fileService::deleteImage);
+        }
+        // 图片上传
+        if (scheduleEditVO.getAddResources() != null && !scheduleEditVO.getAddResources().isEmpty()) {
+            ArrayList<String> imageNameList = new ArrayList<>();
+            scheduleEditVO.getAddResources().forEach(resource -> imageNameList.add(fileService.uploadImage(resource)));
+            scheduleDO.setResources(gson.toJson(imageNameList));
+        }
+        if (scheduleEditVO.getGroupUuid() == null) {
+            scheduleDO.setUserUuid(userDTO.getUuid());
+            scheduleDO.setGroupUuid(null);
+        }
+        scheduleDO
+                .setName(scheduleEditVO.getName())
+                .setDescription(scheduleEditVO.getDescription())
+                .setStartTime(scheduleEditVO.getStartTime())
+                .setEndTime(scheduleEditVO.getEndTime())
+                .setType(scheduleEditVO.getType())
+                .setLoopType(scheduleEditVO.getLoopType())
+                .setCustomLoop(scheduleEditVO.getCustomLoop())
+                .setTags(gson.toJson(scheduleEditVO.getTags()))
+                .setPriority(scheduleEditVO.getPriority())
+                .setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        scheduleDAO.updateById(scheduleDO);
+    }
+
+    @Override
+    public void deleteSchedule(UserDTO userDTO, String scheduleUuid) {
+        ScheduleDO scheduleDO = scheduleDAO.lambdaQuery().eq(ScheduleDO::getScheduleUuid, scheduleUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
+        if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
+            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+        }
+        if (scheduleDO.getGroupUuid() != null) {
+            GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+            if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+            }
+        }
+        scheduleDAO.removeById(scheduleDO);
     }
 }

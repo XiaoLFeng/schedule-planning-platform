@@ -40,4 +40,13 @@ public interface FileService {
      * @return 图片url
      */
     String uploadImage(String imageBase64);
+
+    /**
+     * 删除图片
+     * <p>
+     * 该方法用于删除图片
+     *
+     * @param imageUrl 图片url
+     */
+    void deleteImage(String imageUrl);
 }

@@ -28,17 +28,17 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * 日程值对象
+ * 日程添加值对象
  * <p>
- * 该类用于定义日程值对象;
+ * 该类用于定义日程添加值对象;
  *
- * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
+ * @author xiao_lfeng
  */
 @Getter
 @SuppressWarnings("unused")
-public class ScheduleVO {
+public class ScheduleAddVO {
     @NotNull(message = "添加位置不能为空")
     private Boolean addLocation;
     private String groupUuid;

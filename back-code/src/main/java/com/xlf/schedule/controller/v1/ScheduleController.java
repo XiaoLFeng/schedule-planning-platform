@@ -29,7 +29,8 @@ import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupMemberAddVO;
 import com.xlf.schedule.model.vo.GroupVO;
-import com.xlf.schedule.model.vo.ScheduleVO;
+import com.xlf.schedule.model.vo.ScheduleAddVO;
+import com.xlf.schedule.model.vo.ScheduleEditVO;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.schedule.util.CopyUtil;
@@ -285,11 +286,54 @@ public class ScheduleController {
     @HasAuthorize
     @PostMapping("/")
     public ResponseEntity<BaseResponse<Void>> addSchedule(
-            @RequestBody @Validated ScheduleVO scheduleVO,
+            @RequestBody @Validated ScheduleAddVO scheduleAddVO,
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        scheduleService.addSchedule(userDTO, scheduleVO);
+        scheduleService.addSchedule(userDTO, scheduleAddVO);
         return ResultUtil.success("添加日程成功");
+    }
+
+    /**
+     * 编辑日程
+     * <p>
+     * 该方法用于编辑日程
+     *
+     * @return 编辑日程结果
+     */
+    @HasAuthorize
+    @PutMapping("/")
+    public ResponseEntity<BaseResponse<Void>> editSchedule(
+            @RequestParam("schedule_uuid") String scheduleUuid,
+            @RequestBody @Validated ScheduleEditVO scheduleEditVO,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", scheduleUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.editSchedule(userDTO, scheduleUuid, scheduleEditVO);
+        return ResultUtil.success("编辑日程成功");
+    }
+
+    /**
+     * 删除日程
+     * <p>
+     * 该方法用于删除日程
+     *
+     * @return 删除日程结果
+     */
+    @HasAuthorize
+    @DeleteMapping("/")
+    public ResponseEntity<BaseResponse<Void>> deleteSchedule(
+            @RequestParam("schedule_uuid") String scheduleUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", scheduleUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.deleteSchedule(userDTO, scheduleUuid);
+        return ResultUtil.success("删除日程成功");
     }
 }

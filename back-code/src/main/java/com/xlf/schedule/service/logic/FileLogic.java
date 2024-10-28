@@ -25,6 +25,7 @@ import com.xlf.schedule.service.FileService;
 import com.xlf.schedule.util.ProcessUtil;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.util.UuidUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -43,6 +44,7 @@ import java.util.Base64;
  * @version v1.0.0
  * @since v1.0.0
  */
+@Slf4j
 @Service
 public class FileLogic implements FileService {
     @Override
@@ -65,5 +67,17 @@ public class FileLogic implements FileService {
             throw new IllegalDataException(ErrorCode.OPERATION_FAILED, "文件上传失败");
         }
         return imageName;
+    }
+
+    @Override
+    public void deleteImage(String imageUrl) {
+        File file = new File("uploads/images/" + imageUrl);
+        if (file.exists()) {
+            if (file.delete()) {
+                log.info("[FILE] 文件 {} 删除成功", imageUrl);
+            } else {
+                log.warn("[FILE] 文件 {} 删除失败", imageUrl);
+            }
+        }
     }
 }
