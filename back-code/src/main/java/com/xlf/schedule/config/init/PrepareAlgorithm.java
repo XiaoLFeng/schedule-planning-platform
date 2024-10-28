@@ -33,6 +33,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.FileCopyUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -126,6 +127,17 @@ public class PrepareAlgorithm {
                     .setRoleDesc(desc);
             roleDAO.save(newRole);
             log.debug("[INIT] 创建角色 | [{}]{}", name, displayName);
+        }
+    }
+
+    public void initFolder(String folderName) {
+        File resource = new File(folderName);
+        if (!resource.exists()) {
+            if (resource.mkdirs()) {
+                log.debug("[INIT] 创建文件夹 | {}", folderName);
+            } else {
+                log.warn("[INIT] 创建文件夹失败 | {}", folderName);
+            }
         }
     }
 }

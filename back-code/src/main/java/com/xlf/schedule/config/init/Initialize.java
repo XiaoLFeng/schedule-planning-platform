@@ -79,6 +79,7 @@ public class Initialize {
         this.initGlobalVariableAssignment();
         this.initClassDefaultCheck();
         this.initRole();
+        this.initFolder();
     }
 
     /**
@@ -214,5 +215,15 @@ public class Initialize {
 
         prepare.initRole("ADMIN", "管理员", "拥有软件的所有权限，包括用户管理、角色管理、日志管理、信息管理等。");
         prepare.initRole("USER", "用户", "拥有软件的部分权限，包括日志查看、信息查看等。");
+    }
+
+    /**
+     * 初始化文件夹
+     */
+    private void initFolder() {
+        log.info("[INIT] 初始化文件夹...");
+
+        prepare.initFolder("uploads");
+        prepare.initFolder("uploads/images");
     }
 }

@@ -24,13 +24,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xlf.schedule.dao.GroupDAO;
 import com.xlf.schedule.dao.GroupMemberDAO;
+import com.xlf.schedule.dao.ScheduleDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.entity.GroupMemberDO;
+import com.xlf.schedule.model.entity.ScheduleDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.model.vo.GroupVO;
+import com.xlf.schedule.model.vo.ScheduleVO;
+import com.xlf.schedule.service.FileService;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.utility.ErrorCode;
@@ -61,6 +65,8 @@ public class ScheduleLogic implements ScheduleService {
     private final RoleService roleService;
     private final GroupMemberDAO groupMemberDAO;
     private final UserDAO userDAO;
+    private final FileService fileService;
+    private final ScheduleDAO scheduleDAO;
 
     @Override
     public String createGroup(UserDTO userDTO, @NotNull GroupVO groupVO) {
@@ -273,5 +279,47 @@ public class ScheduleLogic implements ScheduleService {
                 }, () -> {
                     throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
                 });
+    }
+
+    @Override
+    public void addSchedule(UserDTO userDTO, @NotNull ScheduleVO scheduleVO) {
+        ScheduleDO newSchedule = new ScheduleDO();
+        // 检查用户是否添加到小组内
+        if (scheduleVO.getAddLocation()) {
+            GroupDO getGroup = groupDAO.lambdaQuery()
+                    .eq(GroupDO::getGroupUuid, scheduleVO.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+            if (!getGroup.getUserAbleAdd()) {
+                throw new BusinessException("小组不允许普通用户添加日程", ErrorCode.OPERATION_DENIED);
+            }
+            groupMemberDAO.lambdaQuery()
+                    .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                    .eq(GroupMemberDO::getGroupUuid, getGroup.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+            newSchedule.setGroupUuid(scheduleVO.getGroupUuid());
+        }
+        // 图片上传
+        if (scheduleVO.getResources() != null && !scheduleVO.getResources().isEmpty()) {
+            ArrayList<String> imageNameList = new ArrayList<>();
+            scheduleVO.getResources().forEach(resource -> imageNameList.add(fileService.uploadImage(resource)));
+            newSchedule.setResources(gson.toJson(imageNameList));
+        }
+        // 添加日程
+        if (newSchedule.getGroupUuid() == null) {
+            newSchedule.setUserUuid(userDTO.getUuid());
+        }
+        newSchedule
+                .setName(scheduleVO.getName())
+                .setDescription(scheduleVO.getDescription())
+                .setStartTime(scheduleVO.getStartTime())
+                .setEndTime(scheduleVO.getEndTime())
+                .setType(scheduleVO.getType())
+                .setLoopType(scheduleVO.getLoopType())
+                .setCustomLoop(scheduleVO.getCustomLoop())
+                .setTags(gson.toJson(scheduleVO.getTags()))
+                .setPriority(scheduleVO.getPriority());
+        scheduleDAO.save(newSchedule);
     }
 }

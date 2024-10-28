@@ -29,6 +29,7 @@ import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupMemberAddVO;
 import com.xlf.schedule.model.vo.GroupVO;
+import com.xlf.schedule.model.vo.ScheduleVO;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.schedule.util.CopyUtil;
@@ -272,5 +273,23 @@ public class ScheduleController {
         UserDTO userDTO = userService.getUserByToken(request);
         scheduleService.deleteGroupMember(userDTO, groupUuid, memberUuid);
         return ResultUtil.success("删除成员成功");
+    }
+
+    /**
+     * 添加日程
+     * <p>
+     * 该方法用于添加日程
+     *
+     * @return 添加日程结果
+     */
+    @HasAuthorize
+    @PostMapping("/")
+    public ResponseEntity<BaseResponse<Void>> addSchedule(
+            @RequestBody @Validated ScheduleVO scheduleVO,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.addSchedule(userDTO, scheduleVO);
+        return ResultUtil.success("添加日程成功");
     }
 }

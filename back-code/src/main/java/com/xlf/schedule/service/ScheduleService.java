@@ -25,6 +25,7 @@ import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupVO;
+import com.xlf.schedule.model.vo.ScheduleVO;
 
 import java.util.List;
 
@@ -112,8 +113,8 @@ public interface ScheduleService {
      * <p>
      * 该方法用于添加小组成员
      *
-     * @param userDTO   用户信息
-     * @param groupUuid 小组uuid
+     * @param userDTO    用户信息
+     * @param groupUuid  小组uuid
      * @param memberUuid 成员uuid
      */
     void addGroupMember(UserDTO userDTO, String groupUuid, String memberUuid);
@@ -123,8 +124,8 @@ public interface ScheduleService {
      * <p>
      * 该方法用于添加小组成员列表
      *
-     * @param userDTO   用户信息
-     * @param groupUuid 小组uuid
+     * @param userDTO        用户信息
+     * @param groupUuid      小组uuid
      * @param memberUuidList 成员uuid列表
      */
     void addGroupMemberList(UserDTO userDTO, String groupUuid, List<String> memberUuidList);
@@ -134,9 +135,19 @@ public interface ScheduleService {
      * <p>
      * 该方法用于删除小组成员
      *
-     * @param userDTO   用户信息
-     * @param groupUuid 小组uuid
+     * @param userDTO    用户信息
+     * @param groupUuid  小组uuid
      * @param memberUuid 成员uuid
      */
     void deleteGroupMember(UserDTO userDTO, String groupUuid, String memberUuid);
+
+    /**
+     * 获取小组成员列表
+     * <p>
+     * 该方法用于获取小组成员列表
+     *
+     * @param userDTO    用户信息
+     * @param scheduleVO 日程请求参数
+     */
+    void addSchedule(UserDTO userDTO, ScheduleVO scheduleVO);
 }
