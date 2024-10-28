@@ -24,10 +24,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xlf.schedule.dao.GroupDAO;
 import com.xlf.schedule.dao.GroupMemberDAO;
+import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.entity.GroupMemberDO;
+import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.schedule.service.ScheduleService;
@@ -58,6 +60,7 @@ public class ScheduleLogic implements ScheduleService {
     private final Gson gson;
     private final RoleService roleService;
     private final GroupMemberDAO groupMemberDAO;
+    private final UserDAO userDAO;
 
     @Override
     public String createGroup(UserDTO userDTO, @NotNull GroupVO groupVO) {
@@ -205,12 +208,68 @@ public class ScheduleLogic implements ScheduleService {
                             throw new BusinessException("您没有权限添加", ErrorCode.OPERATION_DENIED);
                         }
                     }
+                    userDAO.lambdaQuery().eq(UserDO::getUuid, memberUuid)
+                            .oneOpt()
+                            .orElseThrow(() -> new BusinessException("用户不存在", ErrorCode.NOT_EXIST));
                     GroupMemberDO groupMemberDO = new GroupMemberDO();
                     groupMemberDO
                             .setGroupUuid(groupUuid)
                             .setUserUuid(memberUuid)
                             .setStatus((short) 1);
                     groupMemberDAO.save(groupMemberDO);
+                }, () -> {
+                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public void addGroupMemberList(UserDTO userDTO, String groupUuid, @NotNull List<String> memberUuidList) {
+        if (memberUuidList.isEmpty()) {
+            throw new BusinessException("成员列表不能为空", ErrorCode.PARAMETER_ILLEGAL);
+        }
+        groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
+                .oneOpt()
+                .ifPresentOrElse(groupDO -> {
+                    if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
+                            throw new BusinessException("您没有权限添加", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    List<GroupMemberDO> groupMemberDOList = new ArrayList<>();
+                    memberUuidList.forEach(memberUuid -> {
+                        userDAO.lambdaQuery().eq(UserDO::getUuid, memberUuid)
+                                .oneOpt()
+                                .orElseThrow(() -> new BusinessException("用户不存在", ErrorCode.NOT_EXIST));
+                        GroupMemberDO groupMemberDO = new GroupMemberDO();
+                        groupMemberDO
+                                .setGroupUuid(groupUuid)
+                                .setUserUuid(memberUuid)
+                                .setStatus((short) 1);
+                        groupMemberDOList.add(groupMemberDO);
+                    });
+                    groupMemberDAO.saveBatch(groupMemberDOList);
+                }, () -> {
+                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public void deleteGroupMember(UserDTO userDTO, String groupUuid, String memberUuid) {
+        groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
+                .oneOpt()
+                .ifPresentOrElse(groupDO -> {
+                    if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
+                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    groupMemberDAO.lambdaQuery()
+                            .eq(GroupMemberDO::getGroupUuid, groupUuid)
+                            .eq(GroupMemberDO::getUserUuid, memberUuid)
+                            .oneOpt()
+                            .ifPresentOrElse(groupMemberDAO::removeById, () -> {
+                                throw new BusinessException("成员不存在", ErrorCode.NOT_EXIST);
+                            });
                 }, () -> {
                     throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
                 });

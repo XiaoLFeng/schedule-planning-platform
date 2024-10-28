@@ -27,6 +27,7 @@ import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
+import com.xlf.schedule.model.vo.GroupMemberAddVO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.schedule.service.UserService;
@@ -102,7 +103,7 @@ public class ScheduleController {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
-        scheduleService.editGroup(userDTO, groupUuid,  groupVO);
+        scheduleService.editGroup(userDTO, groupUuid, groupVO);
         return ResultUtil.success("编辑小组成功");
     }
 
@@ -198,10 +199,78 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识��误");
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
         GroupDTO groupDTO = scheduleService.getGroup(userDTO, groupUuid);
         return ResultUtil.success("获取成功", groupDTO);
+    }
+
+    /**
+     * 批量添加日程小组成员
+     * <p>
+     * 该方法用于批量添加日程小组成员
+     *
+     * @return 添加日程成员结果
+     */
+    @HasAuthorize
+    @PostMapping("/group/member")
+    public ResponseEntity<BaseResponse<Void>> addGroupMemberList(
+            @RequestBody @Validated GroupMemberAddVO groupMemberAddVO,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.addGroupMemberList(userDTO, groupMemberAddVO.getGroupUuid(), groupMemberAddVO.getUserUuid());
+        return ResultUtil.success("添加成员成功");
+    }
+
+    /**
+     * 添加日程小组成员
+     * <p>
+     * 该方法用于添加日程小组成员
+     *
+     * @return 添加日程成员结果
+     */
+    @HasAuthorize
+    @PostMapping("/group/{group_uuid}/member/{member_uuid}")
+    public ResponseEntity<BaseResponse<Void>> addGroupMember(
+            @PathVariable("group_uuid") String groupUuid,
+            @PathVariable("member_uuid") String memberUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
+        }
+        if (Pattern.matches("^[a-f0-9]{32}$", memberUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.addGroupMember(userDTO, groupUuid, memberUuid);
+        return ResultUtil.success("添加成员成功");
+    }
+
+    /**
+     * 删除日程小组成员
+     * <p>
+     * 该方法用于删除日程小组成员
+     *
+     * @return 删除日程成员结果
+     */
+    @HasAuthorize
+    @DeleteMapping("/group/{group_uuid}/member/{member_uuid}")
+    public ResponseEntity<BaseResponse<Void>> deleteGroupMember(
+            @PathVariable("group_uuid") String groupUuid,
+            @PathVariable("member_uuid") String memberUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
+        }
+        if (Pattern.matches("^[a-f0-9]{32}$", memberUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.deleteGroupMember(userDTO, groupUuid, memberUuid);
+        return ResultUtil.success("删除成员成功");
     }
 }
