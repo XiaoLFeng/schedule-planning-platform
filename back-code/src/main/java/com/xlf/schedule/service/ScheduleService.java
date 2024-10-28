@@ -20,7 +20,10 @@
 
 package com.xlf.schedule.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupVO;
 
 /**
@@ -41,8 +44,9 @@ public interface ScheduleService {
      *
      * @param userDTO 用户信息
      * @param groupVO 创建小组请求参数
+     * @return 小组uuid
      */
-    void createGroup(UserDTO userDTO, GroupVO groupVO);
+    String createGroup(UserDTO userDTO, GroupVO groupVO);
 
     /**
      * 编辑小组
@@ -64,4 +68,51 @@ public interface ScheduleService {
      * @param groupUuid 小组uuid
      */
     void deleteGroup(UserDTO userDTO, String groupUuid);
+
+    /**
+     * 转让小组
+     * <p>
+     * 该方法用于转让小组
+     *
+     * @param userDTO   用户信息
+     * @param groupUuid 小组uuid
+     * @param newMaster 新队长
+     */
+    void transferMaster(UserDTO userDTO, String groupUuid, String newMaster);
+
+    /**
+     * 获取小组列表
+     * <p>
+     * 该方法用于获取小组列表
+     *
+     * @param userDTO 用户信息
+     * @param type    类型
+     * @param page    页码
+     * @param size    每页大小
+     * @param search  搜索关键字
+     * @return 小组列表
+     */
+    Page<GroupDO> getGroupList(UserDTO userDTO, String type, Integer page, Integer size, String search);
+
+    /**
+     * 获取小组
+     * <p>
+     * 该方法用于获取小组
+     *
+     * @param userDTO   用户信息
+     * @param groupUuid 小组uuid
+     * @return 小组
+     */
+    GroupDTO getGroup(UserDTO userDTO, String groupUuid);
+
+    /**
+     * 添加小组成员
+     * <p>
+     * 该方法用于添加小组成员
+     *
+     * @param userDTO   用户信息
+     * @param groupUuid 小组uuid
+     * @param memberUuid 成员uuid
+     */
+    void addGroupMember(UserDTO userDTO, String groupUuid, String memberUuid);
 }

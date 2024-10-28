@@ -20,17 +20,23 @@
 
 package com.xlf.schedule.service.logic;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xlf.schedule.dao.GroupDAO;
+import com.xlf.schedule.dao.GroupMemberDAO;
+import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
+import com.xlf.schedule.model.entity.GroupMemberDO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.service.RoleService;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.util.UuidUtil;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,9 +47,9 @@ import java.util.List;
  * <p>
  * 该类是日程逻辑类，用于处理日程相关的逻辑
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @Service
 @RequiredArgsConstructor
@@ -51,21 +57,26 @@ public class ScheduleLogic implements ScheduleService {
     private final GroupDAO groupDAO;
     private final Gson gson;
     private final RoleService roleService;
+    private final GroupMemberDAO groupMemberDAO;
 
     @Override
-    public void createGroup(UserDTO userDTO, @NotNull GroupVO groupVO) {
+    public String createGroup(UserDTO userDTO, @NotNull GroupVO groupVO) {
         List<String> tags;
         if (groupVO.getTags() == null || groupVO.getTags().isEmpty()) {
             tags = new ArrayList<>();
         } else {
             tags = groupVO.getTags();
         }
+        String newGroupUuid = UuidUtil.generateUuidNoDash();
         GroupDO newGroup = new GroupDO();
         newGroup
+                .setGroupUuid(newGroupUuid)
                 .setName(groupVO.getName())
+                .setUserAbleAdd(groupVO.getAbleAdd())
                 .setTags(gson.toJson(tags))
                 .setMaster(userDTO.getUuid());
         groupDAO.save(newGroup);
+        return newGroupUuid;
     }
 
     @Override
@@ -86,6 +97,7 @@ public class ScheduleLogic implements ScheduleService {
                     }
                     groupDO
                             .setName(groupVO.getName())
+                            .setUserAbleAdd(groupVO.getAbleAdd())
                             .setTags(gson.toJson(tags));
                     groupDAO.updateById(groupDO);
                 }, () -> {
@@ -104,6 +116,101 @@ public class ScheduleLogic implements ScheduleService {
                         }
                     }
                     groupDAO.removeById(groupDO);
+                }, () -> {
+                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public void transferMaster(UserDTO userDTO, String groupUuid, String newMaster) {
+        groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
+                .oneOpt()
+                .ifPresentOrElse(groupDO -> {
+                    if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
+                            throw new BusinessException("您没有权限转让", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    groupDO.setMaster(newMaster);
+                    groupDAO.updateById(groupDO);
+                }, () -> {
+                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public Page<GroupDO> getGroupList(UserDTO userDTO, @NotNull String type, Integer page, Integer size, String search) {
+        switch (type) {
+            case "master":
+                Page<GroupDO> groupPage;
+                if (search != null && !search.isEmpty()) {
+                    groupPage = groupDAO.lambdaQuery()
+                            .or(i -> i.eq(GroupDO::getMaster, userDTO.getUuid()).like(GroupDO::getName, search))
+                            .or(i -> i.eq(GroupDO::getMaster, userDTO.getUuid()).like(GroupDO::getTags, search))
+                            .page(new Page<>(page, size));
+                } else {
+                    groupPage = groupDAO.lambdaQuery()
+                            .eq(GroupDO::getMaster, userDTO.getUuid())
+                            .page(new Page<>(page, size));
+                }
+                return groupPage;
+            case "user":
+                List<GroupDO> groupList = groupDAO.lambdaQuery()
+                        .or(i -> i.like(GroupDO::getName, search))
+                        .or(i -> i.like(GroupDO::getTags, search))
+                        .list()
+                        .stream().filter(groupDO -> {
+                            GroupMemberDO record = groupMemberDAO.lambdaQuery()
+                                    .eq(GroupMemberDO::getGroupUuid, groupDO.getGroupUuid())
+                                    .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                                    .one();
+                            return record != null;
+                        }).toList();
+                Page<GroupDO> pageGroup = new Page<>(page, size);
+                pageGroup.setRecords(groupList);
+                return pageGroup;
+            default:
+                throw new BusinessException("类型有误", ErrorCode.PARAMETER_ILLEGAL);
+        }
+    }
+
+    @Override
+    public GroupDTO getGroup(@NotNull UserDTO userDTO, String groupUuid) {
+        GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid).oneOpt()
+                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+        if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+            groupMemberDAO.lambdaQuery()
+                    .eq(GroupMemberDO::getGroupUuid, groupUuid)
+                    .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+            if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
+                throw new BusinessException("您没有权限查看", ErrorCode.OPERATION_DENIED);
+            }
+        }
+        GroupDTO groupDTO = new GroupDTO();
+        BeanUtils.copyProperties(groupDO, groupDTO);
+        String[] strings = gson.fromJson(groupDO.getTags(), String[].class);
+        groupDTO.setTags(new ArrayList<>(List.of(strings)));
+        return groupDTO;
+    }
+
+    @Override
+    public void addGroupMember(UserDTO userDTO, String groupUuid, String memberUuid) {
+        groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
+                .oneOpt()
+                .ifPresentOrElse(groupDO -> {
+                    if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
+                            throw new BusinessException("您没有权限添加", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    GroupMemberDO groupMemberDO = new GroupMemberDO();
+                    groupMemberDO
+                            .setGroupUuid(groupUuid)
+                            .setUserUuid(memberUuid)
+                            .setStatus((short) 1);
+                    groupMemberDAO.save(groupMemberDO);
                 }, () -> {
                     throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
                 });

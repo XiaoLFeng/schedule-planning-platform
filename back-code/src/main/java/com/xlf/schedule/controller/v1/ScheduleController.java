@@ -20,11 +20,17 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.xlf.schedule.exception.lib.IllegalDataException;
+import com.xlf.schedule.model.CustomPage;
+import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.service.ScheduleService;
 import com.xlf.schedule.service.UserService;
+import com.xlf.schedule.util.CopyUtil;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
@@ -37,6 +43,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -55,6 +63,7 @@ import java.util.regex.Pattern;
 public class ScheduleController {
     private final UserService userService;
     private final ScheduleService scheduleService;
+    private final Gson gson;
 
     /**
      * 创建日程小组
@@ -70,7 +79,8 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        scheduleService.createGroup(userDTO, groupVO);
+        String groupUuid = scheduleService.createGroup(userDTO, groupVO);
+        scheduleService.addGroupMember(userDTO, groupUuid, userDTO.getUuid());
         return ResultUtil.success("创建小组成功");
     }
 
@@ -88,7 +98,7 @@ public class ScheduleController {
             @RequestBody @Validated GroupVO groupVO,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.compile("^[a-f0-9]{32}$").matcher(groupUuid).matches()) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -109,11 +119,89 @@ public class ScheduleController {
             @PathVariable("group_uuid") String groupUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.compile("^[a-f0-9]{32}$").matcher(groupUuid).matches()) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
         scheduleService.deleteGroup(userDTO, groupUuid);
         return ResultUtil.success("删除小组成功");
+    }
+
+    /**
+     * 转让日程小组
+     * <p>
+     * 该方法用于转让日程小组，转让成功后，新队长将拥有小组的管理权限
+     *
+     * @return 转让日程结果
+     */
+    @HasAuthorize
+    @PatchMapping("/group/transfer/{group_uuid}")
+    public ResponseEntity<BaseResponse<Void>> transferMaster(
+            @PathVariable("group_uuid") String groupUuid,
+            @RequestParam("new_master") String newMaster,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
+        }
+        if (Pattern.matches("^[a-f0-9]{32}$", newMaster)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "新队长标识有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        scheduleService.transferMaster(userDTO, groupUuid, newMaster);
+        return ResultUtil.success("转让队长成功");
+    }
+
+    /**
+     * 获取日程小组列表
+     * <p>
+     * 该方法用于获取日程小组列表，获取成功后，可以查看小组的日程
+     *
+     * @return 获取日程列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/group")
+    public ResponseEntity<BaseResponse<CustomPage<GroupDTO>>> getGroupList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @RequestParam(value = "type", defaultValue = "master") String type,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!"master".equalsIgnoreCase(type)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "类型有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        Page<GroupDO> groupList = scheduleService.getGroupList(userDTO, type, page, size, search);
+        CustomPage<GroupDTO> pageDTO = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(groupList, pageDTO, GroupDTO.class);
+        groupList.getRecords().forEach(groupDO -> pageDTO.getRecords().forEach(groupDTO -> {
+            if (groupDO.getGroupUuid().equals(groupDTO.getGroupUuid())) {
+                String[] strings = gson.fromJson(groupDO.getTags(), String[].class);
+                groupDTO.setTags(new ArrayList<>(Arrays.asList(strings)));
+            }
+        }));
+        return ResultUtil.success("获取成功", pageDTO);
+    }
+
+    /**
+     * 获取日程小组
+     * <p>
+     * 该方法用于获取日程小组
+     *
+     * @return 获取日程结果
+     */
+    @HasAuthorize
+    @GetMapping("/group/{group_uuid}")
+    public ResponseEntity<BaseResponse<GroupDTO>> getGroup(
+            @PathVariable("group_uuid") String groupUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识��误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        GroupDTO groupDTO = scheduleService.getGroup(userDTO, groupUuid);
+        return ResultUtil.success("获取成功", groupDTO);
     }
 }

@@ -44,3 +44,6 @@ comment on column xf_group_member.user_uuid is '用户主键';
 comment on column xf_group_member.status is '状态（0: 等待同意，1: 用户同意，2: 用户拒绝）';
 comment on column xf_group_member.created_at is '创建时间';
 comment on column xf_group_member.updated_at is '更新时间';
+
+create unique index xf_group_member_group_uuid_user_uuid_uindex
+    on xf_group_member (group_uuid, user_uuid);

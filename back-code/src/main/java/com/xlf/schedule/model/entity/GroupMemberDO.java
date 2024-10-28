@@ -48,7 +48,7 @@ public class GroupMemberDO {
     /**
      * 小组成员主键
      */
-    @TableId(type = IdType.NONE)
+    @TableId(type = IdType.ASSIGN_UUID)
     private String groupMemberUuid;
 
     /**
