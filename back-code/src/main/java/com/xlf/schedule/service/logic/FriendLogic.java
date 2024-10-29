@@ -73,11 +73,30 @@ public class FriendLogic implements FriendService {
     @Override
     public void deleteFriend(@NotNull UserDTO userDTO, String friendUuid) {
         friendDAO.lambdaQuery()
-                .eq(FriendDO::getAllowerUserUuid, friendUuid)
-                .eq(FriendDO::getSenderUserUuid, userDTO.getUuid())
+                .or(i -> i.eq(FriendDO::getAllowerUserUuid, friendUuid).eq(FriendDO::getSenderUserUuid, userDTO.getUuid()))
+                .or(i -> i.eq(FriendDO::getAllowerUserUuid, userDTO.getUuid()).eq(FriendDO::getSenderUserUuid, friendUuid))
                 .oneOpt()
                 .ifPresentOrElse(friendDAO::removeById, () -> {
                     throw new BusinessException("好友不存在", ErrorCode.OPERATION_DENIED);
+                });
+    }
+
+    @Override
+    public void allowFriend(@NotNull UserDTO userDTO, String friendUuid, Boolean isAllow, String remark) {
+        friendDAO.lambdaQuery()
+                .eq(FriendDO::getSenderUserUuid, friendUuid)
+                .eq(FriendDO::getAllowerUserUuid, userDTO.getUuid())
+                .oneOpt()
+                .ifPresentOrElse(friendDO -> {
+                    if (isAllow) {
+                        friendDO.setIsFriend(1);
+                    } else {
+                        friendDO.setIsFriend(2);
+                    }
+                    friendDO.setAllowerRemarks(remark);
+                    friendDAO.updateById(friendDO);
+                }, () -> {
+                    throw new BusinessException("好友申请不存在", ErrorCode.OPERATION_DENIED);
                 });
     }
 }

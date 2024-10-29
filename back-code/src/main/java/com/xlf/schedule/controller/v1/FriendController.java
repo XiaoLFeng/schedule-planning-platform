@@ -20,10 +20,12 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.service.FriendService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
+import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
 import com.xlf.utility.annotations.HasAuthorize;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.regex.Pattern;
 
 /**
  * 好友控制器
@@ -64,6 +68,9 @@ public class FriendController {
             @RequestParam(value = "remark", defaultValue = "", required = false) String remark,
             @NotNull HttpServletRequest request
     ) {
+        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+        }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.addFriend(userDTO, friendUuid, remark);
         return ResultUtil.success("好友申请已发送");
@@ -82,8 +89,34 @@ public class FriendController {
             @RequestParam(value = "friend_uuid", defaultValue = "") String friendUuid,
             @NotNull HttpServletRequest request
     ) {
+        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+        }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.deleteFriend(userDTO, friendUuid);
         return ResultUtil.success("好友已删除");
+    }
+
+    /**
+     * 同意好友
+     * <p>
+     * 该方法用于同意好友
+     *
+     * @return 同意好友结果
+     */
+    @HasAuthorize
+    @GetMapping("/allow")
+    public ResponseEntity<BaseResponse<Void>> allowFriend(
+            @RequestParam(value = "friend_uuid", defaultValue = "") String friendUuid,
+            @RequestParam(value = "allow", defaultValue = "false") Boolean allow,
+            @RequestParam(value = "remark", defaultValue = "", required = false) String remark,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        friendService.allowFriend(userDTO, friendUuid, allow, remark);
+        return ResultUtil.success("好友已添加");
     }
 }

@@ -53,4 +53,16 @@ public interface FriendService {
      * @param friendUuid 好友uuid
      */
     void deleteFriend(UserDTO userDTO, String friendUuid);
+
+    /**
+     * 允许好友
+     * <p>
+     * 该方法用于允许好友
+     *
+     * @param userDTO    用户信息
+     * @param friendUuid 好友uuid
+     * @param isAllow    是否允许
+     * @param remark     备注
+     */
+    void allowFriend(UserDTO userDTO, String friendUuid, Boolean isAllow, String remark);
 }
