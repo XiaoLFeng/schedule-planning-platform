@@ -20,24 +20,70 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.service.FriendService;
+import com.xlf.schedule.service.UserService;
+import com.xlf.utility.BaseResponse;
+import com.xlf.utility.ResultUtil;
+import com.xlf.utility.annotations.HasAuthorize;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 好友控制器
  * <p>
  * 该类是好友控制器类，用于实现好友相关的控制器方法
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/friend")
 @RequiredArgsConstructor
 public class FriendController {
+    private final UserService userService;
+    private final FriendService friendService;
 
+    /**
+     * 添加好友
+     * <p>
+     * 该方法用于添加好友
+     *
+     * @return 添加好友结果
+     */
+    @HasAuthorize
+    @PostMapping("/")
+    public ResponseEntity<BaseResponse<Void>> addFriend(
+            @RequestParam(value = "friend_uuid", defaultValue = "") String friendUuid,
+            @RequestParam(value = "remark", defaultValue = "", required = false) String remark,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        friendService.addFriend(userDTO, friendUuid, remark);
+        return ResultUtil.success("好友申请已发送");
+    }
+
+    /**
+     * 删除好友
+     * <p>
+     * 该方法用于删除好友
+     *
+     * @return 删除好友结果
+     */
+    @HasAuthorize
+    @DeleteMapping("/")
+    public ResponseEntity<BaseResponse<Void>> deleteFriend(
+            @RequestParam(value = "friend_uuid", defaultValue = "") String friendUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        friendService.deleteFriend(userDTO, friendUuid);
+        return ResultUtil.success("好友已删除");
+    }
 }
