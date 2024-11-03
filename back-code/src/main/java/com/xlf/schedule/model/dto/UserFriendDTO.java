@@ -40,7 +40,7 @@ import java.sql.Timestamp;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFriendListDTO {
+public class UserFriendDTO {
     /**
      * 用户表主键
      */
@@ -53,6 +53,10 @@ public class UserFriendListDTO {
      * 手机号
      */
     private String phone;
+    /**
+     * 邮箱
+     */
+    private String email;
     /**
      * 用户是否开启
      */

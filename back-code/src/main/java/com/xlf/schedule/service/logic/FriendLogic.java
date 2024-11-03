@@ -23,7 +23,7 @@ package com.xlf.schedule.service.logic;
 import com.xlf.schedule.dao.FriendDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.UserDTO;
-import com.xlf.schedule.model.dto.UserFriendListDTO;
+import com.xlf.schedule.model.dto.UserFriendDTO;
 import com.xlf.schedule.model.entity.FriendDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.service.FriendService;
@@ -110,8 +110,8 @@ public class FriendLogic implements FriendService {
     }
 
     @Override
-    public List<UserFriendListDTO> searchFriend(UserDTO userDTO, String search) {
-        List<UserFriendListDTO> userList = new ArrayList<>();
+    public List<UserFriendDTO> searchFriend(UserDTO userDTO, String search) {
+        List<UserFriendDTO> userList = new ArrayList<>();
         userDAO.lambdaQuery()
                 .like(UserDO::getUsername, search)
                 .or()
@@ -126,7 +126,7 @@ public class FriendLogic implements FriendService {
                             .one();
                     return getFriend == null;
                 }).forEach(userDO -> {
-                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    UserFriendDTO newUser = new UserFriendDTO();
                     BeanUtils.copyProperties(userDO, newUser);
                     userList.add(newUser);
                 });
@@ -134,8 +134,8 @@ public class FriendLogic implements FriendService {
     }
 
     @Override
-    public List<UserFriendListDTO> getFriendList(UserDTO userDTO) {
-        List<UserFriendListDTO> userList = new ArrayList<>();
+    public List<UserFriendDTO> getFriendList(UserDTO userDTO) {
+        List<UserFriendDTO> userList = new ArrayList<>();
         friendDAO.lambdaQuery()
                 .or(i -> i.eq(FriendDO::getSenderUserUuid, userDTO.getUuid()).eq(FriendDO::getIsFriend, 1))
                 .or(i -> i.eq(FriendDO::getAllowerUserUuid, userDTO.getUuid()).eq(FriendDO::getIsFriend, 1))
@@ -144,7 +144,7 @@ public class FriendLogic implements FriendService {
                     UserDO getUser = userDAO.lambdaQuery()
                             .eq(UserDO::getUuid, friendDO.getSenderUserUuid().equals(userDTO.getUuid()) ? friendDO.getAllowerUserUuid() : friendDO.getSenderUserUuid())
                             .one();
-                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    UserFriendDTO newUser = new UserFriendDTO();
                     BeanUtils.copyProperties(getUser, newUser);
                     userList.add(newUser);
                 });
@@ -152,8 +152,8 @@ public class FriendLogic implements FriendService {
     }
 
     @Override
-    public List<UserFriendListDTO> getFriendApplicationList(UserDTO userDTO) {
-        List<UserFriendListDTO> userList = new ArrayList<>();
+    public List<UserFriendDTO> getFriendApplicationList(UserDTO userDTO) {
+        List<UserFriendDTO> userList = new ArrayList<>();
         friendDAO.lambdaQuery()
                 .eq(FriendDO::getAllowerUserUuid, userDTO.getUuid())
                 .eq(FriendDO::getIsFriend, 0)
@@ -162,7 +162,7 @@ public class FriendLogic implements FriendService {
                     UserDO getUser = userDAO.lambdaQuery()
                             .eq(UserDO::getUuid, friendDO.getSenderUserUuid())
                             .one();
-                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    UserFriendDTO newUser = new UserFriendDTO();
                     BeanUtils.copyProperties(getUser, newUser);
                     userList.add(newUser);
                 });
@@ -170,8 +170,8 @@ public class FriendLogic implements FriendService {
     }
 
     @Override
-    public List<UserFriendListDTO> getFriendPendingReviewList(UserDTO userDTO) {
-        List<UserFriendListDTO> userList = new ArrayList<>();
+    public List<UserFriendDTO> getFriendPendingReviewList(UserDTO userDTO) {
+        List<UserFriendDTO> userList = new ArrayList<>();
         friendDAO.lambdaQuery()
                 .eq(FriendDO::getSenderUserUuid, userDTO.getUuid())
                 .eq(FriendDO::getIsFriend, 0)
@@ -180,7 +180,7 @@ public class FriendLogic implements FriendService {
                     UserDO getUser = userDAO.lambdaQuery()
                             .eq(UserDO::getUuid, friendDO.getAllowerUserUuid())
                             .one();
-                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    UserFriendDTO newUser = new UserFriendDTO();
                     BeanUtils.copyProperties(getUser, newUser);
                     userList.add(newUser);
                 });
@@ -188,8 +188,8 @@ public class FriendLogic implements FriendService {
     }
 
     @Override
-    public List<UserFriendListDTO> getFriendDeniedList(UserDTO userDTO) {
-        List<UserFriendListDTO> userList = new ArrayList<>();
+    public List<UserFriendDTO> getFriendDeniedList(UserDTO userDTO) {
+        List<UserFriendDTO> userList = new ArrayList<>();
         friendDAO.lambdaQuery()
                 .eq(FriendDO::getSenderUserUuid, userDTO.getUuid())
                 .eq(FriendDO::getIsFriend, 2)
@@ -198,7 +198,7 @@ public class FriendLogic implements FriendService {
                     UserDO getUser = userDAO.lambdaQuery()
                             .eq(UserDO::getUuid, friendDO.getAllowerUserUuid())
                             .one();
-                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    UserFriendDTO newUser = new UserFriendDTO();
                     BeanUtils.copyProperties(getUser, newUser);
                     userList.add(newUser);
                 });

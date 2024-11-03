@@ -23,7 +23,7 @@ package com.xlf.schedule.controller.v1;
 import com.xlf.schedule.constant.PatternConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
-import com.xlf.schedule.model.dto.UserFriendListDTO;
+import com.xlf.schedule.model.dto.UserFriendDTO;
 import com.xlf.schedule.service.FriendService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
@@ -132,7 +132,7 @@ public class FriendController {
      */
     @HasAuthorize
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> searchFriend(
+    public ResponseEntity<BaseResponse<List<UserFriendDTO>>> searchFriend(
             @RequestParam(value = "search", defaultValue = "") String search,
             @NotNull HttpServletRequest request
     ) {
@@ -140,7 +140,7 @@ public class FriendController {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
         }
         UserDTO userDTO = userService.getUserByToken(request);
-        List<UserFriendListDTO> userList = friendService.searchFriend(userDTO, search);
+        List<UserFriendDTO> userList = friendService.searchFriend(userDTO, search);
         return ResultUtil.success("搜索成功", userList);
     }
 
@@ -153,11 +153,11 @@ public class FriendController {
      */
     @HasAuthorize
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendList(
+    public ResponseEntity<BaseResponse<List<UserFriendDTO>>> getFriendList(
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        List<UserFriendListDTO> userList = friendService.getFriendList(userDTO);
+        List<UserFriendDTO> userList = friendService.getFriendList(userDTO);
         return ResultUtil.success("获取好友列表成功", userList);
     }
 
@@ -170,11 +170,11 @@ public class FriendController {
      */
     @HasAuthorize
     @GetMapping("/application")
-    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendApplicationList(
+    public ResponseEntity<BaseResponse<List<UserFriendDTO>>> getFriendApplicationList(
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        List<UserFriendListDTO> userList = friendService.getFriendApplicationList(userDTO);
+        List<UserFriendDTO> userList = friendService.getFriendApplicationList(userDTO);
         return ResultUtil.success("获取好友申请列表成功", userList);
     }
 
@@ -187,11 +187,11 @@ public class FriendController {
      */
     @HasAuthorize
     @GetMapping("/pending")
-    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendPendingReviewList(
+    public ResponseEntity<BaseResponse<List<UserFriendDTO>>> getFriendPendingReviewList(
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        List<UserFriendListDTO> userList = friendService.getFriendPendingReviewList(userDTO);
+        List<UserFriendDTO> userList = friendService.getFriendPendingReviewList(userDTO);
         return ResultUtil.success("获取好友待审核列表成功", userList);
     }
 
@@ -204,11 +204,11 @@ public class FriendController {
      */
     @HasAuthorize
     @GetMapping("/denied")
-    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendDeniedList(
+    public ResponseEntity<BaseResponse<List<UserFriendDTO>>> getFriendDeniedList(
             @NotNull HttpServletRequest request
     ) {
         UserDTO userDTO = userService.getUserByToken(request);
-        List<UserFriendListDTO> userList = friendService.getFriendDeniedList(userDTO);
+        List<UserFriendDTO> userList = friendService.getFriendDeniedList(userDTO);
         return ResultUtil.success("获取好友拒绝列表成功", userList);
     }
 }

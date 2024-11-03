@@ -21,7 +21,7 @@
 package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.dto.UserDTO;
-import com.xlf.schedule.model.dto.UserFriendListDTO;
+import com.xlf.schedule.model.dto.UserFriendDTO;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public interface FriendService {
      * @param userDTO 用户信息
      * @param search  搜索关键字
      */
-    List<UserFriendListDTO> searchFriend(UserDTO userDTO, String search);
+    List<UserFriendDTO> searchFriend(UserDTO userDTO, String search);
 
     /**
      * 获取好友列表
@@ -86,7 +86,7 @@ public interface FriendService {
      *
      * @param userDTO 用户信息
      */
-    List<UserFriendListDTO> getFriendList(UserDTO userDTO);
+    List<UserFriendDTO> getFriendList(UserDTO userDTO);
 
     /**
      * 获取好友申请列表
@@ -95,7 +95,7 @@ public interface FriendService {
      *
      * @param userDTO 用户信息
      */
-    List<UserFriendListDTO> getFriendApplicationList(UserDTO userDTO);
+    List<UserFriendDTO> getFriendApplicationList(UserDTO userDTO);
 
     /**
      * 获取好友待审核列表
@@ -104,7 +104,7 @@ public interface FriendService {
      *
      * @param userDTO 用户信息
      */
-    List<UserFriendListDTO> getFriendPendingReviewList(UserDTO userDTO);
+    List<UserFriendDTO> getFriendPendingReviewList(UserDTO userDTO);
 
     /**
      * 获取好友已拒绝列表
@@ -113,5 +113,5 @@ public interface FriendService {
      *
      * @param userDTO 用户信息
      */
-    List<UserFriendListDTO> getFriendDeniedList(UserDTO userDTO);
+    List<UserFriendDTO> getFriendDeniedList(UserDTO userDTO);
 }
