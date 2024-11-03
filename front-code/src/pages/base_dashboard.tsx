@@ -31,6 +31,7 @@ import Cookies from "js-cookie";
 import {UserEntity} from "../models/entity/user_entity.ts";
 import {setUser} from "../store/user_store.ts";
 import {message} from "antd";
+import {DashboardCurriculum} from "./dashboard/dashboard_curriculum.tsx";
 
 /**
  * # 基础仪表板
@@ -104,6 +105,7 @@ export function BaseDashboard() {
                         <Routes location={items}>
                             <Route path={"/home"} element={<DashboardHome onHeaderHandler={setHeader}/>}/>
                             <Route path={"/view/*"} element={<DashboardView onHeaderHandler={setHeader}/>}/>
+                            <Route path={"/curriculum/*"} element={<DashboardCurriculum onHeaderHandler={setHeader}/>}/>
                         </Routes>
                     </animated.div>
                 </div>
