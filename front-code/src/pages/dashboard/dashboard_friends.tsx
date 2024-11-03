@@ -20,21 +20,23 @@
 
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
-import {JSX, useEffect, useState} from "react";
-import {GetFriendApplicationAPI, GetUserFriendsListAPI} from "../../interface/friends_api.ts";
+import {JSX, useEffect, useRef, useState} from "react";
+import {GetFriendAllowAPI, GetFriendApplicationAPI, GetUserFriendsListAPI} from "../../interface/friends_api.ts";
 import {message} from "antd";
 import {UserFriendListEntity} from "../../models/entity/user_friends_list_entity.ts";
 import avatar1 from "../../assets/images/avatar_1.webp";
 import avatar2 from "../../assets/images/avatar_2.webp";
 import avatar3 from "../../assets/images/avatar_3.webp";
 import avatar4 from "../../assets/images/avatar_4.webp";
-import {AlertOutlined, PlusOutlined} from "@ant-design/icons";
+import {AlertOutlined, PlusOutlined, UserAddOutlined} from "@ant-design/icons";
 
 export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
     const [userList, setUserList] = useState<UserFriendListEntity[]>([] as UserFriendListEntity[]);
     const [friendApplication, setFriendApplication] = useState<UserFriendListEntity[]>([] as UserFriendListEntity[]);
+    const [friendAllow, setFriendAllow] = useState<UserFriendListEntity[]>([] as UserFriendListEntity[]);
+    const refresh = useRef<boolean>(false);
     const [userUuid, setUserUuid] = useState<string>();
 
     document.title = `${webInfo.name} - 好友`;
@@ -57,25 +59,39 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                 message.warning(getResp?.error_message);
             }
         }
+        const funcFriendAllow = async () => {
+            const getResp = await GetFriendAllowAPI();
+            if (getResp?.output === "Success") {
+                setFriendAllow(getResp.data!);
+            } else {
+                message.warning(getResp?.error_message);
+            }
+        }
         funcUserFriend().then();
         funcFriendApplication().then();
-    }, []);
+        funcFriendAllow().then();
+    }, [refresh]);
 
     useEffect(() => {
         // 获取按钮元素
-        const button = document.querySelector('.flicker-button');
+        const button = document.querySelector('#flicker-button');
 
         if (!button) return; // 确保按钮存在
 
         // 设置定时器，每秒切换一次类名
         const interval = setInterval(() => {
-            button.classList.toggle('bg-red-500'); // 增加亮度
             button.classList.toggle('bg-red-700');  // 降低亮度
         }, 1000);
 
         // 清理定时器以避免内存泄漏
         return () => clearInterval(interval);
-    }, []);
+    });
+
+    useEffect(() => {
+        if (userUuid != undefined || userUuid !== "") {
+
+        }
+    }, [userUuid]);
 
     function handlerAvatar(): string {
         const avatars = [avatar1, avatar2, avatar3, avatar4];
@@ -106,8 +122,22 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
         if (friendApplication.length > 0) {
             return (
                 <div
-                    className="flicker-button transition bg-red-500 flex items-center px-2 text-white rounded-md hover:bg-red-600">
+                    id={"flicker-button"}
+                    className="transition bg-red-500 flex items-center px-2 text-white rounded-md hover:bg-red-600">
                     <AlertOutlined/>
+                </div>
+            );
+        } else {
+            return <></>;
+        }
+    }
+
+    function getAllowFriendButton(): JSX.Element {
+        if (friendAllow.length > 0) {
+            return (
+                <div
+                    className="transition bg-emerald-500 flex items-center px-2 text-white rounded-md hover:bg-emerald-600">
+                    <UserAddOutlined/>
                 </div>
             );
         } else {
@@ -122,20 +152,21 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                 <div className={"flex justify-between"}>
                     <div className="text-xl font-bold">好友列表</div>
                     <div className={"flex gap-1"}>
+                        {getAlertButton()}
+                        {getAllowFriendButton()}
                         <div
                             className={"transition bg-sky-500 flex items-center px-4 text-white rounded-md hover:bg-sky-600 space-x-1"}>
                             <PlusOutlined/>
                             <span>添加</span>
                         </div>
-                        {getAlertButton()}
                     </div>
                 </div>
                 <div className="overflow-y-auto overflow-x-hidden space-y-1">
                     {makeUserListElement()}
                 </div>
             </div>
-            <div className={"hidden lg:block col-span-4 bg-white rounded-lg shadow-lg overflow-y-auto"}>
-
+            <div className={"hidden lg:block col-span-4 bg-white rounded-lg shadow-lg overflow-y-auto p-3"}>
+                <div className="text-xl font-bold">好友信息</div>
             </div>
         </div>
     );

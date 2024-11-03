@@ -56,7 +56,25 @@ const GetFriendApplicationAPI = (): Promise<BaseResponse<UserFriendListEntity[]>
     );
 }
 
+/**
+ * # 获取好友允许列表
+ * 用于获取好友允许列表；该接口用于获取好友允许列表。
+ *
+ * @returns {Promise<BaseResponse<UserFriendListEntity[]> | undefined>} 好友允许列表
+ */
+const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendListEntity[]> | undefined> => {
+    return BaseApi<UserFriendListEntity[]>(
+        MethodType.GET,
+        "/api/v1/friend/pending",
+        null,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     GetUserFriendsListAPI,
-    GetFriendApplicationAPI
+    GetFriendApplicationAPI,
+    GetFriendAllowAPI
 }
