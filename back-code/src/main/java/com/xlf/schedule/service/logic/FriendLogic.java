@@ -150,4 +150,58 @@ public class FriendLogic implements FriendService {
                 });
         return userList;
     }
+
+    @Override
+    public List<UserFriendListDTO> getFriendApplicationList(UserDTO userDTO) {
+        List<UserFriendListDTO> userList = new ArrayList<>();
+        friendDAO.lambdaQuery()
+                .eq(FriendDO::getAllowerUserUuid, userDTO.getUuid())
+                .eq(FriendDO::getIsFriend, 0)
+                .list()
+                .forEach(friendDO -> {
+                    UserDO getUser = userDAO.lambdaQuery()
+                            .eq(UserDO::getUuid, friendDO.getSenderUserUuid())
+                            .one();
+                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    BeanUtils.copyProperties(getUser, newUser);
+                    userList.add(newUser);
+                });
+        return userList;
+    }
+
+    @Override
+    public List<UserFriendListDTO> getFriendPendingReviewList(UserDTO userDTO) {
+        List<UserFriendListDTO> userList = new ArrayList<>();
+        friendDAO.lambdaQuery()
+                .eq(FriendDO::getSenderUserUuid, userDTO.getUuid())
+                .eq(FriendDO::getIsFriend, 0)
+                .list()
+                .forEach(friendDO -> {
+                    UserDO getUser = userDAO.lambdaQuery()
+                            .eq(UserDO::getUuid, friendDO.getAllowerUserUuid())
+                            .one();
+                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    BeanUtils.copyProperties(getUser, newUser);
+                    userList.add(newUser);
+                });
+        return userList;
+    }
+
+    @Override
+    public List<UserFriendListDTO> getFriendDeniedList(UserDTO userDTO) {
+        List<UserFriendListDTO> userList = new ArrayList<>();
+        friendDAO.lambdaQuery()
+                .eq(FriendDO::getSenderUserUuid, userDTO.getUuid())
+                .eq(FriendDO::getIsFriend, 2)
+                .list()
+                .forEach(friendDO -> {
+                    UserDO getUser = userDAO.lambdaQuery()
+                            .eq(UserDO::getUuid, friendDO.getAllowerUserUuid())
+                            .one();
+                    UserFriendListDTO newUser = new UserFriendListDTO();
+                    BeanUtils.copyProperties(getUser, newUser);
+                    userList.add(newUser);
+                });
+        return userList;
+    }
 }

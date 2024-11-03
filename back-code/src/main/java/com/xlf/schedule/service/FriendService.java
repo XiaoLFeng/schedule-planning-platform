@@ -87,4 +87,31 @@ public interface FriendService {
      * @param userDTO 用户信息
      */
     List<UserFriendListDTO> getFriendList(UserDTO userDTO);
+
+    /**
+     * 获取好友申请列表
+     * <p>
+     * 该方法用于获取好友申请列表
+     *
+     * @param userDTO 用户信息
+     */
+    List<UserFriendListDTO> getFriendApplicationList(UserDTO userDTO);
+
+    /**
+     * 获取好友待审核列表
+     * <p>
+     * 该方法用于获取好友待审核列表
+     *
+     * @param userDTO 用户信息
+     */
+    List<UserFriendListDTO> getFriendPendingReviewList(UserDTO userDTO);
+
+    /**
+     * 获取好友已拒绝列表
+     * <p>
+     * 该方法用于获取好友已拒绝列表
+     *
+     * @param userDTO 用户信息
+     */
+    List<UserFriendListDTO> getFriendDeniedList(UserDTO userDTO);
 }

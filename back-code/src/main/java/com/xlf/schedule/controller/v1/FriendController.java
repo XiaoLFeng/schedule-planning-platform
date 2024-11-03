@@ -160,4 +160,55 @@ public class FriendController {
         List<UserFriendListDTO> userList = friendService.getFriendList(userDTO);
         return ResultUtil.success("获取好友列表成功", userList);
     }
+
+    /**
+     * 获取好友申请列表
+     * <p>
+     * 该方法用于获取好友申请列表
+     *
+     * @return 获取好友申请列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/application")
+    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendApplicationList(
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<UserFriendListDTO> userList = friendService.getFriendApplicationList(userDTO);
+        return ResultUtil.success("获取好友申请列表成功", userList);
+    }
+
+    /**
+     * 获取好友待审核列表
+     * <p>
+     * 该方法用于获取好友待审核列表
+     *
+     * @return 获取好友待审核列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/pending")
+    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendPendingReviewList(
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<UserFriendListDTO> userList = friendService.getFriendPendingReviewList(userDTO);
+        return ResultUtil.success("获取好友待审核列表成功", userList);
+    }
+
+    /**
+     * 获取好友拒绝列表
+     * <p>
+     * 该方法用于获取好友拒绝列表
+     *
+     * @return 获取好友拒绝列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/denied")
+    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendDeniedList(
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<UserFriendListDTO> userList = friendService.getFriendDeniedList(userDTO);
+        return ResultUtil.success("获取好友拒绝列表成功", userList);
+    }
 }
