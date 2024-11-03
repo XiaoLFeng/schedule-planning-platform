@@ -43,6 +43,10 @@ export type UserFriendListEntity = {
      */
     phone: string;
     /**
+     * 用户邮箱
+     */
+    email: string;
+    /**
      * 用户表主键
      */
     uuid: string;
