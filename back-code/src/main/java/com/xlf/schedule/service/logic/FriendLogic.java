@@ -61,7 +61,7 @@ public class FriendLogic implements FriendService {
                 .oneOpt()
                 .ifPresentOrElse(friendDO -> {
                     switch (friendDO.getIsFriend()) {
-                        case 0 -> throw new BusinessException("正在等待对方同意", ErrorCode.OPERATION_DENIED);
+                        case 0 -> throw new BusinessException("正在等待对方同意或好友申请任有效", ErrorCode.OPERATION_DENIED);
                         case 1 -> throw new BusinessException("已经是好友", ErrorCode.OPERATION_DENIED);
                         default -> {
                             friendDO.setIsFriend(0);
