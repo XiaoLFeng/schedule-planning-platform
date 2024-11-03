@@ -21,6 +21,9 @@
 package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.dto.UserFriendListDTO;
+
+import java.util.List;
 
 /**
  * 好友服务接口
@@ -65,4 +68,23 @@ public interface FriendService {
      * @param remark     备注
      */
     void allowFriend(UserDTO userDTO, String friendUuid, Boolean isAllow, String remark);
+
+    /**
+     * 查询好友
+     * <p>
+     * 该方法用于查询用户还没有添加为好友用于查询好友的操作
+     *
+     * @param userDTO 用户信息
+     * @param search  搜索关键字
+     */
+    List<UserFriendListDTO> searchFriend(UserDTO userDTO, String search);
+
+    /**
+     * 获取好友列表
+     * <p>
+     * 该方法用于获取好友列表
+     *
+     * @param userDTO 用户信息
+     */
+    List<UserFriendListDTO> getFriendList(UserDTO userDTO);
 }

@@ -20,8 +20,10 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.xlf.schedule.constant.PatternConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.dto.UserFriendListDTO;
 import com.xlf.schedule.service.FriendService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
@@ -35,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -68,7 +71,7 @@ public class FriendController {
             @RequestParam(value = "remark", defaultValue = "", required = false) String remark,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+        if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -89,7 +92,7 @@ public class FriendController {
             @RequestParam(value = "friend_uuid", defaultValue = "") String friendUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+        if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -112,11 +115,49 @@ public class FriendController {
             @RequestParam(value = "remark", defaultValue = "", required = false) String remark,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[0-9a-f]{32}", friendUuid)) {
+        if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.allowFriend(userDTO, friendUuid, allow, remark);
         return ResultUtil.success("好友已添加");
+    }
+
+    /**
+     * 查询好友
+     * <p>
+     * 该方法用于查询用户还没有添加为好友用于查询好友的操作
+     *
+     * @return 查询好友结果
+     */
+    @HasAuthorize
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> searchFriend(
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^([0-9A-Za-z-_@]+)$", search)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<UserFriendListDTO> userList = friendService.searchFriend(userDTO, search);
+        return ResultUtil.success("搜索成功", userList);
+    }
+
+    /**
+     * 获取好友列表
+     * <p>
+     * 该方法用于获取好友列表
+     *
+     * @return 获取好友列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/list")
+    public ResponseEntity<BaseResponse<List<UserFriendListDTO>>> getFriendList(
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<UserFriendListDTO> userList = friendService.getFriendList(userDTO);
+        return ResultUtil.success("获取好友列表成功", userList);
     }
 }
