@@ -32,6 +32,7 @@ import {UserEntity} from "../models/entity/user_entity.ts";
 import {setUser} from "../store/user_store.ts";
 import {message} from "antd";
 import {DashboardCurriculum} from "./dashboard/dashboard_curriculum.tsx";
+import {DashboardFriends} from "./dashboard/dashboard_friends.tsx";
 
 /**
  * # 基础仪表板
@@ -106,6 +107,7 @@ export function BaseDashboard() {
                             <Route path={"/home"} element={<DashboardHome onHeaderHandler={setHeader}/>}/>
                             <Route path={"/view/*"} element={<DashboardView onHeaderHandler={setHeader}/>}/>
                             <Route path={"/curriculum/*"} element={<DashboardCurriculum onHeaderHandler={setHeader}/>}/>
+                            <Route path={"/friends"} element={<DashboardFriends onHeaderHandler={setHeader}/>}/>
                         </Routes>
                     </animated.div>
                 </div>

@@ -23,9 +23,11 @@ import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
 import {
     CalendarOutlined,
     DashboardOutlined,
-    PicLeftOutlined,
+    HighlightOutlined,
     SettingOutlined,
-    SlidersOutlined
+    SlidersOutlined,
+    SnippetsOutlined,
+    UserSwitchOutlined
 } from "@ant-design/icons";
 import {JSX, useEffect, useRef, useState} from "react";
 
@@ -85,8 +87,9 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                 <div className={"p-4 space-y-1 min-h-max"}>
                     <SideMenuItem icon={<DashboardOutlined/>} title={"看板"} path={"/dashboard/home"}/>
                     <SideMenuItem icon={<CalendarOutlined/>} title={"视图"} path={"/dashboard/view"}/>
-                    <SideMenuItem icon={<PicLeftOutlined/>} title={"纪念日"} path={"/dashboard/anniversary"}/>
-                    <SideMenuItem icon={<PicLeftOutlined/>} title={"课程表"} path={"/dashboard/curriculum"}/>
+                    <SideMenuItem icon={<HighlightOutlined/>} title={"纪念日"} path={"/dashboard/anniversary"}/>
+                    <SideMenuItem icon={<SnippetsOutlined/>} title={"课程表"} path={"/dashboard/curriculum"}/>
+                    <SideMenuItem icon={<UserSwitchOutlined/>} title={"好友"} path={"/dashboard/friends"}/>
                     <SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>
                     <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/>
                 </div>
