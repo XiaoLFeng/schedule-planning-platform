@@ -96,7 +96,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
 
     useEffect(() => {
         if (singleFriend.uuid !== "") {
-            const randomBool = Math.random() >= 0.3;
+            const randomBool = Math.random() >= 0.1;
             setGroupItems((prevItems) => {
                 if (randomBool) {
                     return [
@@ -114,12 +114,13 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
             });
 
             setFriendInfo(
-                <animated.div style={friendInfoDiv}
-                              className="col-span-4 bg-white rounded-lg shadow-lg p-3 space-y-3 max-h-dvh">
+                <animated.div
+                    style={friendInfoDiv}
+                    className="col-span-4 bg-white rounded-lg shadow-lg p-3 space-y-3 h-full max-h-dvh -mb-32 overflow-hidden">
                     <div className="text-xl font-bold">好友信息</div>
-                    <div className="grid col-span-1 md:col-span-2 p-3 space-y-3">
+                    <div className="flex flex-col col-span-1 md:col-span-2 p-3 space-y-3 h-full overflow-y-auto">
                         <div className="flex gap-3 items-center">
-                            <img src={handlerAvatar()} alt={singleFriend.uuid} className="w-20 h-20 rounded-full"/>
+                            <img src={handlerAvatar()} alt={singleFriend.uuid} className="size-20 rounded-full"/>
                             <div className="flex flex-col">
                                 <p className="text-2xl font-bold">{singleFriend.username}</p>
                                 <p className="text-sm text-gray-500">{singleFriend.phone}</p>
@@ -127,7 +128,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2">
-                            <div className="flex gap-3 c">
+                            <div className="flex gap-3">
                                 <div className="flex-1">
                                     <div className="text-lg font-bold">账号情况</div>
                                     {singleFriend.enable ? (
@@ -167,8 +168,9 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                         </div>
                         <div className="border-b-4 border-gray-200 rounded-full"/>
                         <div className="text-lg font-medium">共同的小组</div>
-                        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-y-auto"
-                             id={"search-list"}>
+                        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-1"
+                            id="search-list"
+                        >
                             {transitions((style, item) => (
                                 <animated.div key={item.id} style={style} id={item.id.toString()}>
                                     <div className="grid gap-1 items-center p-3 bg-sky-100/75 rounded-lg shadow">
@@ -198,10 +200,10 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                 }`}
                 onClick={() => setSingleFriend(item)}
             >
-                <div className="flex items-center max-w-full overflow-hidden">
+                <div className="flex items-center max-w-full">
                     <img src={handlerAvatar()} alt={item.uuid} className="w-10 h-10 rounded-full"/>
-                    <div className="ml-3 max-w-full overflow-hidden">
-                        <p className="text-lg font-medium whitespace-nowrap overflow-hidden text-ellipsis">{item.username}</p>
+                    <div className="ml-3 max-w-full">
+                        <p className="text-lg font-medium whitespace-nowrap text-ellipsis">{item.username}</p>
                         <p className="text-sm text-gray-500">{item.phone}</p>
                     </div>
                 </div>
@@ -236,7 +238,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     }
 
     return (
-        <div className="grid gap-3 grid-cols-6 max-h-dvh -mb-32">
+        <div className="grid gap-3 grid-cols-6">
             <div
                 className="col-span-2 bg-white rounded-lg shadow-lg p-3 space-y-3 w-full h-full flex flex-col max-h-dvh -mb-32">
                 <div className="flex justify-between">
