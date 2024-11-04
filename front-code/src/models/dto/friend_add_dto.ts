@@ -18,36 +18,7 @@
  * ***************************************************************************************
  */
 
-/**
- * 用户好友列表数据传输对象
- * <p>
- * 该类用于定义用户好友列表数据传输对象；
- *
- * UserFriendListDTO
- */
-export type UserFriendListEntity = {
-    /**
-     * 封禁到
-     */
-    banned_at?: string;
-    /**
-     * 用户是否开启
-     */
-    enable: boolean;
-    /**
-     * 用户名
-     */
-    username: string;
-    /**
-     * 手机号
-     */
-    phone: string;
-    /**
-     * 用户邮箱
-     */
-    email: string;
-    /**
-     * 用户表主键
-     */
-    uuid: string;
+export type FriendAddDTO = {
+    friend_uuid: string;
+    remark: string;
 }

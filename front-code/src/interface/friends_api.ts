@@ -20,16 +20,17 @@
 
 import {BaseResponse} from "../models/base_response.ts";
 import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/base_api.ts";
-import {UserFriendListEntity} from "../models/entity/user_friends_list_entity.ts";
+import {UserFriendEntity} from "../models/entity/user_friends_entity.ts";
+import {FriendAddDTO} from "../models/dto/friend_add_dto.ts";
 
 /**
  * # 获取用户好友列表
  * 用于获取用户好友列表；该接口用于获取用户好友列表。
  *
- * @returns {Promise<BaseResponse<UserFriendListEntity[]> | undefined>} 用户好友列表
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 用户好友列表
  */
-const GetUserFriendsListAPI = (): Promise<BaseResponse<UserFriendListEntity[]> | undefined> => {
-    return BaseApi<UserFriendListEntity[]>(
+const GetUserFriendsListAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+    return BaseApi<UserFriendEntity[]>(
         MethodType.GET,
         "/api/v1/friend/list",
         null,
@@ -43,10 +44,10 @@ const GetUserFriendsListAPI = (): Promise<BaseResponse<UserFriendListEntity[]> |
  * # 获取好友申请列表
  * 用于获取好友申请列表；该接口用于获取好友申请列表。
  *
- * @returns {Promise<BaseResponse<UserFriendListEntity[]> | undefined>} 好友申请列表
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友申请列表
  */
-const GetFriendApplicationAPI = (): Promise<BaseResponse<UserFriendListEntity[]> | undefined> => {
-    return BaseApi<UserFriendListEntity[]>(
+const GetFriendApplicationAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+    return BaseApi<UserFriendEntity[]>(
         MethodType.GET,
         "/api/v1/friend/application",
         null,
@@ -60,10 +61,10 @@ const GetFriendApplicationAPI = (): Promise<BaseResponse<UserFriendListEntity[]>
  * # 获取好友允许列表
  * 用于获取好友允许列表；该接口用于获取好友允许列表。
  *
- * @returns {Promise<BaseResponse<UserFriendListEntity[]> | undefined>} 好友允许列表
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友允许列表
  */
-const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendListEntity[]> | undefined> => {
-    return BaseApi<UserFriendListEntity[]>(
+const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+    return BaseApi<UserFriendEntity[]>(
         MethodType.GET,
         "/api/v1/friend/pending",
         null,
@@ -73,8 +74,46 @@ const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendListEntity[]> | und
     );
 }
 
+/**
+ * # 搜索好友
+ * 用于搜索好友；该接口用于搜索好友。
+ *
+ * @param {string} search 搜索内容
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 搜索结果
+ */
+const SearchFriendAPI = (search: string): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+    return BaseApi<UserFriendEntity[]>(
+        MethodType.GET,
+        "/api/v1/friend/search",
+        null,
+        {search: search},
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 添加好友
+ * 用于添加好友；该接口用于添加好友。
+ *
+ * @param paramData 添加好友参数
+ * @returns {Promise<BaseResponse<void> | undefined>} 添加好友结果
+ */
+const AddUserAPI = (paramData: FriendAddDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.POST,
+        "/api/v1/friend/",
+        null,
+        paramData,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     GetUserFriendsListAPI,
     GetFriendApplicationAPI,
-    GetFriendAllowAPI
+    GetFriendAllowAPI,
+    SearchFriendAPI,
+    AddUserAPI
 }

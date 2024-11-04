@@ -4,19 +4,20 @@ import {animated, useSpring, useTransition} from "@react-spring/web";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
 import {GetFriendAllowAPI, GetFriendApplicationAPI, GetUserFriendsListAPI} from "../../interface/friends_api.ts";
 import {message} from "antd";
-import {UserFriendListEntity} from "../../models/entity/user_friends_list_entity.ts";
+import {UserFriendEntity} from "../../models/entity/user_friends_entity.ts";
 import {AlertOutlined, DeleteOutlined, PlusOutlined, UserAddOutlined} from "@ant-design/icons";
 import avatar1 from "../../assets/images/avatar_1.webp";
 import avatar2 from "../../assets/images/avatar_2.webp";
 import avatar3 from "../../assets/images/avatar_3.webp";
 import avatar4 from "../../assets/images/avatar_4.webp";
+import {FriendsAddModal} from "../../components/modal/friends_add_modal.tsx";
 
 export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
-    const [userList, setUserList] = useState<UserFriendListEntity[]>([] as UserFriendListEntity[]);
-    const [friendApplication, setFriendApplication] = useState<UserFriendListEntity[]>([]);
-    const [friendAllow, setFriendAllow] = useState<UserFriendListEntity[]>([]);
+    const [userList, setUserList] = useState<UserFriendEntity[]>([] as UserFriendEntity[]);
+    const [friendApplication, setFriendApplication] = useState<UserFriendEntity[]>([]);
+    const [friendAllow, setFriendAllow] = useState<UserFriendEntity[]>([]);
     const [friendInfo, setFriendInfo] = useState<JSX.Element>(
         <div className={"hidden"}>
             <div className="text-xl font-bold">Loading......</div>
@@ -24,7 +25,9 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     );
     const [groupItems, setGroupItems] = useState([] as { id: number, name: string, description: string }[]);
     const refresh = useRef<boolean>(false);
-    const [singleFriend, setSingleFriend] = useState<UserFriendListEntity>({uuid: ""} as UserFriendListEntity);
+    const [singleFriend, setSingleFriend] = useState<UserFriendEntity>({uuid: ""} as UserFriendEntity);
+
+    const [addUserModal, setAddUserModal] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 好友`;
     onHeaderHandler("好友");
@@ -238,26 +241,29 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     }
 
     return (
-        <div className="grid gap-3 grid-cols-6">
-            <div
-                className="col-span-2 bg-white rounded-lg shadow-lg p-3 space-y-3 w-full h-full flex flex-col max-h-dvh -mb-32">
-                <div className="flex justify-between">
-                    <div className="text-xl font-bold">好友列表</div>
-                    <div className="flex gap-1">
-                        {getAlertButton()}
-                        {getAllowFriendButton()}
-                        <div
-                            className="transition bg-sky-500 flex items-center px-4 text-white rounded-md hover:bg-sky-600 space-x-1">
-                            <PlusOutlined/>
-                            <span>添加</span>
+        <>
+            <div className="grid gap-3 grid-cols-6">
+                <div
+                    className="col-span-2 bg-white rounded-lg shadow-lg p-3 space-y-3 w-full h-full flex flex-col max-h-dvh -mb-32">
+                    <div className="flex justify-between">
+                        <div className="text-xl font-bold">好友列表</div>
+                        <div className="flex gap-1">
+                            {getAlertButton()}
+                            {getAllowFriendButton()}
+                            <button onClick={() => setAddUserModal(true)}
+                                className="transition bg-sky-500 flex items-center px-4 text-white rounded-md hover:bg-sky-600 space-x-1">
+                                <PlusOutlined/>
+                                <span>添加</span>
+                            </button>
                         </div>
                     </div>
+                    <div className="overflow-y-auto overflow-x-hidden space-y-1">
+                        {makeUserListElement()}
+                    </div>
                 </div>
-                <div className="overflow-y-auto overflow-x-hidden space-y-1">
-                    {makeUserListElement()}
-                </div>
+                {friendInfo}
             </div>
-            {friendInfo}
-        </div>
+            <FriendsAddModal propOpen={addUserModal} emit={(value: boolean) => setAddUserModal(value)}/>
+        </>
     );
 }
