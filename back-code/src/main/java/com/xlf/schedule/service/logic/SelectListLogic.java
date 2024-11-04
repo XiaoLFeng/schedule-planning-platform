@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.service.logic;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.ListUserDTO;
 import com.xlf.schedule.model.entity.UserDO;
@@ -49,14 +50,21 @@ public class SelectListLogic implements SelectListService {
     @Override
     public List<ListUserDTO> selectUserList(String search) {
         List<ListUserDTO> newUserList = new ArrayList<>();
-        userDAO.lambdaQuery()
+        LambdaQueryChainWrapper<UserDO> wrapper = userDAO.lambdaQuery()
                 .like(UserDO::getUsername, search)
                 .or()
                 .like(UserDO::getPhone, search)
                 .or()
                 .like(UserDO::getEmail, search)
-                .list()
-                .forEach(userDO -> {
+                .or()
+                .like(UserDO::getUuid, search);
+        List<UserDO> userList;
+        if ("".equals(search)) {
+            userList = wrapper.orderByDesc(UserDO::getCreatedAt).last("limit 20").list();
+        } else {
+            userList = wrapper.list();
+        }
+        userList.forEach(userDO -> {
                     ListUserDTO newUser = new ListUserDTO();
                     BeanUtils.copyProperties(userDO, newUser);
                     newUserList.add(newUser);

@@ -55,6 +55,9 @@ public class FriendLogic implements FriendService {
 
     @Override
     public void addFriend(UserDTO userDTO, String friendUuid, String remark) {
+        if (userDTO.getUuid().equals(friendUuid)) {
+            throw new BusinessException("不能添加自己为好友", ErrorCode.OPERATION_DENIED);
+        }
         friendDAO.lambdaQuery()
                 .or(i -> i.eq(FriendDO::getSenderUserUuid, friendUuid).eq(FriendDO::getAllowerUserUuid, userDTO.getUuid()))
                 .or(i -> i.eq(FriendDO::getSenderUserUuid, userDTO.getUuid()).eq(FriendDO::getAllowerUserUuid, friendUuid))
@@ -118,6 +121,8 @@ public class FriendLogic implements FriendService {
                 .like(UserDO::getPhone, search)
                 .or()
                 .like(UserDO::getEmail, search)
+                .or()
+                .like(UserDO::getUuid, search)
                 .list()
                 .stream().filter(userDO -> {
                     FriendDO getFriend = friendDAO.lambdaQuery()
