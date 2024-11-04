@@ -92,7 +92,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
         }, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    });
 
     useEffect(() => {
         if (singleFriend.uuid !== "") {
@@ -169,7 +169,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                         <div className="border-b-4 border-gray-200 rounded-full"/>
                         <div className="text-lg font-medium">共同的小组</div>
                         <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-1"
-                            id="search-list"
+                             id="search-list"
                         >
                             {transitions((style, item) => (
                                 <animated.div key={item.id} style={style} id={item.id.toString()}>
