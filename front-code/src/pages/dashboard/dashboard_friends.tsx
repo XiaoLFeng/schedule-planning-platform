@@ -198,16 +198,14 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
         return userList.map((item, index) => (
             <div
                 key={index}
-                className={`transition flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer rounded-lg ${
-                    singleFriend.uuid === item.uuid ? "bg-gray-100" : ""
-                }`}
+                className={`transition flex items-center justify-between p-3 hover:bg-gray-100 w-full cursor-pointer rounded-lg ${singleFriend.uuid === item.uuid ? "bg-gray-100" : ""}`}
                 onClick={() => setSingleFriend(item)}
             >
-                <div className="flex items-center max-w-full">
+                <div className="flex items-center w-full">
                     <img src={handlerAvatar()} alt={item.uuid} className="w-10 h-10 rounded-full"/>
-                    <div className="ml-3 max-w-full">
-                        <p className="text-lg font-medium whitespace-nowrap text-ellipsis">{item.username}</p>
-                        <p className="text-sm text-gray-500">{item.phone}</p>
+                    <div className="ml-3 overflow-hidden">
+                        <p className="text-lg font-medium text-ellipsis overflow-hidden whitespace-nowrap">{item.username}</p>
+                        <p className="text-sm text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap">{item.phone}</p>
                     </div>
                 </div>
             </div>
@@ -251,7 +249,7 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                             {getAlertButton()}
                             {getAllowFriendButton()}
                             <button onClick={() => setAddUserModal(true)}
-                                className="transition bg-sky-500 flex items-center px-4 text-white rounded-md hover:bg-sky-600 space-x-1">
+                                    className="transition bg-sky-500 flex items-center px-4 text-white rounded-md hover:bg-sky-600 space-x-1">
                                 <PlusOutlined/>
                                 <span>添加</span>
                             </button>

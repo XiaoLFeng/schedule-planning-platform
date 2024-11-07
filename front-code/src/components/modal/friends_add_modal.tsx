@@ -204,8 +204,6 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
                         })}
                     </datalist>
                 </div>
-                {/* 添加添加描述 Textarea */
-                }
                 <div>
                     <label htmlFor="HeadlineAct" className="block text-sm font-medium text-gray-900">
                         好友请求描述
