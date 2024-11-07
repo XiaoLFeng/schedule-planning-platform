@@ -20,7 +20,7 @@
 
 import {message, Modal} from "antd";
 import {DashOutlined, LoadingOutlined, WarningOutlined} from "@ant-design/icons";
-import {JSX, useEffect, useState} from "react";
+import {JSX, useEffect, useRef, useState} from "react";
 import {UserInfoEntity} from "../../models/entity/user_info_entity.ts";
 import {SelectUserListAPI} from "../../interface/select_list_api.ts";
 import {AddUserAPI} from "../../interface/friends_api.ts";
@@ -32,8 +32,8 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
     const userEntity = useSelector((state: { userCurrent: UserEntity }) => state.userCurrent);
 
     const [open, setOpen] = useState(false);
-    const [selectInput, setSelectInput] = useState<string>("");
-    const [remark, setRemark] = useState<string>("");
+    const friendAdd = useRef<FriendAddDTO>({} as FriendAddDTO);
+    const [select, setSelect] = useState<string>("");
     const [debounce, setDebounce] = useState<number>(0);
     const [userList, setUserList] = useState<UserInfoEntity[]>([] as UserInfoEntity[]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -62,7 +62,7 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
         clearTimeout(debounce);
         setDebounce(
             setTimeout(async () => {
-                const getResp = await SelectUserListAPI(selectInput);
+                const getResp = await SelectUserListAPI(friendAdd.current.friend_uuid);
                 if (getResp?.output === "Success") {
                     if (getResp.data!.length === 0) {
                         setUserList([{username: "未查询到用户"} as UserInfoEntity]);
@@ -76,7 +76,7 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
                 console.log("userList", userList);
             }, 500)
         );
-    }, [selectInput]);
+    }, [select]);
 
     useEffect(() => {
         if (loading) {
@@ -118,9 +118,10 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
 
     async function handleOk() {
         setLoading(true);
-        const getResp = await AddUserAPI({friend_uuid: selectInput, remark: remark} as FriendAddDTO);
+        const getResp = await AddUserAPI(friendAdd.current);
         if (getResp?.output === "Success") {
             message.success("添加成功，等待对方接受");
+            friendAdd.current = {} as FriendAddDTO;
             emit(false);
         } else {
             message.warning(getResp?.error_message);
@@ -139,7 +140,7 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
             <div className="flex flex-col gap-3">
                 <div className="grid gap-1">
                     {userList
-                        .filter((item) => item.uuid === selectInput)
+                        .filter((item) => item.uuid === friendAdd.current.friend_uuid)
                         .map((item, index) => {
                             if (userEntity.uuid === item.uuid) {
                                 return (
@@ -182,7 +183,11 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
                             type="text"
                             list="HeadlineActArtist"
                             id="HeadlineAct"
-                            onInput={(e) => setSelectInput(e.currentTarget.value)}
+                            value={friendAdd.current.friend_uuid}
+                            onInput={(e) => {
+                                setSelect(e.currentTarget.value);
+                                friendAdd.current.friend_uuid = e.currentTarget.value
+                            }}
                             className="transition w-full rounded-lg border-gray-300 pe-10 text-gray-700 sm:text-sm [&::-webkit-calendar-picker-indicator]:opacity-0"
                             placeholder="可输入用户名、邮箱、手机号查询"
                         />
@@ -210,13 +215,13 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
                     </label>
                     <textarea
                         id="HeadlineAct"
-                        onInput={(e) => setRemark(e.currentTarget.value)}
+                        value={friendAdd.current.remark}
+                        onInput={(e) => friendAdd.current.remark = e.currentTarget.value}
                         className="transition w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
                         placeholder="好友请求描述"
                     />
                 </div>
             </div>
         </Modal>
-    )
-        ;
+    );
 }

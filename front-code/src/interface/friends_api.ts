@@ -58,12 +58,12 @@ const GetFriendApplicationAPI = (): Promise<BaseResponse<UserFriendEntity[]> | u
 }
 
 /**
- * # 获取好友允许列表
- * 用于获取好友允许列表；该接口用于获取好友允许列表。
+ * # 获取好友待处理列表
+ * 用于获取好友待处理列表；该接口用于获取好友待处理列表。
  *
- * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友允许列表
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友待处理列表
  */
-const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+const GetFriendPendingAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
     return BaseApi<UserFriendEntity[]>(
         MethodType.GET,
         "/api/v1/friend/pending",
@@ -75,18 +75,17 @@ const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefin
 }
 
 /**
- * # 搜索好友
- * 用于搜索好友；该接口用于搜索好友。
+ * # 获取好友允许列表
+ * 用于获取好友允许列表；该接口用于获取好友允许列表。
  *
- * @param {string} search 搜索内容
- * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 搜索结果
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友允许列表
  */
-const SearchFriendAPI = (search: string): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+const GetFriendAllowAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
     return BaseApi<UserFriendEntity[]>(
         MethodType.GET,
-        "/api/v1/friend/search",
+        "/api/v1/friend/pending",
         null,
-        {search: search},
+        null,
         null,
         {Authorization: GetAuthorizationToken()}
     );
@@ -110,10 +109,66 @@ const AddUserAPI = (paramData: FriendAddDTO): Promise<BaseResponse<void> | undef
     );
 }
 
+/**
+ * # 同意添加用户
+ * 用于同意添加用户；该接口用于同意添加用户。
+ *
+ * @param paramData 添加好友参数
+ * @returns {Promise<BaseResponse<void> | undefined>} 同意添加用户结果
+ */
+const AllowUserAPI = (paramData: FriendAddDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.GET,
+        "/api/v1/friend/allow",
+        null,
+        paramData,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 删除用户
+ * 用于删除用户；该接口用于删除用户。
+ *
+ * @param paramData 用户UUID
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除用户结果
+ */
+const DeleteUserAPI = (paramData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
+        "/api/v1/friend/",
+        null,
+        {"friend_uuid": paramData},
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 获取好友拒绝列表
+ * 用于获取好友拒绝列表；该接口用于获取好友拒绝列表。
+ *
+ * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友拒绝列表
+ */
+const GetFriendDeniedAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
+    return BaseApi<UserFriendEntity[]>(
+        MethodType.GET,
+        "/api/v1/friend/denied",
+        null,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     GetUserFriendsListAPI,
     GetFriendApplicationAPI,
+    GetFriendPendingAPI,
     GetFriendAllowAPI,
-    SearchFriendAPI,
-    AddUserAPI
+    AddUserAPI,
+    AllowUserAPI,
+    DeleteUserAPI,
+    GetFriendDeniedAPI
 }

@@ -104,7 +104,7 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                         <div className={"ml-2 flex-1 grid items-center"}>
                             <div className={"grid"}>
                                 <div className={"font-bold"}>{userEntity.username}</div>
-                                <div className={"text-sm text-gray-400"}>{userEntity.email}</div>
+                                <div className={"text-sm text-gray-400"}>{userEntity.phone}</div>
                             </div>
                         </div>
                     </div>

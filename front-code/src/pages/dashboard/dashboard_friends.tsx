@@ -1,8 +1,14 @@
 import {useSelector} from "react-redux";
-import {JSX, useEffect, useRef, useState} from "react";
+import {JSX, useEffect, useState} from "react";
 import {animated, useSpring, useTransition} from "@react-spring/web";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
-import {GetFriendAllowAPI, GetFriendApplicationAPI, GetUserFriendsListAPI} from "../../interface/friends_api.ts";
+import {
+    DeleteUserAPI,
+    GetFriendAllowAPI,
+    GetFriendApplicationAPI,
+    GetFriendDeniedAPI,
+    GetUserFriendsListAPI
+} from "../../interface/friends_api.ts";
 import {message} from "antd";
 import {UserFriendEntity} from "../../models/entity/user_friends_entity.ts";
 import {AlertOutlined, DeleteOutlined, PlusOutlined, UserAddOutlined} from "@ant-design/icons";
@@ -11,23 +17,29 @@ import avatar2 from "../../assets/images/avatar_2.webp";
 import avatar3 from "../../assets/images/avatar_3.webp";
 import avatar4 from "../../assets/images/avatar_4.webp";
 import {FriendsAddModal} from "../../components/modal/friends_add_modal.tsx";
+import {FriendsAllowWaitModal} from "../../components/modal/friends_allow_wait_modal.tsx";
+import {FriendsApplicationModal} from "../../components/modal/friends_application_modal.tsx";
 
 export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
     const [userList, setUserList] = useState<UserFriendEntity[]>([] as UserFriendEntity[]);
-    const [friendApplication, setFriendApplication] = useState<UserFriendEntity[]>([]);
-    const [friendAllow, setFriendAllow] = useState<UserFriendEntity[]>([]);
+    const [friendApplication, setFriendApplication] = useState<UserFriendEntity[]>([] as UserFriendEntity[]);
+    const [friendAllow, setFriendAllow] = useState<UserFriendEntity[]>([] as UserFriendEntity[]);
+    const [friendDenied, setFriendDenied] = useState<UserFriendEntity[]>([] as UserFriendEntity[]);
     const [friendInfo, setFriendInfo] = useState<JSX.Element>(
         <div className={"hidden"}>
             <div className="text-xl font-bold">Loading......</div>
         </div>
     );
     const [groupItems, setGroupItems] = useState([] as { id: number, name: string, description: string }[]);
-    const refresh = useRef<boolean>(false);
     const [singleFriend, setSingleFriend] = useState<UserFriendEntity>({uuid: ""} as UserFriendEntity);
 
     const [addUserModal, setAddUserModal] = useState<boolean>(false);
+    const [allowUserModal, setAllowUserModal] = useState<boolean>(false);
+    const [applicationUserModal, setApplicationUserModal] = useState<boolean>(false);
+
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 好友`;
     onHeaderHandler("好友");
@@ -64,10 +76,11 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [userResp, appResp, allowResp] = await Promise.all([
+                const [userResp, appResp, allowResp, deniedResp] = await Promise.all([
                     GetUserFriendsListAPI(),
                     GetFriendApplicationAPI(),
-                    GetFriendAllowAPI()
+                    GetFriendAllowAPI(),
+                    GetFriendDeniedAPI()
                 ]);
 
                 if (userResp?.output === "Success") setUserList(userResp.data!);
@@ -78,13 +91,16 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
 
                 if (allowResp?.output === "Success") setFriendAllow(allowResp.data!);
                 else message.warning(allowResp?.error_message);
+
+                if (deniedResp?.output === "Success") setFriendDenied(deniedResp.data!);
+                else message.warning(allowResp?.error_message);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
         fetchData().then();
-    }, [refresh]);
+    }, [addUserModal, allowUserModal, applicationUserModal, refresh]);
 
     useEffect(() => {
         const button = document.querySelector("#flicker-button");
@@ -162,11 +178,11 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                                 </div>
                             </div>
                             <div className="flex justify-end items-end">
-                                <div
-                                    className="transition bg-red-500 flex items-center px-4 py-2 text-white rounded-md hover:bg-red-600 space-x-3 hover:scale-105">
+                                <button onClick={() => deleteUserSubmit(singleFriend.uuid)}
+                                        className="transition bg-red-500 flex items-center px-4 py-2 text-white rounded-md hover:bg-red-600 space-x-3 hover:scale-105">
                                     <DeleteOutlined/>
                                     <span>删除好友</span>
-                                </div>
+                                </button>
                             </div>
                         </div>
                         <div className="border-b-4 border-gray-200 rounded-full"/>
@@ -213,9 +229,9 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     }
 
     function getAlertButton(): JSX.Element {
-        if (friendApplication.length > 0) {
+        if (friendAllow.length > 0 || friendDenied.length > 0) {
             return (
-                <div id="flicker-button"
+                <div id="flicker-button" onClick={() => setApplicationUserModal(true)}
                      className="transition bg-red-500 flex items-center px-2 text-white rounded-md hover:bg-red-600">
                     <AlertOutlined/>
                 </div>
@@ -226,10 +242,10 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
     }
 
     function getAllowFriendButton(): JSX.Element {
-        if (friendAllow.length > 0) {
+        if (friendApplication.length > 0) {
             return (
-                <div
-                    className="transition bg-emerald-500 flex items-center px-2 text-white rounded-md hover:bg-emerald-600">
+                <div onClick={() => setAllowUserModal(true)}
+                     className="transition bg-emerald-500 flex items-center px-2 text-white rounded-md hover:bg-emerald-600">
                     <UserAddOutlined/>
                 </div>
             );
@@ -238,11 +254,22 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
         }
     }
 
+    async function deleteUserSubmit(uuid: string) {
+        const getResp = await DeleteUserAPI(uuid);
+        if (getResp?.output === "Success") {
+            message.success("好友删除成功");
+            setUserList(userList.filter(item => item.uuid !== uuid));
+            setSingleFriend({uuid: ""} as UserFriendEntity);
+        } else {
+            message.warning(getResp?.error_message);
+        }
+    }
+
     return (
         <>
-            <div className="grid gap-3 grid-cols-6">
+            <div className="grid gap-3 grid-cols-6 h-full">
                 <div
-                    className="col-span-2 bg-white rounded-lg shadow-lg p-3 space-y-3 w-full h-full flex flex-col max-h-dvh -mb-32">
+                    className={`col-span-2 bg-white rounded-lg shadow-lg p-3 space-y-3 w-full h-full flex flex-col max-h-dvh ${userList.length > 0 ? "-mb-32" : ""}`}>
                     <div className="flex justify-between">
                         <div className="text-xl font-bold">好友列表</div>
                         <div className="flex gap-1">
@@ -255,13 +282,21 @@ export function DashboardFriends({onHeaderHandler}: { onHeaderHandler: (header: 
                             </button>
                         </div>
                     </div>
-                    <div className="overflow-y-auto overflow-x-hidden space-y-1">
-                        {makeUserListElement()}
-                    </div>
+                    {userList.length > 0 ?
+                        <div className="overflow-y-auto overflow-x-hidden space-y-1">
+                            {makeUserListElement()}
+                        </div>
+                        :
+                        <div className="text-md text-center">暂无好友</div>
+                    }
                 </div>
                 {friendInfo}
             </div>
             <FriendsAddModal propOpen={addUserModal} emit={(value: boolean) => setAddUserModal(value)}/>
+            <FriendsAllowWaitModal propOpen={allowUserModal} friendApplication={friendApplication}
+                                   emit={(value: boolean) => setAllowUserModal(value)} refresh={setRefresh}/>
+            <FriendsApplicationModal propOpen={applicationUserModal} friendPending={friendAllow} friendDenied={friendDenied}
+                                     emit={(value: boolean) => setApplicationUserModal(value)} refresh={setRefresh}/>
         </>
     );
 }

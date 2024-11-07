@@ -21,4 +21,5 @@
 export type FriendAddDTO = {
     friend_uuid: string;
     remark: string;
+    allow: boolean;
 }
