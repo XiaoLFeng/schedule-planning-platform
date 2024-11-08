@@ -21,14 +21,19 @@
 package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.exception.lib.IllegalDataException;
+import com.xlf.schedule.model.dto.ListCurriculumDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
+import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.service.SelectListService;
+import com.xlf.schedule.service.UserService;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
 import com.xlf.utility.annotations.HasAuthorize;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +58,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class SelectListController {
     private final SelectListService selectListService;
+    private final UserService userService;
 
     /**
      * 查询用户列表
@@ -71,5 +77,26 @@ public class SelectListController {
         }
         List<ListUserDTO> listUser = selectListService.selectUserList(search);
         return ResultUtil.success("获取成功",  listUser);
+    }
+
+    /**
+     * 查询课程列表
+     * <p>
+     * 该方法用于查询课程列表
+     *
+     * @return 课程列表
+     */
+    @HasAuthorize
+    @GetMapping("/curriculum")
+    public ResponseEntity<BaseResponse<List<ListCurriculumDTO>>> selectCurriculumList(
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^(|[0-9A-Za-z-_@]+)$", search)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<ListCurriculumDTO> listCurriculum = selectListService.selectCurriculumList(userDTO, search);
+        return ResultUtil.success("获取成功",  listCurriculum);
     }
 }

@@ -18,44 +18,30 @@
  * ***************************************************************************************
  */
 
-package com.xlf.schedule.service;
+package com.xlf.schedule.model.dto;
 
-import com.xlf.schedule.model.dto.ListCurriculumDTO;
-import com.xlf.schedule.model.dto.ListUserDTO;
-import com.xlf.schedule.model.dto.UserDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.sql.Date;
 
 /**
- * 下拉列表服务接口
+ * 列表课程数据传输对象
  * <p>
- * 该接口是下拉列表服务接口，用于定义下拉列表相关的服务方法
+ * 该类是列表课程数据传输对象类，用于定义列表课程数据传输对象的属性
  *
- * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
+ * @author xiao_lfeng
  */
-public interface SelectListService {
-
-    /**
-     * 查询用户列表
-     * <p>
-     * 该方法用于查询用户列表
-     *
-     * @param search 搜索关键字
-     * @return 用户列表
-     */
-    List<ListUserDTO> selectUserList(String search);
-
-    /**
-     * 查询课程列表
-     * <p>
-     * 该方法用于查询课程列表
-     *
-     * @param userDTO 用户信息
-     * @param search  搜索关键字
-     * @return 课程列表
-     */
-    List<ListCurriculumDTO> selectCurriculumList(UserDTO userDTO, String search);
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ListCurriculumDTO {
+    private String classGradeUuid;
+    private String classTimeUuid;
+    private Date semesterBegin;
+    private Date semesterEnd;
+    private String nickname;
 }

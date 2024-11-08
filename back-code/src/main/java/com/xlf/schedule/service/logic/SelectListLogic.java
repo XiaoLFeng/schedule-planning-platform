@@ -21,11 +21,16 @@
 package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.dao.UserDAO;
+import com.xlf.schedule.model.dto.ListCurriculumDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
+import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.service.SelectListService;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +51,7 @@ import java.util.List;
 public class SelectListLogic implements SelectListService {
 
     private final UserDAO userDAO;
+    private final ClassGradeDAO classGradeDAO;
 
     @Override
     public List<ListUserDTO> selectUserList(String search) {
@@ -70,5 +76,19 @@ public class SelectListLogic implements SelectListService {
                     newUserList.add(newUser);
                 });
         return newUserList;
+    }
+
+    @Override
+    public List<ListCurriculumDTO> selectCurriculumList(@NotNull UserDTO userDTO, String search) {
+        return classGradeDAO.lambdaQuery()
+                .eq(ClassGradeDO::getUserUuid, userDTO.getUuid())
+                .and(i -> {
+                    i.or(j -> j.like(ClassGradeDO::getUserUuid, search));
+                    i.or(j -> j.like(ClassGradeDO::getNickname, search));
+                }).list().stream().map(classGradeDO -> {
+                    ListCurriculumDTO newCurriculum = new ListCurriculumDTO();
+                    BeanUtils.copyProperties(classGradeDO, newCurriculum);
+                    return newCurriculum;
+                }).toList();
     }
 }
