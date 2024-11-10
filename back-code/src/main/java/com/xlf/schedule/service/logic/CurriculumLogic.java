@@ -28,8 +28,9 @@ import com.xlf.schedule.dao.ClassDAO;
 import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.dao.ClassTimeMarketDAO;
 import com.xlf.schedule.dao.ClassTimeMyDAO;
+import com.xlf.schedule.model.dto.ClassDTO;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
-import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
+import com.xlf.schedule.model.dto.ClassTimeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import com.xlf.schedule.model.entity.ClassDO;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -119,8 +121,26 @@ public class CurriculumLogic implements CurriculumService {
                 throw new BusinessException("您没有权限查看", ErrorCode.OPERATION_DENIED);
             }
         }
+        List<ClassDTO> classList = new ArrayList<>();
+        classDAO.lambdaQuery()
+                .eq(ClassDO::getClassGradeUuid, uuid)
+                .list().forEach(classDO -> {
+                    if (classList.stream().noneMatch(classDTO -> classDTO.getName().equals(classDO.getName()))) {
+                        ClassDTO classDTO = new ClassDTO();
+                        List<Short> weeks = new ArrayList<>();
+                        BeanUtils.copyProperties(classDO, classDTO);
+                        classDTO.setWeek(weeks);
+                        classList.add(classDTO);
+                    } else {
+                        classList.stream()
+                                .filter(classDTO -> classDTO.getName().equals(classDO.getName()))
+                                .findFirst()
+                                .ifPresent(classDTO -> classDTO.getWeek().add(classDO.getWeek()));
+                    }
+                });
         ClassGradeDTO classGradeDTO = new ClassGradeDTO();
         BeanUtils.copyProperties(getClassGrade, classGradeDTO);
+        classGradeDTO.setClassList(classList);
         return classGradeDTO;
     }
 
@@ -162,13 +182,6 @@ public class CurriculumLogic implements CurriculumService {
             classGradeDO.setSemesterEnd(new java.sql.Date(end.getTime()));
         }
         classGradeDAO.updateById(classGradeDO);
-    }
-
-    @Override
-    public Page<ClassGradeDO> getClassGradeList(@NotNull UserDTO userDTO, Integer page, Integer size) {
-        return classGradeDAO.lambdaQuery()
-                .eq(ClassGradeDO::getUserUuid, userDTO.getUuid())
-                .page(new Page<>(page, size));
     }
 
     @Override
@@ -250,17 +263,17 @@ public class CurriculumLogic implements CurriculumService {
     }
 
     @Override
-    public ClassTimeMarketDTO getClassTimeMarket(String classTimeMarketUuid) {
+    public ClassTimeDTO getClassTimeMarket(String classTimeMarketUuid) {
         ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
-        ClassTimeMarketDTO classTimeMarketDTO = new ClassTimeMarketDTO();
-        BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+        ClassTimeDTO classTimeDTO = new ClassTimeDTO();
+        BeanUtils.copyProperties(classTimeMarketDO, classTimeDTO);
         List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
         }.getType());
-        classTimeMarketDTO.setTimetable(timeAble);
-        return classTimeMarketDTO;
+        classTimeDTO.setTimetable(timeAble);
+        return classTimeDTO;
     }
 
     @Override
@@ -298,20 +311,25 @@ public class CurriculumLogic implements CurriculumService {
 
     @Override
     public Page<ClassTimeMarketDO> getMyClassTimeList(@NotNull UserDTO userDTO, Integer page, Integer size) {
-        return classTimeMarketDAO.lambdaQuery()
-                .in(ClassTimeMarketDO::getClassTimeMarketUuid,
-                        classTimeMyDAO.lambdaQuery()
-                                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
-                                .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList()
-                )
-                .or()
-                .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
-                .page(new Page<>(page, size));
+        List<String> stringList = classTimeMyDAO.lambdaQuery()
+                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList();
+        if (stringList.isEmpty()) {
+            return classTimeMarketDAO.lambdaQuery()
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .page(new Page<>(page, size));
+        } else {
+            return classTimeMarketDAO.lambdaQuery()
+                    .in(ClassTimeMarketDO::getClassTimeMarketUuid, stringList)
+                    .or()
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .page(new Page<>(page, size));
+        }
     }
 
     @Override
-    public ClassTimeMarketDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid) {
-        ClassTimeMarketDTO classTimeMarketDTO = new ClassTimeMarketDTO();
+    public ClassTimeDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid) {
+        ClassTimeDTO classTimeDTO = new ClassTimeDTO();
         classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
                 .oneOpt()
@@ -323,23 +341,23 @@ public class CurriculumLogic implements CurriculumService {
                                 .or()
                                 .oneOpt()
                                 .ifPresentOrElse(classTimeMyDO -> {
-                                    BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+                                    BeanUtils.copyProperties(classTimeMarketDO, classTimeDTO);
                                     List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
                                     }.getType());
-                                    classTimeMarketDTO.setTimetable(timeAble);
+                                    classTimeDTO.setTimetable(timeAble);
                                 }, () -> {
                                     throw new BusinessException("您未添加该课程时间", ErrorCode.NOT_EXIST);
                                 });
                     } else {
-                        BeanUtils.copyProperties(classTimeMarketDO, classTimeMarketDTO);
+                        BeanUtils.copyProperties(classTimeMarketDO, classTimeDTO);
                         List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
                         }.getType());
-                        classTimeMarketDTO.setTimetable(timeAble);
+                        classTimeDTO.setTimetable(timeAble);
                     }
                 }, () -> {
                     throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
                 });
-        return classTimeMarketDTO;
+        return classTimeDTO;
     }
 
     @Override

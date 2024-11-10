@@ -21,6 +21,7 @@
 package com.xlf.schedule.service;
 
 import com.xlf.schedule.model.dto.ListCurriculumDTO;
+import com.xlf.schedule.model.dto.ListCurriculumTimeDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 
@@ -58,4 +59,14 @@ public interface SelectListService {
      */
     List<ListCurriculumDTO> selectCurriculumList(UserDTO userDTO, String search);
 
+    /**
+     * 查询课程时间列表
+     * <p>
+     * 该方法用于查询课程时间列表
+     *
+     * @param userDTO 用户信息
+     * @param search  搜索关键字
+     * @return 课程时间列表
+     */
+    List<ListCurriculumTimeDTO> selectCurriculumTimeList(UserDTO userDTO, String search);
 }

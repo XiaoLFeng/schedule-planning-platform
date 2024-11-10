@@ -23,9 +23,8 @@ package com.xlf.schedule.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
-import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
+import com.xlf.schedule.model.dto.ClassTimeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
-import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
 import com.xlf.schedule.model.vo.ClassVO;
@@ -104,20 +103,6 @@ public interface CurriculumService {
      */
     void editClassGrade(String uuid, String name, Date begin, Date end, UserDTO userDTO);
 
-    /**
-     * 获取课程表列表
-     * <p>
-     * 该方法用于获取课程表列表；
-     * 获取课程表列表时，需要提供 {@code 用户信息}、{@code 页码}、{@code 每页数量}；
-     * 获取成功后，返回课程表列表。
-     *
-     * @param userDTO 用户信息
-     * @param page    页码
-     * @param size    每页数量
-     * @return 课程表列表
-     */
-    Page<ClassGradeDO> getClassGradeList(UserDTO userDTO, Integer page, Integer size);
-
     /*
      * ***************************************************************************************
      * 课程表时间服务
@@ -184,7 +169,7 @@ public interface CurriculumService {
      * @param classTimeMarketUuid 课程时间UUID
      * @return 课程时间信息
      */
-    ClassTimeMarketDTO getClassTimeMarket(String classTimeMarketUuid);
+    ClassTimeDTO getClassTimeMarket(String classTimeMarketUuid);
 
     /*
      * ***************************************************************************************
@@ -239,7 +224,7 @@ public interface CurriculumService {
      * @param classTimeMarketUuid 课程时间UUID
      * @return 我的课程时间信息
      */
-    ClassTimeMarketDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
+    ClassTimeDTO getMyClassTime(UserDTO userDTO, String classTimeMarketUuid);
 
     /*
      * ***************************************************************************************

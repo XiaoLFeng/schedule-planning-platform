@@ -20,19 +20,18 @@
 
 package com.xlf.schedule.model.dto;
 
+import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * 班级年级数据传输对象
+ * 课程时间市列表数据传输对象
  * <p>
- * 该类用于定义班级年级数据传输对象；
+ * 该类用于定义课程时间市列表数据传输对象；
  *
  * @author xiao_lfeng
  * @version v1.0.0
@@ -42,14 +41,8 @@ import java.util.List;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClassGradeDTO {
-    private String classGradeUuid;
-    private String userUuid;
-    private String classTimeUuid;
-    private Date semesterBegin;
-    private Date semesterEnd;
-    private String nickname;
-    private List<ClassDTO> classList;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+public class ListCurriculumTimeDTO {
+    private String classTimeMarketUuid;
+    private String name;
+    private List<ClassTimeAbleDTO> timetable;
 }

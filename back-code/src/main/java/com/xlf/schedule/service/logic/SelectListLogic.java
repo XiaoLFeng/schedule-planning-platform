@@ -21,12 +21,18 @@
 package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.ClassGradeDAO;
+import com.xlf.schedule.dao.ClassTimeMarketDAO;
+import com.xlf.schedule.dao.ClassTimeMyDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.ListCurriculumDTO;
+import com.xlf.schedule.model.dto.ListCurriculumTimeDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
+import com.xlf.schedule.model.entity.ClassTimeMarketDO;
+import com.xlf.schedule.model.entity.ClassTimeMyDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.service.SelectListService;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +48,9 @@ import java.util.List;
  * <p>
  * 该类是下拉列表逻辑类，用于实现下拉列表相关的逻辑方法
  *
+ * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
- * @author xiao_lfeng
  */
 @Service
 @RequiredArgsConstructor
@@ -52,6 +58,8 @@ public class SelectListLogic implements SelectListService {
 
     private final UserDAO userDAO;
     private final ClassGradeDAO classGradeDAO;
+    private final ClassTimeMarketDAO classTimeMarketDAO;
+    private final ClassTimeMyDAO classTimeMyDAO;
 
     @Override
     public List<ListUserDTO> selectUserList(String search) {
@@ -71,10 +79,10 @@ public class SelectListLogic implements SelectListService {
             userList = wrapper.list();
         }
         userList.forEach(userDO -> {
-                    ListUserDTO newUser = new ListUserDTO();
-                    BeanUtils.copyProperties(userDO, newUser);
-                    newUserList.add(newUser);
-                });
+            ListUserDTO newUser = new ListUserDTO();
+            BeanUtils.copyProperties(userDO, newUser);
+            newUserList.add(newUser);
+        });
         return newUserList;
     }
 
@@ -90,5 +98,31 @@ public class SelectListLogic implements SelectListService {
                     BeanUtils.copyProperties(classGradeDO, newCurriculum);
                     return newCurriculum;
                 }).toList();
+    }
+
+    @Override
+    public List<ListCurriculumTimeDTO> selectCurriculumTimeList(@NotNull UserDTO userDTO, String search) {
+        List<String> stringList = classTimeMyDAO.lambdaQuery()
+                .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList();
+        if (stringList.isEmpty()) {
+            return classTimeMarketDAO.lambdaQuery()
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .list().stream().map(classTimeMarketDO -> {
+                        ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
+                        BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);
+                        return newCurriculumTime;
+                    }).toList();
+        } else {
+            return classTimeMarketDAO.lambdaQuery()
+                    .in(ClassTimeMarketDO::getClassTimeMarketUuid, stringList)
+                    .or()
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .list().stream().map(classTimeMarketDO -> {
+                        ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
+                        BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);
+                        return newCurriculumTime;
+                    }).toList();
+        }
     }
 }

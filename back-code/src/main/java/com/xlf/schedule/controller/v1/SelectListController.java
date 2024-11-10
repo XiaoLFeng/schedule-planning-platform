@@ -22,6 +22,7 @@ package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.ListCurriculumDTO;
+import com.xlf.schedule.model.dto.ListCurriculumTimeDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.service.SelectListService;
@@ -98,5 +99,26 @@ public class SelectListController {
         UserDTO userDTO = userService.getUserByToken(request);
         List<ListCurriculumDTO> listCurriculum = selectListService.selectCurriculumList(userDTO, search);
         return ResultUtil.success("获取成功",  listCurriculum);
+    }
+
+    /**
+     * 查询课程时间列表
+     * <p>
+     * 该方法用于查询课程时间列表
+     *
+     * @return 课程时间列表
+     */
+    @HasAuthorize
+    @GetMapping("/curriculum-my-time")
+    public ResponseEntity<BaseResponse<List<ListCurriculumTimeDTO>>> selectCurriculumTimeList(
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^(|[0-9A-Za-z-_@]+)$", search)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<ListCurriculumTimeDTO> listCurriculumTime = selectListService.selectCurriculumTimeList(userDTO, search);
+        return ResultUtil.success("获取成功",  listCurriculumTime);
     }
 }

@@ -26,10 +26,9 @@ import com.google.gson.reflect.TypeToken;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
-import com.xlf.schedule.model.dto.ClassTimeMarketDTO;
+import com.xlf.schedule.model.dto.ClassTimeDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
-import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.vo.ClassGradeVO;
 import com.xlf.schedule.model.vo.ClassTimeVO;
@@ -95,7 +94,7 @@ public class CurriculumController {
             if (!classGradeVO.getSemesterEnd().isBlank()) {
                 endTime = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime());
             }
-            if (endTime != null && !endTime.before(startTime)) {
+            if (endTime != null && endTime.before(startTime)) {
                 log.debug(endTime.toString());
                 throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束时间不能早于开始时间");
             }
@@ -164,27 +163,6 @@ public class CurriculumController {
         } catch (ParseException e) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL);
         }
-    }
-
-    /**
-     * 获取课程表列表
-     * <p>
-     * 用于获取年度学期列表，可以查看所有年度学期的基本信息。
-     *
-     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassGradeDTO}>>
-     */
-    @HasAuthorize
-    @GetMapping("/grade")
-    public ResponseEntity<BaseResponse<CustomPage<ClassGradeDTO>>> getClassGradeList(
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer size,
-            @NotNull HttpServletRequest request
-    ) {
-        UserDTO getUser = userService.getUserByToken(request);
-        Page<ClassGradeDO> classGradeList = curriculumService.getClassGradeList(getUser, page, size);
-        CustomPage<ClassGradeDTO> newClassGradeList = new CustomPage<>();
-        CopyUtil.pageDoCopyToDTO(classGradeList, newClassGradeList, ClassGradeDTO.class);
-        return ResultUtil.success("操作成功", newClassGradeList);
     }
 
     /**
@@ -277,11 +255,11 @@ public class CurriculumController {
      * <p>
      * 用于获取一个课程时间的市场列表。
      *
-     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeDTO}>>
      */
     @HasAuthorize
     @GetMapping("/time")
-    public ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> getClassTimeMarketList(
+    public ResponseEntity<BaseResponse<CustomPage<ClassTimeDTO>>> getClassTimeMarketList(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "20") Integer size
     ) {
@@ -294,17 +272,17 @@ public class CurriculumController {
      * <p>
      * 用于获取一个课程时间的市场信息。
      *
-     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeDTO}>>
      */
     @HasAuthorize
     @GetMapping("/time/{class_time_market_uuid}")
-    public ResponseEntity<BaseResponse<ClassTimeMarketDTO>> getClassTimeMarket(
+    public ResponseEntity<BaseResponse<ClassTimeDTO>> getClassTimeMarket(
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid
     ) {
         if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
-        ClassTimeMarketDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
+        ClassTimeDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
         return ResultUtil.success("操作成功", classTimeMarket);
     }
 
@@ -355,11 +333,11 @@ public class CurriculumController {
      * <p>
      * 用于获取我的课程时间列表。
      *
-     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeDTO}>>
      */
     @HasAuthorize
     @GetMapping("/my-time")
-    public ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> getMyClassTimeList(
+    public ResponseEntity<BaseResponse<CustomPage<ClassTimeDTO>>> getMyClassTimeList(
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam(value = "size", defaultValue = "20") Integer size,
             @NotNull HttpServletRequest request
@@ -374,11 +352,11 @@ public class CurriculumController {
      * <p>
      * 用于获取一个课程时间的详细信息。
      *
-     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeMarketDTO}>>
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link ClassTimeDTO}>>
      */
     @HasAuthorize
     @GetMapping("/my-time/{class_time_market_uuid}")
-    public ResponseEntity<BaseResponse<ClassTimeMarketDTO>> getMyClassTime(
+    public ResponseEntity<BaseResponse<ClassTimeDTO>> getMyClassTime(
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
             @RequestHeader
             @NotNull HttpServletRequest request
@@ -387,7 +365,7 @@ public class CurriculumController {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
-        ClassTimeMarketDTO myClassTime = curriculumService.getMyClassTime(getUser, classTimeMarketUuid);
+        ClassTimeDTO myClassTime = curriculumService.getMyClassTime(getUser, classTimeMarketUuid);
         return ResultUtil.success("操作成功", myClassTime);
     }
 
@@ -470,9 +448,9 @@ public class CurriculumController {
     }
 
     @NotNull
-    private ResponseEntity<BaseResponse<CustomPage<ClassTimeMarketDTO>>> classTimeMarkCustomPage(Page<ClassTimeMarketDO> myClassTimeList) {
-        CustomPage<ClassTimeMarketDTO> newMyClassTimeList = new CustomPage<>();
-        CopyUtil.pageDoCopyToDTO(myClassTimeList, newMyClassTimeList, ClassTimeMarketDTO.class);
+    private ResponseEntity<BaseResponse<CustomPage<ClassTimeDTO>>> classTimeMarkCustomPage(Page<ClassTimeMarketDO> myClassTimeList) {
+        CustomPage<ClassTimeDTO> newMyClassTimeList = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(myClassTimeList, newMyClassTimeList, ClassTimeDTO.class);
         myClassTimeList.getRecords().forEach(myClassTimeDTO -> {
             List<ClassTimeAbleDTO> classTimeAbleList = gson.fromJson(myClassTimeDTO.getTimetable(), new TypeToken<>() {
             }.getType());

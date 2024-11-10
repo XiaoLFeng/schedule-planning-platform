@@ -20,35 +20,30 @@
 
 package com.xlf.schedule.model.dto;
 
-import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * 课程时间市场数据传输对象
+ * 课程表数据传输对象
  * <p>
- * 该类用于定义课程时间市场数据传输对象；
+ * 该类用于传输课程表的相关信息;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
 @Data
-@Accessors(chain = true)
-@NoArgsConstructor
 @AllArgsConstructor
-public class ClassTimeMarketDTO {
-    private String classTimeMarketUuid;
+@NoArgsConstructor
+public class ClassDTO {
+    private String classUuid;
     private String name;
-    private String userUuid;
-    private List<ClassTimeAbleDTO> timetable;
-    private Boolean isPublic;
-    private Boolean isOfficial;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private Short startTick;
+    private Short endTick;
+    private List<Short> week;
+    private String teacher;
+    private String location;
 }
