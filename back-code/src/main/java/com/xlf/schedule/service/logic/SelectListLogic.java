@@ -21,6 +21,8 @@
 package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.ClassGradeDAO;
 import com.xlf.schedule.dao.ClassTimeMarketDAO;
@@ -30,6 +32,7 @@ import com.xlf.schedule.model.dto.ListCurriculumDTO;
 import com.xlf.schedule.model.dto.ListCurriculumTimeDTO;
 import com.xlf.schedule.model.dto.ListUserDTO;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.dto.json.ClassTimeAbleDTO;
 import com.xlf.schedule.model.entity.ClassGradeDO;
 import com.xlf.schedule.model.entity.ClassTimeMarketDO;
 import com.xlf.schedule.model.entity.ClassTimeMyDO;
@@ -60,6 +63,7 @@ public class SelectListLogic implements SelectListService {
     private final ClassGradeDAO classGradeDAO;
     private final ClassTimeMarketDAO classTimeMarketDAO;
     private final ClassTimeMyDAO classTimeMyDAO;
+    private final Gson gson;
 
     @Override
     public List<ListUserDTO> selectUserList(String search) {
@@ -111,6 +115,7 @@ public class SelectListLogic implements SelectListService {
                     .list().stream().map(classTimeMarketDO -> {
                         ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
                         BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);
+                        newCurriculumTime.setTimetable(gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<ArrayList<ClassTimeAbleDTO>>() {}));
                         return newCurriculumTime;
                     }).toList();
         } else {
@@ -121,6 +126,7 @@ public class SelectListLogic implements SelectListService {
                     .list().stream().map(classTimeMarketDO -> {
                         ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
                         BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);
+                        newCurriculumTime.setTimetable(gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<ArrayList<ClassTimeAbleDTO>>() {}));
                         return newCurriculumTime;
                     }).toList();
         }
