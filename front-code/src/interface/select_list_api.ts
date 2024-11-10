@@ -22,6 +22,8 @@ import {BaseResponse} from "../models/base_response.ts";
 import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/base_api.ts";
 import {UserFriendEntity} from "../models/entity/user_friends_entity.ts";
 import {UserInfoEntity} from "../models/entity/user_info_entity.ts";
+import {ListCurriculumEntity} from "../models/entity/list_curriculum_entity.ts";
+import {ListCurriculumTimeEntity} from "../models/entity/list_curriculum_time_entity.ts";
 
 /**
  * # 获取用户选择列表
@@ -41,6 +43,42 @@ const SelectUserListAPI = (search: string): Promise<BaseResponse<UserInfoEntity[
     );
 }
 
+/**
+ * # 获取课程选择列表
+ * 用于获取课程选择列表；该接口用于获取课程选择列表。
+ *
+ * @param search 搜索内容
+ */
+const SelectCurriculumListAPI = (search: string): Promise<BaseResponse<ListCurriculumEntity[]> | undefined> => {
+    return BaseApi<ListCurriculumEntity[]>(
+        MethodType.GET,
+        "/api/v1/select-list/curriculum",
+        null,
+        {search: search},
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 获取课程时间选择列表
+ * 用于获取课程时间选择列表；该接口用于获取课程时间选择列表。
+ *
+ * @param search 搜索内容
+ */
+const SelectCurriculumTimeListAPI = (search: string): Promise<BaseResponse<ListCurriculumTimeEntity[]> | undefined> => {
+    return BaseApi<ListCurriculumTimeEntity[]>(
+        MethodType.GET,
+        "/api/v1/select-list/curriculum-my-time",
+        null,
+        {search: search},
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
-    SelectUserListAPI
+    SelectUserListAPI,
+    SelectCurriculumListAPI,
+    SelectCurriculumTimeListAPI
 }

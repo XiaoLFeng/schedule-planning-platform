@@ -87,7 +87,7 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                 <div className={"p-4 space-y-1 min-h-max"}>
                     <SideMenuItem icon={<DashboardOutlined/>} title={"看板"} path={"/dashboard/home"}/>
                     <SideMenuItem icon={<CalendarOutlined/>} title={"视图"} path={"/dashboard/view"}/>
-                    <SideMenuItem icon={<HighlightOutlined/>} title={"纪念日"} path={"/dashboard/anniversary"}/>
+                    <SideMenuItem icon={<HighlightOutlined/>} title={"重要日"} path={"/dashboard/important-day"}/>
                     <SideMenuItem icon={<SnippetsOutlined/>} title={"课程表"} path={"/dashboard/curriculum"}/>
                     <SideMenuItem icon={<UserSwitchOutlined/>} title={"好友"} path={"/dashboard/friends"}/>
                     <SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>
