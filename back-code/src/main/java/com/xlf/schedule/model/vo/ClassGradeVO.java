@@ -43,4 +43,6 @@ public class ClassGradeVO {
     private String semesterBegin;
     @Pattern(regexp = "^(|\\d{4}-\\d{2}-\\d{2})$", message = "学期结束格式错误")
     private String semesterEnd;
+    @Pattern(regexp = "^(|[0-9a-f]+)$", message = "课程时间主键格式错误")
+    private String classTimeUuid;
 }

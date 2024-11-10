@@ -186,6 +186,17 @@ public class Initialize {
         if (prepare.initGetGlobalVariable("system_default_class_time_uuid") == null) {
             String newTimeMarketUuid = UuidUtil.generateUuidNoDash();
             ArrayList<ClassTimeVO.TimeAble> timeAble = new ArrayList<>();
+            timeAble.add(new ClassTimeVO.TimeAble("08:00", "08:45"));
+            timeAble.add(new ClassTimeVO.TimeAble("08:55", "09:40"));
+            timeAble.add(new ClassTimeVO.TimeAble("10:10", "10:55"));
+            timeAble.add(new ClassTimeVO.TimeAble("11:05", "11:50"));
+            timeAble.add(new ClassTimeVO.TimeAble("13:45", "14:30"));
+            timeAble.add(new ClassTimeVO.TimeAble("14:40", "15:25"));
+            timeAble.add(new ClassTimeVO.TimeAble("15:55", "16:40"));
+            timeAble.add(new ClassTimeVO.TimeAble("16:50", "17:35"));
+            timeAble.add(new ClassTimeVO.TimeAble("18:45", "19:30"));
+            timeAble.add(new ClassTimeVO.TimeAble("19:40", "20:25"));
+            timeAble.add(new ClassTimeVO.TimeAble("20:35", "21:20"));
             ClassTimeMarketDO classTimeMarketDO = new ClassTimeMarketDO();
             classTimeMarketDO
                     .setClassTimeMarketUuid(newTimeMarketUuid)

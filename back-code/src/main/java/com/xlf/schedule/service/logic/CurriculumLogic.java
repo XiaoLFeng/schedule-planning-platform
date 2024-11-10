@@ -82,13 +82,24 @@ public class CurriculumLogic implements CurriculumService {
     private final ClassDAO classDAO;
 
     @Override
-    public String createClassGrade(String name, Date begin, Date end, String userUuid) {
+    public String createClassGrade(String name, Date begin, Date end, String userUuid, String timeUuid) {
         boolean exists = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getNickname, name)
                 .eq(ClassGradeDO::getSemesterBegin, begin)
                 .exists();
         if (exists) {
             throw new BusinessException("课程表已存在", ErrorCode.EXISTED);
+        }
+        if (!timeUuid.isBlank()) {
+            if (!timeUuid.equals(SystemConstant.defaultClassTimeUUID)) {
+                exists = classTimeMyDAO.lambdaQuery()
+                        .eq(ClassTimeMyDO::getUserUuid, userUuid)
+                        .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
+                        .exists();
+                if (!exists) {
+                    throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
+                }
+            }
         }
         // 检查开始时间是否为周一
         Calendar calendar = Calendar.getInstance();
@@ -159,11 +170,20 @@ public class CurriculumLogic implements CurriculumService {
     }
 
     @Override
-    public void editClassGrade(String uuid, String name, Date begin, Date end, @NotNull UserDTO userDTO) {
+    public void editClassGrade(String uuid, String name, Date begin, Date end, @NotNull UserDTO userDTO, @NotNull String timeUuid) {
         ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
-                .eq(ClassGradeDO::getUserUuid, uuid)
+                .eq(ClassGradeDO::getClassGradeUuid, uuid)
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+        if (!timeUuid.isBlank()) {
+            if (!timeUuid.equals(SystemConstant.defaultClassTimeUUID)) {
+                classTimeMyDAO.lambdaQuery()
+                        .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
+                        .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
+                        .oneOpt()
+                        .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+            }
+        }
         if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
                 throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
@@ -176,6 +196,7 @@ public class CurriculumLogic implements CurriculumService {
         }
         classGradeDO
                 .setNickname(name)
+                .setClassTimeUuid(timeUuid)
                 .setSemesterBegin(new java.sql.Date(begin.getTime()))
                 .setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         if (end != null) {

@@ -22,6 +22,7 @@ package com.xlf.schedule.model.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
@@ -44,6 +45,7 @@ public class ClassTimeVO {
     private List<TimeAble> timeAble;
 
     @Getter
+    @AllArgsConstructor
     @SuppressWarnings("unused")
     public static class TimeAble {
         @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间开始时间格式错误")

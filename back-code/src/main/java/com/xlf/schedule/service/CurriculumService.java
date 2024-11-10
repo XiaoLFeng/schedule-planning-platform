@@ -59,9 +59,10 @@ public interface CurriculumService {
      * @param begin    开始时间
      * @param end      结束时间
      * @param userUuid 用户UUID
+     * @param timeUuid 时间UUID
      * @return 创建课程表的主键
      */
-    String createClassGrade(String name, Date begin, Date end, String userUuid);
+    String createClassGrade(String name, Date begin, Date end, String userUuid, String timeUuid);
 
     /**
      * 获取课程表
@@ -100,8 +101,9 @@ public interface CurriculumService {
      * @param begin   开始时间
      * @param end     结束时间
      * @param userDTO 用户信息
+     * @param timeUuid 时间UUID
      */
-    void editClassGrade(String uuid, String name, Date begin, Date end, UserDTO userDTO);
+    void editClassGrade(String uuid, String name, Date begin, Date end, UserDTO userDTO, String timeUuid);
 
     /*
      * ***************************************************************************************

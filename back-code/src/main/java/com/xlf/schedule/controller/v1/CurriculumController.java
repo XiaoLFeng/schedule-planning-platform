@@ -103,7 +103,8 @@ public class CurriculumController {
                     classGradeVO.getGradeName(),
                     startTime,
                     endTime,
-                    getUser.getUuid()
+                    getUser.getUuid(),
+                    classGradeVO.getClassTimeUuid()
             );
             ClassGradeDTO classGrade = curriculumService.getClassGrade(getUser, classGradeUuid);
             return ResultUtil.success("操作成功", classGrade);
@@ -157,7 +158,8 @@ public class CurriculumController {
                     classGradeVO.getGradeName(),
                     new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
                     new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime()),
-                    getUser
+                    getUser,
+                    classGradeVO.getClassTimeUuid()
             );
             return ResultUtil.success("操作成功");
         } catch (ParseException e) {
