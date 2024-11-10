@@ -91,7 +91,7 @@ public class CurriculumController {
         try {
             Date startTime = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime());
             Date endTime = null;
-            if (!classGradeVO.getSemesterEnd().isBlank()) {
+            if (classGradeVO.getSemesterEnd() != null && !classGradeVO.getSemesterEnd().isBlank()) {
                 endTime = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime());
             }
             if (endTime != null && endTime.before(startTime)) {
@@ -153,14 +153,25 @@ public class CurriculumController {
         }
         try {
             UserDTO getUser = userService.getUserByToken(request);
-            curriculumService.editClassGrade(
-                    classGradeUuid,
-                    classGradeVO.getGradeName(),
-                    new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
-                    new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime()),
-                    getUser,
-                    classGradeVO.getClassTimeUuid()
-            );
+            if (classGradeVO.getSemesterEnd() != null) {
+                curriculumService.editClassGrade(
+                        classGradeUuid,
+                        classGradeVO.getGradeName(),
+                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
+                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime()),
+                        getUser,
+                        classGradeVO.getClassTimeUuid()
+                );
+            } else {
+                curriculumService.editClassGrade(
+                        classGradeUuid,
+                        classGradeVO.getGradeName(),
+                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
+                        null,
+                        getUser,
+                        classGradeVO.getClassTimeUuid()
+                );
+            }
             return ResultUtil.success("操作成功");
         } catch (ParseException e) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL);

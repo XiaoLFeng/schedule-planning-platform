@@ -111,6 +111,7 @@ public class CurriculumLogic implements CurriculumService {
         String classGradeUuid = UuidUtil.generateUuidNoDash();
         classGradeDO
                 .setClassGradeUuid(classGradeUuid)
+                .setClassTimeUuid(timeUuid)
                 .setNickname(name)
                 .setSemesterBegin(new java.sql.Date(begin.getTime()))
                 .setUserUuid(userUuid);
