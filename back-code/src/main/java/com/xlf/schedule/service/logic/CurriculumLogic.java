@@ -403,7 +403,7 @@ public class CurriculumLogic implements CurriculumService {
                     .setClassGradeUuid(classGradeDO.getClassGradeUuid())
                     .setName(classVO.getName())
                     .setStartTick(classVO.getStartTick())
-                    .setEndTick(classVO.getEndTick())
+                    .setEndTick((short) (classVO.getEndTick() + 1))
                     .setWeek(week)
                     .setTeacher(classVO.getTeacher())
                     .setLocation(classVO.getLocation());

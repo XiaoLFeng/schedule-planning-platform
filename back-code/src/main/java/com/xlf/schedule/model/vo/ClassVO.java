@@ -45,9 +45,9 @@ public class ClassVO {
     private String classGradeUuid;
     @Min(value = 1, message = "星期几不能小于1")
     private Short dayTick;
-    @Min(value = 0, message = "开始节数不能小于1")
+    @Min(value = 0, message = "开始节数不能小于0")
     private Short startTick;
-    @Min(value = 0, message = "结束节数不能小于1")
+    @Min(value = 1, message = "结束节数不能小于1")
     private Short endTick;
     private List<Short> weeks;
     private String teacher;
