@@ -127,12 +127,12 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                     <select
                         name="start_time"
                         id="start_time"
-                        onChange={(e) => setClazz({...clazz, start_tick: Number(e.target.value) - 1} as ClassDTO)}
+                        onChange={(e) => setClazz({...clazz, start_tick: Number(e.target.value)} as ClassDTO)}
                         value={clazz.start_tick}
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index + 1} selected={index == 0}>{item.start_time}</option>
+                            <option key={index} value={index} selected={index == 0}>{item.start_time}</option>
                         ))}
                     </select>
                 </div>
@@ -146,7 +146,7 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index + 1}>{item.end_time}</option>
+                            <option key={index} value={index}>{item.end_time}</option>
                         ))}
                     </select>
                 </div>

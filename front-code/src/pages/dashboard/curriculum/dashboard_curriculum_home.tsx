@@ -20,7 +20,7 @@
 
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../../../models/entity/web_info_entity.ts";
-import {useEffect, useState} from "react";
+import {JSX, useEffect, useState} from "react";
 import {SelectCurriculumListAPI, SelectCurriculumTimeListAPI} from "../../../interface/select_list_api.ts";
 import {ListCurriculumEntity} from "../../../models/entity/list_curriculum_entity.ts";
 import {message} from "antd";
@@ -144,10 +144,11 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                 </div>
                 {curriculum ? (
                     <>
-                        <div className="col-span-8">
+                        <div className="col-span-9 2xl:col-span-10">
                             <div className="bg-white rounded-lg shadow-md p-3">
                                 {classGrade.class_time_uuid ? (
-                                    <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                                    <table
+                                        className="min-w-full min-h-full divide-y-2 divide-gray-200 bg-white text-sm">
                                         <thead>
                                         <tr className="text-center font-bold">
                                             <th className="px-4 py-2 w-2/12">节次</th>
@@ -160,52 +161,56 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                             <th className="px-4 py-2 w-1/12">周日</th>
                                         </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-200 h-fulll">
                                         {curriculumSelectTime.timetable?.map((time, rowIndex) => (
                                             <tr key={rowIndex} className="text-center">
-                                                <td className={`font-bold bg-gray-200 p-1 ${rowIndex === curriculumSelectTime.timetable.length - 1 ? "rounded-b-lg" : ""}`}>
+                                                <td className={`h-[50px] font-bold bg-gray-200 p-1 ${rowIndex === curriculumSelectTime.timetable.length - 1 ? "rounded-b-lg" : ""}`}>
                                                     第 {rowIndex + 1} 节
-                                                    <div className="text-sm text-gray-400">
+                                                    <div className="hidden lg:block text-sm text-gray-400">
                                                         <span>{time.start_time} - {time.end_time}</span>
                                                     </div>
                                                 </td>
                                                 {Array.from({length: 7}).map((_, dayIndex) => {
-                                                    const course = classGrade.class_list.find(
+                                                    const courses = classGrade.class_list.filter(
                                                         (item) =>
                                                             item.start_tick === rowIndex && // 节次匹配
                                                             item.day_tick - 1 === dayIndex // 星期几匹配
                                                     );
 
-                                                    if (course && course.start_tick === rowIndex) {
-                                                        const rowSpan = course.end_tick - course.start_tick;
-                                                        const colors = ["bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-red-500", "bg-purple-500", "bg-pink-500"];
-
-                                                        // 基于课程名称的哈希值来选择背景颜色
-                                                        const hash = [...course.name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                                                        const colorClass = colors[hash % colors.length];
-
+                                                    if (courses.length > 0) {
+                                                        const element = [] as JSX.Element[];
+                                                        const maxRow = Math.max(...courses.map((item) => item.end_tick - item.start_tick));
+                                                        for (const coursesKey of courses) {
+                                                            const rowSpan = coursesKey.end_tick - coursesKey.start_tick;
+                                                            const colors = ["bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-red-500", "bg-purple-500", "bg-pink-500"];
+                                                            const hash = [...coursesKey.name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                                                            const colorClass = colors[hash % colors.length];
+                                                            element.push(
+                                                                <div style={{height: rowSpan * 50}}
+                                                                     className={`${colorClass} flex-1 text-white p-0.5 rounded-md shadow flex flex-col justify-between`}>
+                                                                    <div className="text-xs text-gray-200">{
+                                                                        coursesKey.teacher}
+                                                                    </div>
+                                                                    <div className="font-bold overflow-hidden overflow-ellipsis">
+                                                                        {coursesKey.name}
+                                                                    </div>
+                                                                    <div className="text-xs text-gray-300">
+                                                                        {coursesKey.location}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
                                                         return (
-                                                            <td
-                                                                key={dayIndex}
-                                                                className={`${colorClass} text-white p-1 rounded-lg shadow`}
-                                                                style={{verticalAlign: "middle"}}
-                                                                rowSpan={rowSpan}
-                                                            >
-                                                                {course.name}
+                                                            <td key={dayIndex} rowSpan={maxRow}
+                                                                className={"p-0.5 align-top h-full"}>
+                                                                <div className={"flex gap-x-0.5 h-full"}>
+                                                                    {element}
+                                                                </div>
                                                             </td>
                                                         );
-                                                    } else if (
-                                                        // 检查是否有课程在该节次跨节
-                                                        classGrade.class_list.some(
-                                                            (item) =>
-                                                                item.start_tick < rowIndex &&
-                                                                item.end_tick >= rowIndex &&
-                                                                item.day_tick < dayIndex
-                                                        )
-                                                    ) {
+                                                    } else if (classGrade.class_list.some((item) => item.start_tick < rowIndex && item.end_tick >= rowIndex && item.day_tick < dayIndex)) {
                                                         return null;
                                                     } else {
-                                                        // 无课程时显示空单元格
                                                         return <td key={dayIndex} className="p-1"></td>;
                                                     }
                                                 })}
@@ -220,15 +225,17 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                 )}
                             </div>
                         </div>
-                        <div className={"col-span-4"}>
+                        <div className={"col-span-3 2xl:col-span-2"}>
                             <div className={"grid grid-cols-1 gap-3 bg-white shadow-md p-3 rounded-lg"}>
                                 <div className={"flex gap-3 text-white"}>
-                                    <button onClick={() => {setCurriculumClassAddModal(true)}}
-                                            className={"flex-1 py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"}>
+                                    <button onClick={() => {
+                                        setCurriculumClassAddModal(true)
+                                    }}
+                                            className={"flex-1 py-1.5 px-2 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"}>
                                         添加课程
                                     </button>
                                     <button
-                                        className={"flex-1 py-1.5 px-4 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"}>
+                                        className={"flex-1 py-1.5 px-2 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"}>
                                         删除课程表
                                     </button>
                                 </div>
