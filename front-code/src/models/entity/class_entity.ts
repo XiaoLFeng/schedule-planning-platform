@@ -27,6 +27,7 @@
  */
 export type ClassEntity = {
     class_uuid: string;
+    day_tick: number;
     end_tick: number;
     location?: string;
     name: string;

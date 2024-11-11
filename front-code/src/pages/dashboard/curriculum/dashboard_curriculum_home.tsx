@@ -39,6 +39,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
 
     const [curriculumList, setCurriculumList] = useState<ListCurriculumEntity[]>([] as ListCurriculumEntity[]);
     const [curriculumTimeList, setCurriculumTimeList] = useState<ListCurriculumTimeEntity[]>([] as ListCurriculumTimeEntity[]);
+    const [curriculumSelectTime, setCurriculumSelectTime] = useState<ListCurriculumTimeEntity>({} as ListCurriculumTimeEntity);
     const [classGrade, setClassGrade] = useState<ClassGradeEntity>({} as ClassGradeEntity);
     const [curriculum, setCurriculum] = useState<string>("");
 
@@ -94,7 +95,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
             navigate("/dashboard/curriculum/time");
         } else {
             if (classGrade.class_time_uuid && classGrade.class_time_uuid !== "") {
-                console.debug("classGrade", !classGrade.class_time_uuid);
+                setCurriculumSelectTime(curriculumTimeList.find(item => item.class_time_market_uuid === classGrade.class_time_uuid)!);
                 clearTimeout(debounceTimeout);
                 setDebounceTimeout(setTimeout(async () => {
                     const makeBody = {
@@ -141,17 +142,73 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                 </div>
                 {curriculum ? (
                     <>
-                        <div className={"col-span-8"}>
-                            <div className={"grid grid-cols-2 gap-3"}>
-                                <div className={"col-span-2 bg-white rounded-lg shadow-md p-3"}>
-                                    {classGrade.class_time_uuid ? (
-                                        <div/>
-                                    ) : (
-                                        <div className={"text-2xl font-bold text-center text-gray-500"}>
-                                            该课程表未设置课表时间，请先设置课表时间
-                                        </div>
-                                    )}
-                                </div>
+                        <div className="col-span-8">
+                            <div className="bg-white rounded-lg shadow-md p-3">
+                                {classGrade.class_time_uuid ? (
+                                    <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                                        <thead>
+                                        <tr className="text-center font-bold">
+                                            <th className="px-4 py-2 w-2/12">节次</th>
+                                            <th className="px-4 py-2 w-1/12">周一</th>
+                                            <th className="px-4 py-2 w-1/12">周二</th>
+                                            <th className="px-4 py-2 w-1/12">周三</th>
+                                            <th className="px-4 py-2 w-1/12">周四</th>
+                                            <th className="px-4 py-2 w-1/12">周五</th>
+                                            <th className="px-4 py-2 w-1/12">周六</th>
+                                            <th className="px-4 py-2 w-1/12">周日</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200">
+                                        {curriculumSelectTime.timetable?.map((time, rowIndex) => (
+                                            <tr key={rowIndex} className="text-center">
+                                                <td className={`font-bold bg-gray-200 p-1 ${rowIndex === curriculumSelectTime.timetable.length - 1 ? "rounded-b-lg" : ""}`}>
+                                                    第 {rowIndex + 1} 节
+                                                    <div className="text-sm text-gray-400">
+                                                        <span>{time.start_time} - {time.end_time}</span>
+                                                    </div>
+                                                </td>
+                                                {Array.from({length: 7}).map((_, dayIndex) => {
+                                                    const course = classGrade.class_list.find(
+                                                        (item) => item.start_tick === rowIndex && item.day_tick - 1 === dayIndex
+                                                    );
+
+                                                    if (course && course.start_tick === rowIndex) {
+                                                        const rowSpan = course.end_tick - course.start_tick;
+                                                        const colors = ["bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-red-500", "bg-purple-500", "bg-pink-500"];
+
+                                                        // 计算课程名称的哈希值并选择颜色
+                                                        const hash = [...course.name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                                                        const colorClass = colors[hash % colors.length];
+
+                                                        return (
+                                                            <td
+                                                                key={dayIndex}
+                                                                className={`${colorClass} text-white p-1 rounded-lg shadow`}
+                                                                style={{verticalAlign: "middle"}}
+                                                                rowSpan={rowSpan}
+                                                            >
+                                                                {course.name}
+                                                            </td>
+                                                        );
+                                                    } else if (
+                                                        classGrade.class_list.some(
+                                                            (item) => item.start_tick < rowIndex && item.end_tick >= rowIndex && item.day_tick - 1 === dayIndex
+                                                        )
+                                                    ) {
+                                                        return null;
+                                                    } else {
+                                                        return <td key={dayIndex} className="p-1"></td>;
+                                                    }
+                                                })}
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div className="text-2xl font-bold text-center text-gray-500">
+                                        该课程表未设置课表时间，请先设置课表时间
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className={"col-span-4"}>
