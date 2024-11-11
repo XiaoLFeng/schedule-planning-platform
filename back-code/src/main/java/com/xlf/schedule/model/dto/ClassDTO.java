@@ -41,6 +41,7 @@ import java.util.List;
 public class ClassDTO {
     private String classUuid;
     private String name;
+    private Short dayTick;
     private Short startTick;
     private Short endTick;
     private List<Short> week;

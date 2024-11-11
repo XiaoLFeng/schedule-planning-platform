@@ -29,6 +29,7 @@ create table xf_class
             references xf_class_grade
             on update cascade on delete cascade,
     name             varchar(256)            not null,
+    day_tick         smallint  default 1     not null,
     start_tick       smallint  default 0     not null,
     end_tick         smallint  default 1     not null,
     week            smallint  default 1     not null,
@@ -42,6 +43,7 @@ comment on table xf_class is '课程表';
 comment on column xf_class.class_uuid is '课程表主键';
 comment on column xf_class.class_grade_uuid is '用户主键';
 COMMENT ON COLUMN xf_class.name IS '课程名称';
+COMMENT ON COLUMN xf_class.day_tick IS '课程上课的星期几';
 COMMENT ON COLUMN xf_class.start_tick IS '课程开始的节次编号';
 COMMENT ON COLUMN xf_class.end_tick IS '课程结束的节次编号';
 COMMENT ON COLUMN xf_class.week IS '课程周次信息';

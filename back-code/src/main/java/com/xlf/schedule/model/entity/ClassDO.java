@@ -63,6 +63,11 @@ public class ClassDO {
     private String name;
 
     /**
+     * 课程星期编号
+     */
+    private Short dayTick;
+
+    /**
      * 课程开始的节次编号
      */
     private Short startTick;

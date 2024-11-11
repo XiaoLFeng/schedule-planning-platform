@@ -399,6 +399,7 @@ public class CurriculumLogic implements CurriculumService {
         classVO.getWeeks().forEach(week -> {
             ClassDO newClass = new ClassDO();
             newClass
+                    .setDayTick(classVO.getDayTick())
                     .setClassGradeUuid(classGradeDO.getClassGradeUuid())
                     .setName(classVO.getName())
                     .setStartTick(classVO.getStartTick())
