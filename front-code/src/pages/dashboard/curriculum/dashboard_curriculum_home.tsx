@@ -31,6 +31,7 @@ import dayjs from "dayjs";
 import {ListCurriculumTimeEntity} from "../../../models/entity/list_curriculum_time_entity.ts";
 import {useNavigate} from "react-router-dom";
 import {ClassGradeDTO} from "../../../models/dto/class_grade_create_dto.ts";
+import {CurriculumClassAddModal} from "../../../components/modal/curriculum_class_add_modal.tsx";
 
 export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const navigate = useNavigate();
@@ -44,6 +45,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
     const [curriculum, setCurriculum] = useState<string>("");
 
     const [curriculumAddModal, setCurriculumAddModal] = useState<boolean>(false);
+    const [curriculumClassAddModal, setCurriculumClassAddModal] = useState<boolean>(false);
 
     const [refresh, setRefresh] = useState<boolean>(false);
 
@@ -169,14 +171,16 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                 </td>
                                                 {Array.from({length: 7}).map((_, dayIndex) => {
                                                     const course = classGrade.class_list.find(
-                                                        (item) => item.start_tick === rowIndex && item.day_tick - 1 === dayIndex
+                                                        (item) =>
+                                                            item.start_tick === rowIndex && // 节次匹配
+                                                            item.day_tick - 1 === dayIndex // 星期几匹配
                                                     );
 
                                                     if (course && course.start_tick === rowIndex) {
                                                         const rowSpan = course.end_tick - course.start_tick;
                                                         const colors = ["bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-red-500", "bg-purple-500", "bg-pink-500"];
 
-                                                        // 计算课程名称的哈希值并选择颜色
+                                                        // 基于课程名称的哈希值来选择背景颜色
                                                         const hash = [...course.name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
                                                         const colorClass = colors[hash % colors.length];
 
@@ -191,12 +195,17 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                             </td>
                                                         );
                                                     } else if (
+                                                        // 检查是否有课程在该节次跨节
                                                         classGrade.class_list.some(
-                                                            (item) => item.start_tick < rowIndex && item.end_tick >= rowIndex && item.day_tick - 1 === dayIndex
+                                                            (item) =>
+                                                                item.start_tick < rowIndex &&
+                                                                item.end_tick >= rowIndex &&
+                                                                item.day_tick < dayIndex
                                                         )
                                                     ) {
                                                         return null;
                                                     } else {
+                                                        // 无课程时显示空单元格
                                                         return <td key={dayIndex} className="p-1"></td>;
                                                     }
                                                 })}
@@ -214,8 +223,8 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                         <div className={"col-span-4"}>
                             <div className={"grid grid-cols-1 gap-3 bg-white shadow-md p-3 rounded-lg"}>
                                 <div className={"flex gap-3 text-white"}>
-                                    <button
-                                        className={"flex-1 py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"}>
+                                    <button onClick={() => {setCurriculumClassAddModal(true)}}
+                                            className={"flex-1 py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"}>
                                         添加课程
                                     </button>
                                     <button
@@ -278,6 +287,9 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
             <CurriculumAddModal propOpen={curriculumAddModal} emit={(value) => setCurriculumAddModal(value)}
                                 timeList={curriculumTimeList}
                                 refresh={(value) => setRefresh(value)}/>
+            <CurriculumClassAddModal propOpen={curriculumClassAddModal} refresh={(value) => setRefresh(value)}
+                                     emit={(value) => setCurriculumClassAddModal(value)}
+                                     curriculumSelectTime={curriculumSelectTime} curriculum={curriculum}/>
         </>
     );
 }

@@ -39,6 +39,7 @@ import {BaseResponse} from "../models/base_response.ts";
 import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/base_api.ts";
 import {ClassGradeDTO} from "../models/dto/class_grade_create_dto.ts";
 import {ClassGradeEntity} from "../models/entity/class_grade_entity.ts";
+import {ClassDTO} from "../models/dto/class_dto.ts";
 
 /**
  * # 创建课程表
@@ -95,8 +96,27 @@ const EditClassGradeAPI = (pathData: string, bodyData: ClassGradeDTO): Promise<B
     );
 }
 
+/**
+ * # 添加课程表
+ * 用于添加课程表；该接口用于添加课程表。
+ *
+ * @param bodyData {ClassGradeDTO} 添加课程表
+ * @returns {Promise<BaseResponse<void> | undefined>} 添加课程表
+ */
+const AddClassAPI = (bodyData: ClassDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.POST,
+        "/api/v1/curriculum/class",
+        bodyData,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
-    EditClassGradeAPI
+    EditClassGradeAPI,
+    AddClassAPI
 }
