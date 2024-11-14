@@ -137,7 +137,7 @@ public class CurriculumLogic implements CurriculumService {
         classDAO.lambdaQuery()
                 .eq(ClassDO::getClassGradeUuid, uuid)
                 .list().forEach(classDO -> {
-                    if (classList.stream().noneMatch(classDTO -> classDTO.getName().equals(classDO.getName()))) {
+                    if (classList.stream().noneMatch(classDTO -> classDTO.getName().equals(classDO.getName()) && classDTO.getDayTick().equals(classDO.getDayTick()))) {
                         ClassDTO classDTO = new ClassDTO();
                         List<Short> weeks = new ArrayList<>();
                         BeanUtils.copyProperties(classDO, classDTO);
@@ -145,7 +145,7 @@ public class CurriculumLogic implements CurriculumService {
                         classList.add(classDTO);
                     } else {
                         classList.stream()
-                                .filter(classDTO -> classDTO.getName().equals(classDO.getName()))
+                                .filter(classDTO -> classDTO.getName().equals(classDO.getName()) && classDTO.getDayTick().equals(classDO.getDayTick()))
                                 .findFirst()
                                 .ifPresent(classDTO -> classDTO.getWeek().add(classDO.getWeek()));
                     }
