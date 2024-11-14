@@ -97,6 +97,24 @@ const EditClassGradeAPI = (pathData: string, bodyData: ClassGradeDTO): Promise<B
 }
 
 /**
+ * # 删除课程表
+ * 用于删除课程表；该接口用于删除课程表。
+ *
+ * @param pathData {string} 删除课程表
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除课程表
+ */
+const DeleteClassGradeAPI = (pathData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
+        "/api/v1/curriculum/grade",
+        null,
+        null,
+        pathData,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
  * # 添加课程表
  * 用于添加课程表；该接口用于添加课程表。
  *
@@ -118,5 +136,6 @@ export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
     EditClassGradeAPI,
+    DeleteClassGradeAPI,
     AddClassAPI
 }

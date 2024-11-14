@@ -32,6 +32,7 @@ import {ListCurriculumTimeEntity} from "../../../models/entity/list_curriculum_t
 import {useNavigate} from "react-router-dom";
 import {ClassGradeDTO} from "../../../models/dto/class_grade_create_dto.ts";
 import {CurriculumClassAddModal} from "../../../components/modal/curriculum_class_add_modal.tsx";
+import {CurriculumDelModal} from "../../../components/modal/curriculum_del_modal.tsx";
 
 export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const navigate = useNavigate();
@@ -46,6 +47,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
 
     const [curriculumAddModal, setCurriculumAddModal] = useState<boolean>(false);
     const [curriculumClassAddModal, setCurriculumClassAddModal] = useState<boolean>(false);
+    const [curriculumDeleteModal, setCurriculumDeleteModal] = useState<boolean>(false);
 
     const [refresh, setRefresh] = useState<boolean>(false);
 
@@ -230,14 +232,12 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                         <div className={"col-span-3 2xl:col-span-2"}>
                             <div className={"grid grid-cols-1 gap-3 bg-white shadow-md p-3 rounded-lg"}>
                                 <div className={"flex gap-3 text-white"}>
-                                    <button onClick={() => {
-                                        setCurriculumClassAddModal(true)
-                                    }}
+                                    <button onClick={() => setCurriculumClassAddModal(true)}
                                             className={"flex-1 py-1.5 px-2 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"}>
                                         添加课程
                                     </button>
-                                    <button
-                                        className={"flex-1 py-1.5 px-2 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"}>
+                                    <button onClick={() => setCurriculumDeleteModal(true)}
+                                            className={"flex-1 py-1.5 px-2 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"}>
                                         删除课程表
                                     </button>
                                 </div>
@@ -293,13 +293,13 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                     <div/>
                 )}
             </div>
-            <CurriculumAddModal propOpen={curriculumAddModal} emit={(value) => setCurriculumAddModal(value)}
-                                timeList={curriculumTimeList}
-                                refresh={(value) => setRefresh(value)}/>
-            <CurriculumClassAddModal propOpen={curriculumClassAddModal} refresh={(value) => setRefresh(value)}
-                                     emit={(value) => setCurriculumClassAddModal(value)}
-                                     curriculumSelectTime={curriculumSelectTime} curriculum={curriculum}
-                                     emitCurriculum={(value) => setCurriculum(value)}/>
+            <CurriculumAddModal propOpen={curriculumAddModal} emit={setCurriculumAddModal} timeList={curriculumTimeList}
+                                refresh={setRefresh}/>
+            <CurriculumClassAddModal propOpen={curriculumClassAddModal} refresh={setRefresh} curriculum={curriculum}
+                                     emit={setCurriculumClassAddModal} curriculumSelectTime={curriculumSelectTime}
+                                     emitCurriculum={setCurriculum}/>
+            <CurriculumDelModal propOpen={curriculumDeleteModal} emit={setCurriculumDeleteModal} refresh={setRefresh}
+                                classGrade={classGrade} reset={setCurriculum}/>
         </>
     );
 }

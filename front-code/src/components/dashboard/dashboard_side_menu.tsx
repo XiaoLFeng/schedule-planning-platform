@@ -151,7 +151,7 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
  * @param path 路径
  * @returns {JSX.Element} 侧边菜单项
  */
-function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, path: string }) {
+function SideMenuItem({icon, title, path}: { icon: JSX.Element, title: string, path: string }): JSX.Element {
     const getData = () => {
         if (location.pathname.startsWith(path)) {
             return "transition text-white flex gap-2 px-4 py-2 rounded-lg shadow bg-gray-700";
