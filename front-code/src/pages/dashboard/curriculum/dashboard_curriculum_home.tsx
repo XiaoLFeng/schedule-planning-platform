@@ -90,6 +90,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                 func().then();
             }
         }
+        setRefresh(false);
     }, [curriculum]);
 
     useEffect(() => {
@@ -115,7 +116,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                 }, 300)); // 设置300ms延迟
             }
         }
-    }, [classGrade, navigate]);
+    }, [classGrade.class_time_uuid, navigate]);
     return (
         <>
             <div className={"grid lg:grid-cols-12 gap-3"}>
@@ -191,7 +192,8 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                                     <div className="text-xs text-gray-200">{
                                                                         coursesKey.teacher}
                                                                     </div>
-                                                                    <div className="font-bold overflow-hidden overflow-ellipsis">
+                                                                    <div
+                                                                        className="font-bold overflow-hidden overflow-ellipsis">
                                                                         {coursesKey.name}
                                                                     </div>
                                                                     <div className="text-xs text-gray-300">
@@ -296,7 +298,8 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                 refresh={(value) => setRefresh(value)}/>
             <CurriculumClassAddModal propOpen={curriculumClassAddModal} refresh={(value) => setRefresh(value)}
                                      emit={(value) => setCurriculumClassAddModal(value)}
-                                     curriculumSelectTime={curriculumSelectTime} curriculum={curriculum}/>
+                                     curriculumSelectTime={curriculumSelectTime} curriculum={curriculum}
+                                     emitCurriculum={(value) => setCurriculum(value)}/>
         </>
     );
 }

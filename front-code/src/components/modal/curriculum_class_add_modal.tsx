@@ -25,14 +25,14 @@ import {ListCurriculumTimeEntity} from "../../models/entity/list_curriculum_time
 import {DashOutlined} from "@ant-design/icons";
 import {AddClassAPI} from "../../interface/curriculum_api.ts";
 
-export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curriculum, emit, refresh}: {
+export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curriculum, emit, refresh, emitCurriculum}: {
     propOpen: boolean;
     curriculumSelectTime: ListCurriculumTimeEntity;
     curriculum: string;
     emit: (open: boolean) => void;
-    refresh: (data: boolean) => void
+    refresh: (data: boolean) => void;
+    emitCurriculum: (curriculum: string) => void;
 }) {
-
     const [open, setOpen] = useState<boolean>(false);
     const [clazz, setClazz] = useState<ClassDTO>({start_tick: 0, end_tick: 1, day_tick: 1} as ClassDTO);
     const [selectedWeeks, setSelectedWeeks] = useState<boolean[]>(Array(20).fill(true));
@@ -56,8 +56,9 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
         const getResp = await AddClassAPI(clazz);
         if (getResp?.output === "Success") {
             message.success(`课程《${clazz.name}》添加成功`);
-            emit(false);
             refresh(true);
+            emit(false);
+            emitCurriculum(curriculum);
         } else {
             message.warning(getResp?.error_message);
         }
