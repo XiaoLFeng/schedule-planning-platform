@@ -159,7 +159,7 @@ public class CurriculumLogic implements CurriculumService {
     @Override
     public void deleteClassGrade(@NotNull UserDTO userDTO, String classGradeUuid) {
         ClassGradeDO getClassGrade = classGradeDAO.lambdaQuery()
-                .eq(ClassGradeDO::getUserUuid, classGradeUuid)
+                .eq(ClassGradeDO::getClassGradeUuid, classGradeUuid)
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
@@ -167,7 +167,7 @@ public class CurriculumLogic implements CurriculumService {
                 throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
             }
         }
-        classGradeDAO.lambdaUpdate().eq(ClassGradeDO::getUserUuid, userDTO).remove();
+        classGradeDAO.removeById(classGradeUuid);
     }
 
     @Override
