@@ -488,6 +488,29 @@ public class CurriculumLogic implements CurriculumService {
                 });
     }
 
+    @Override
+    public void deleteMutiClass(UserDTO getUser, String classGrade, String className, Short originalDayTick, Short originalStartTick, Short originalEndTick) {
+        classGradeDAO.lambdaQuery()
+                .eq(ClassGradeDO::getClassGradeUuid, classGrade)
+                .oneOpt()
+                .ifPresentOrElse(classGradeDO -> {
+                    if (!classGradeDO.getUserUuid().equals(getUser.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
+                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    classDAO.lambdaUpdate()
+                            .eq(ClassDO::getClassGradeUuid, classGrade)
+                            .eq(ClassDO::getName, className)
+                            .eq(ClassDO::getDayTick, originalDayTick)
+                            .eq(ClassDO::getStartTick, originalStartTick)
+                            .eq(ClassDO::getEndTick, originalEndTick)
+                            .remove();
+                }, () -> {
+                    throw new BusinessException("课程表不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
     /**
      * 检查时间是否有效
      *

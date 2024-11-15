@@ -513,6 +513,43 @@ public class CurriculumController {
         return ResultUtil.success("操作成功");
     }
 
+    /**
+     * 删除多个课程
+     * <p>
+     * 用于删除多个课程。
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @DeleteMapping("/class")
+    public ResponseEntity<BaseResponse<Void>> deleteMutiClass(
+            @RequestParam("class_grade") String classGrade,
+            @RequestParam("class_name") String className,
+            @RequestParam(value = "original_start_tick", defaultValue = "0") Short originalStartTick,
+            @RequestParam(value = "original_end_tick", defaultValue = "0") Short originalEndTick,
+            @RequestParam(value = "original_day_tick", defaultValue = "0") Short originalDayTick,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classGrade)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        }
+        if (className.isBlank()) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程名称非法");
+        }
+        if (originalStartTick < 0) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始开始节数非法");
+        }
+        if (originalEndTick < 0 || originalEndTick < originalStartTick) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始结束节数非法");
+        }
+        if (originalDayTick < 0 || originalDayTick > 7) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始星期数非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.deleteMutiClass(getUser, classGrade, className, originalDayTick, originalStartTick, originalEndTick);
+        return ResultUtil.success("操作成功");
+    }
+
     @NotNull
     private ResponseEntity<BaseResponse<CustomPage<ClassTimeDTO>>> classTimeMarkCustomPage(Page<ClassTimeMarketDO> myClassTimeList) {
         CustomPage<ClassTimeDTO> newMyClassTimeList = new CustomPage<>();

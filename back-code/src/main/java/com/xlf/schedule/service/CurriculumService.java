@@ -284,4 +284,18 @@ public interface CurriculumService {
      * @param dayTick           星期几
      */
     void moveMutiClass(UserDTO getUser, String classGradeUuid, String className, Short originalDayTick, Short originalStartTick, Short originalEndTick, Short startTick, Short endTick, Short dayTick);
+
+    /**
+     * 删除课程
+     * <p>
+     * 该方法用于删除课程；删除课程时，需要提供 {@code 用户信息}、{@code 课程表UUID}、{@code 课程名称}、{@code 原星期几}、{@code 原开始节次}、{@code 原结束节次}。
+     *
+     * @param getUser          用户信息
+     * @param classGrade       课程表UUID
+     * @param className        课程名称
+     * @param originalDayTick  原星期几
+     * @param originalStartTick 原开始节次
+     * @param originalEndTick  原结束节次
+     */
+    void deleteMutiClass(UserDTO getUser, String classGrade, String className, Short originalDayTick, Short originalStartTick, Short originalEndTick);
 }
