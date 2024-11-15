@@ -23,8 +23,9 @@ import {message, Modal} from "antd";
 import {ClassEntity} from "../../models/entity/class_entity.ts";
 import {DashOutlined} from "@ant-design/icons";
 import {ListCurriculumTimeEntity} from "../../models/entity/list_curriculum_time_entity.ts";
-import {MoveMutiClassAPI} from "../../interface/curriculum_api.ts";
+import {DeleteMutiClassAPI, MoveMutiClassAPI} from "../../interface/curriculum_api.ts";
 import {ClassMutiMoveDTO} from "../../models/dto/class_muti_move_dto.ts";
+import {ClassMutiDeleteDTO} from "../../models/dto/class_muti_delete_dto.ts";
 
 export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculumSelectTime, emit, mergeRefresh}: {
     propOpen: boolean;
@@ -83,6 +84,25 @@ export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculu
         }
     }
 
+    async function deleteClass() {
+        const makeData = {
+            class_grade: curriculum,
+            class_name: clazzEdit.name,
+            original_day_tick: copyClazz.day_tick,
+            original_end_tick: copyClazz.end_tick,
+            original_start_tick: copyClazz.start_tick,
+        } as ClassMutiDeleteDTO;
+
+        const getResp = await DeleteMutiClassAPI(makeData);
+        if (getResp?.output === "Success") {
+            message.success("删除成功");
+            emit(false);
+            mergeRefresh(true);
+        } else {
+            message.warning(getResp?.error_message);
+        }
+    }
+
     return (
         <Modal
             title="编辑课程"
@@ -96,7 +116,7 @@ export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculu
                         取消
                     </button>
                     <button
-                        onClick={() => emit(false)}
+                        onClick={deleteClass}
                         className="py-1.5 px-4 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"
                     >
                         删除该课程

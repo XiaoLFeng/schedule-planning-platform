@@ -41,6 +41,7 @@ import {ClassGradeDTO} from "../models/dto/class_grade_create_dto.ts";
 import {ClassGradeEntity} from "../models/entity/class_grade_entity.ts";
 import {ClassDTO} from "../models/dto/class_dto.ts";
 import {ClassMutiMoveDTO} from "../models/dto/class_muti_move_dto.ts";
+import {ClassMutiDeleteDTO} from "../models/dto/class_muti_delete_dto.ts";
 
 /**
  * # 创建课程表
@@ -137,12 +138,30 @@ const AddClassAPI = (bodyData: ClassDTO): Promise<BaseResponse<void> | undefined
  * # 移动多个课程表
  * 用于移动多个课程表；该接口用于移动多个课程表。
  *
- * @param paramBody {any} 移动多个课程表
- * @constructor
+ * @param paramBody {ClassMutiMoveDTO} 移动多个课程表
+ * @returns {Promise<BaseResponse<void> | undefined>} 移动多个课程表
  */
 const MoveMutiClassAPI = (paramBody: ClassMutiMoveDTO): Promise<BaseResponse<void> | undefined> => {
     return BaseApi<void>(
         MethodType.PUT,
+        "/api/v1/curriculum/class",
+        null,
+        paramBody,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 删除多个课程表
+ * 用于删除多个课程表；该接口用于删除多个课程表。
+ *
+ * @param paramBody {ClassMutiDeleteDTO} 删除多个课程表
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除多个课程表
+ */
+const DeleteMutiClassAPI = (paramBody: ClassMutiDeleteDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
         "/api/v1/curriculum/class",
         null,
         paramBody,
@@ -157,5 +176,6 @@ export {
     EditClassGradeAPI,
     DeleteClassGradeAPI,
     AddClassAPI,
-    MoveMutiClassAPI
+    MoveMutiClassAPI,
+    DeleteMutiClassAPI
 }
