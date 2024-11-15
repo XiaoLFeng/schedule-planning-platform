@@ -38,7 +38,7 @@ export function FriendsAddModal({propOpen, emit}: { propOpen: boolean; emit: (op
     const [userList, setUserList] = useState<UserInfoEntity[]>([] as UserInfoEntity[]);
     const [loading, setLoading] = useState<boolean>(false);
     const [button, setButton] = useState<JSX.Element>(
-        <div className="flex gap-3 justify-end text-white">
+        <div className="flex gap-1 justify-end text-white">
             <button
                 onClick={() => emit(false)}
                 className="py-1.5 px-4 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"

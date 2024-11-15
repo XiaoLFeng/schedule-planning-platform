@@ -18,92 +18,94 @@
  * ***************************************************************************************
  */
 
-import {message, Modal} from "antd";
 import {useEffect, useRef, useState} from "react";
-import {ClassDTO} from "../../models/dto/class_dto.ts";
-import {ListCurriculumTimeEntity} from "../../models/entity/list_curriculum_time_entity.ts";
+import {message, Modal} from "antd";
+import {ClassEntity} from "../../models/entity/class_entity.ts";
 import {DashOutlined} from "@ant-design/icons";
-import {AddClassAPI} from "../../interface/curriculum_api.ts";
+import {ListCurriculumTimeEntity} from "../../models/entity/list_curriculum_time_entity.ts";
+import {MoveMutiClassAPI} from "../../interface/curriculum_api.ts";
+import {ClassMutiMoveDTO} from "../../models/dto/class_muti_move_dto.ts";
 
-/**
- * # 课程班级添加模态框
- * 用于添加课程班级的模态框；该模态框用于添加课程班级。
- *
- * @param propOpen {boolean} 是否打开
- * @param curriculumSelectTime {ListCurriculumTimeEntity} 课程时间
- * @param curriculum {string} 课程
- * @param emit {function} 发射
- * @param refresh {function} 刷新
- * @param mergeRefresh {function} 合并刷新
- * @param emitCurriculum {function} 发射课程
- * @constructor
- */
-export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curriculum, emit, refresh, mergeRefresh, emitCurriculum}: {
+export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculumSelectTime, emit, mergeRefresh}: {
     propOpen: boolean;
-    curriculumSelectTime: ListCurriculumTimeEntity;
+    clazz: ClassEntity;
     curriculum: string;
-    emit: (open: boolean) => void;
-    refresh: (data: boolean) => void;
+    curriculumSelectTime: ListCurriculumTimeEntity;
     mergeRefresh: (data: boolean) => void;
-    emitCurriculum: (curriculum: string) => void;
+    emit: (open: boolean) => void;
 }) {
     const [open, setOpen] = useState<boolean>(false);
-    const [clazz, setClazz] = useState<ClassDTO>({start_tick: 0, end_tick: 1, day_tick: 1} as ClassDTO);
-    const [selectedWeeks, setSelectedWeeks] = useState<boolean[]>(Array(20).fill(true));
+    const [copyClazz, setCopyClazz] = useState<ClassEntity>({} as ClassEntity);
+    const [clazzEdit, setClazzEdit] = useState<ClassEntity>({} as ClassEntity);
+    const [selectedWeeks, setSelectedWeeks] = useState<boolean[]>([]);
+
     const localTeacher = useRef<string[]>(JSON.parse(localStorage.getItem("local_class_teacher") || "[]") as string[]);
 
     useEffect(() => {
+        setSelectedWeeks(Array(20).fill(false));
         setOpen(propOpen);
-        setClazz({...clazz, class_grade_uuid: curriculum} as ClassDTO);
-        console.debug("propOpen", propOpen);
-        console.debug("clazz", clazz);
-    }, [curriculum, propOpen]);
-
-    useEffect(() => {
-        const weeks = selectedWeeks
-            .map((isSelected, index) => (isSelected ? index + 1 : -1))
-            .filter((week) => week !== -1);
-        setClazz((prevClazz) => ({...prevClazz, weeks}));
-    }, [selectedWeeks]);
+        setClazzEdit(clazz);
+        setCopyClazz(clazz);
+        if (clazzEdit.week) {
+            clazzEdit.week.forEach((week) => {
+                const index = week - 1;
+                setSelectedWeeks((prev) => {
+                    prev[index] = true;
+                    return [...prev];
+                });
+            });
+        }
+    }, [clazz, clazzEdit.week, propOpen]);
 
     async function handleOk() {
-        const getResp = await AddClassAPI(clazz);
+        emit(false);
+    }
+
+    async function moveClass() {
+        const makeData = {
+            class_grade: curriculum,
+            class_name: clazzEdit.name,
+            day_tick: clazzEdit.day_tick,
+            end_tick: clazzEdit.end_tick,
+            start_tick: clazzEdit.start_tick,
+            original_day_tick: copyClazz.day_tick,
+            original_end_tick: copyClazz.end_tick,
+            original_start_tick: copyClazz.start_tick,
+        } as ClassMutiMoveDTO;
+
+        const getResp = await MoveMutiClassAPI(makeData);
         if (getResp?.output === "Success") {
-            message.success(`课程《${clazz.name}》添加成功`);
-            refresh(true);
-            mergeRefresh(true);
+            message.success("移动成功");
             emit(false);
-            emitCurriculum(curriculum);
+            mergeRefresh(true);
         } else {
             message.warning(getResp?.error_message);
         }
     }
 
-    function toggleWeekSelection(index: number) {
-        const updatedWeeks = [...selectedWeeks];
-        updatedWeeks[index] = !updatedWeeks[index];
-        setSelectedWeeks(updatedWeeks);
-    }
-
     return (
         <Modal
+            title="编辑课程"
             open={open}
-            title="添加课程"
             onOk={handleOk}
             onCancel={() => emit(false)}
             footer={
                 <div className="flex gap-1 justify-end text-white">
+                    <button onClick={() => emit(false)}
+                            className="py-1.5 px-4 rounded-lg shadow bg-gray-500 hover:bg-gray-600 transition">
+                        取消
+                    </button>
                     <button
                         onClick={() => emit(false)}
                         className="py-1.5 px-4 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"
                     >
-                        取消
+                        删除该课程
                     </button>
                     <button
-                        onClick={handleOk}
+                        onClick={moveClass}
                         className="py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"
                     >
-                        添加
+                        移动该课程
                     </button>
                 </div>
             }
@@ -115,9 +117,10 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                         type="text"
                         id="class_name"
                         placeholder="高等数学II"
-                        value={clazz.name}
-                        onChange={(e) => setClazz({...clazz, name: e.target.value})}
-                        className="mt-1 w-full rounded-md border-gray-200 text-gray-800 shadow-sm sm:text-sm"
+                        value={clazzEdit.name}
+                        onChange={(e) => setClazzEdit({...clazz, name: e.target.value})}
+                        className="mt-1 w-full rounded-md border-gray-200 text-gray-800 bg-gray-100 shadow-sm sm:text-sm"
+                        disabled={true}
                     />
                 </div>
                 <div>
@@ -125,8 +128,12 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                     <select
                         name="class_week"
                         id="class_week"
-                        onChange={(e) => setClazz({...clazz, day_tick: Number(e.target.value)} as ClassDTO)}
-                        value={clazz.day_tick}
+                        onChange={(e) => {
+                            console.log("执行了操作，获取结果", e.target.value)
+                            setClazzEdit({...clazz, day_tick: Number(e.target.value)} as ClassEntity)
+                            console.log("执行了操作，存储结果", clazzEdit)
+                        }}
+                        value={clazzEdit.day_tick ? clazzEdit.day_tick : 1}
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         <option value={1}>周一</option>
@@ -143,8 +150,11 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                     <select
                         name="start_time"
                         id="start_time"
-                        onChange={(e) => setClazz({...clazz, start_tick: Number(e.target.value)} as ClassDTO)}
-                        value={clazz.start_tick}
+                        onChange={(e) => setClazzEdit({
+                            ...clazzEdit,
+                            start_tick: Number(e.target.value)
+                        } as ClassEntity)}
+                        value={clazzEdit.start_tick}
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
@@ -157,12 +167,12 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                     <select
                         name="end_time"
                         id="end_time"
-                        onChange={(e) => setClazz({...clazz, end_tick: Number(e.target.value)} as ClassDTO)}
-                        value={clazz.end_tick}
+                        onChange={(e) => setClazzEdit({...clazz, end_tick: Number(e.target.value)} as ClassEntity)}
+                        value={clazzEdit.end_tick}
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index}>{item.end_time}</option>
+                            <option key={index} value={index+1}>{item.end_time}</option>
                         ))}
                     </select>
                 </div>
@@ -173,10 +183,10 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                             type="text"
                             list="class_teacher"
                             id="class_teacher"
-                            onChange={(e) => setClazz({...clazz, teacher: e.target.value})}
-                            value={clazz.teacher}
-                            className="w-full rounded-md border-gray-200 pe-10 text-gray-900 sm:text-sm [&::-webkit-calendar-picker-indicator]:opacity-0"
+                            value={clazzEdit.teacher}
+                            className="w-full rounded-md border-gray-200 pe-10 text-gray-900 bg-gray-100 sm:text-sm [&::-webkit-calendar-picker-indicator]:opacity-0"
                             placeholder="输入教师名字"
+                            disabled={true}
                         />
                         <span className="absolute inset-y-0 end-0 flex w-8 items-center"><DashOutlined/></span>
                     </div>
@@ -193,10 +203,10 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                             type="text"
                             list="class_location"
                             id="class_location"
-                            onChange={(e) => setClazz({...clazz, location: e.target.value})}
-                            value={clazz.location}
-                            className="w-full rounded-md border-gray-200 pe-10 text-gray-900 sm:text-sm [&::-webkit-calendar-picker-indicator]:opacity-0"
+                            value={clazzEdit.location}
+                            className="w-full rounded-md border-gray-200 pe-10 text-gray-900 sm:text-sm bg-gray-100 [&::-webkit-calendar-picker-indicator]:opacity-0"
                             placeholder="敏学楼102"
+                            disabled={true}
                         />
                         <span className="absolute inset-y-0 end-0 flex w-8 items-center"><DashOutlined/></span>
                     </div>
@@ -212,7 +222,6 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                         {selectedWeeks.map((isSelected, week) => (
                             <div
                                 key={week}
-                                onClick={() => toggleWeekSelection(week)}
                                 className={`cursor-pointer transition flex items-center justify-center p-2 rounded-lg border ${
                                     isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'
                                 }`}
@@ -224,5 +233,5 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                 </fieldset>
             </div>
         </Modal>
-    );
+    )
 }

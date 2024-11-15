@@ -55,10 +55,10 @@ export function CurriculumDelModal({propOpen, classGrade, emit, refresh, reset}:
             onOk={handleOk}
             onCancel={() => emit(false)}
             footer={
-                <div className="flex gap-3 justify-end text-white">
+                <div className="flex gap-1 justify-end text-white">
                     <button
                         onClick={() => emit(false)}
-                        className="py-1.5 px-4 rounded-lg shadow bg-emerald-500 hover:bg-emerald-600 transition"
+                        className="py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"
                     >
                         取消
                     </button>

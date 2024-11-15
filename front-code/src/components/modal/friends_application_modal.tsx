@@ -57,7 +57,7 @@ export function FriendsApplicationModal({propOpen, friendPending, friendDenied, 
             onOk={handleOk}
             onCancel={() => emit(false)}
             footer={
-                <div className="flex gap-3 justify-end text-white">
+                <div className="flex gap-1 justify-end text-white">
                     <button
                         onClick={handleOk}
                         className="py-1.5 px-4 rounded-lg shadow bg-sky-500 hover:bg-sky-600 transition"

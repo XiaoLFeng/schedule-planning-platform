@@ -33,6 +33,8 @@ import {useNavigate} from "react-router-dom";
 import {ClassGradeDTO} from "../../../models/dto/class_grade_create_dto.ts";
 import {CurriculumClassAddModal} from "../../../components/modal/curriculum_class_add_modal.tsx";
 import {CurriculumDelModal} from "../../../components/modal/curriculum_del_modal.tsx";
+import {ClassEntity} from "../../../models/entity/class_entity.ts";
+import {CurriculumClassEditModal} from "../../../components/modal/curriculum_class_edit_modal.tsx";
 
 export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const navigate = useNavigate();
@@ -43,13 +45,16 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
     const [curriculumTimeList, setCurriculumTimeList] = useState<ListCurriculumTimeEntity[]>([] as ListCurriculumTimeEntity[]);
     const [curriculumSelectTime, setCurriculumSelectTime] = useState<ListCurriculumTimeEntity>({} as ListCurriculumTimeEntity);
     const [classGrade, setClassGrade] = useState<ClassGradeEntity>({} as ClassGradeEntity);
+    const [clazz, setClazz] = useState<ClassEntity>({} as ClassEntity);
     const [curriculum, setCurriculum] = useState<string>("");
 
     const [curriculumAddModal, setCurriculumAddModal] = useState<boolean>(false);
     const [curriculumClassAddModal, setCurriculumClassAddModal] = useState<boolean>(false);
+    const [curriculumClassEditModal, setCurriculumClassEditModal] = useState<boolean>(false);
     const [curriculumDeleteModal, setCurriculumDeleteModal] = useState<boolean>(false);
 
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [mergeRefresh, setMergeRefresh] = useState<boolean>(false);
 
     const [debounceTimeout, setDebounceTimeout] = useState<number>();
 
@@ -57,37 +62,52 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
     onHeaderHandler("课程表");
 
     useEffect(() => {
-        if (!refresh) {
-            const func = async () => {
-                const [listApi, timeListApi] = await Promise.all([
-                    SelectCurriculumListAPI(""),
-                    SelectCurriculumTimeListAPI("")
-                ]);
+        const func = async () => {
+            const [listApi, timeListApi] = await Promise.all([
+                SelectCurriculumListAPI(""),
+                SelectCurriculumTimeListAPI("")
+            ]);
 
+            if (!refresh || !mergeRefresh) {
                 if (listApi?.output === "Success") setCurriculumList(listApi.data!);
                 else message.warning(listApi?.error_message);
+                if (!mergeRefresh && curriculum !== "") {
+                    const func = async () => {
+                        const getResp = await GetClassGradeAPI(curriculum);
+                        if (getResp?.output === "Success") {
+                            setClassGrade(getResp.data!);
+                        } else {
+                            message.warning(getResp?.error_message);
+                        }
+                    }
+                    func().then();
+                }
+            }
 
+            if (!refresh) {
                 if (timeListApi?.output === "Success") setCurriculumTimeList(timeListApi.data!);
                 else message.warning(listApi?.error_message);
             }
-            func().then();
         }
+        func().then();
         setRefresh(false);
-    }, [refresh]);
+        setMergeRefresh(false);
+    }, [refresh, mergeRefresh, curriculum]);
 
     useEffect(() => {
+        const func = async () => {
+            const getResp = await GetClassGradeAPI(curriculum);
+            if (getResp?.output === "Success") {
+                setClassGrade(getResp.data!);
+            } else {
+                message.warning(getResp?.error_message);
+            }
+        }
+
         if (curriculum === "system-add") {
             setCurriculum("");
             setCurriculumAddModal(true);
         } else {
-            const func = async () => {
-                const getResp = await GetClassGradeAPI(curriculum);
-                if (getResp?.output === "Success") {
-                    setClassGrade(getResp.data!);
-                } else {
-                    message.warning(getResp?.error_message);
-                }
-            }
             if (curriculum !== "") {
                 func().then();
             }
@@ -119,6 +139,12 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
             }
         }
     }, [classGrade.class_time_uuid, navigate]);
+
+    function editCurriculumEdit(clazz: ClassEntity) {
+        setCurriculumClassEditModal(true);
+        setClazz(clazz);
+    }
+
     return (
         <>
             <div className={"grid lg:grid-cols-12 gap-3"}>
@@ -189,7 +215,9 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                             const hash = [...coursesKey.name].reduce((acc, char) => acc + char.charCodeAt(0), 0);
                                                             const colorClass = colors[hash % colors.length];
                                                             element.push(
-                                                                <div style={{height: rowSpan * 50}}
+                                                                <div key={coursesKey.class_uuid}
+                                                                     style={{height: rowSpan * 50}}
+                                                                     onClick={() => editCurriculumEdit(coursesKey)}
                                                                      className={`${colorClass} flex-1 text-white p-0.5 rounded-md shadow flex flex-col justify-between`}>
                                                                     <div className="text-xs text-gray-200">{
                                                                         coursesKey.teacher}
@@ -212,7 +240,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                                 </div>
                                                             </td>
                                                         );
-                                                    } else if (classGrade.class_list.some((item) => item.start_tick < rowIndex && item.end_tick >= rowIndex && item.day_tick < dayIndex)) {
+                                                    } else if (classGrade.class_list.some((item) => item.start_tick < rowIndex && item.end_tick >= rowIndex && item.day_tick + 1 < dayIndex)) {
                                                         return null;
                                                     } else {
                                                         return <td key={dayIndex} className="p-1"></td>;
@@ -297,9 +325,12 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                 refresh={setRefresh}/>
             <CurriculumClassAddModal propOpen={curriculumClassAddModal} refresh={setRefresh} curriculum={curriculum}
                                      emit={setCurriculumClassAddModal} curriculumSelectTime={curriculumSelectTime}
-                                     emitCurriculum={setCurriculum}/>
+                                     emitCurriculum={setCurriculum} mergeRefresh={setMergeRefresh}/>
             <CurriculumDelModal propOpen={curriculumDeleteModal} emit={setCurriculumDeleteModal} refresh={setRefresh}
                                 classGrade={classGrade} reset={setCurriculum}/>
+            <CurriculumClassEditModal propOpen={curriculumClassEditModal} clazz={clazz} curriculum={curriculum}
+                                      emit={setCurriculumClassEditModal} curriculumSelectTime={curriculumSelectTime}
+                                      mergeRefresh={setMergeRefresh}/>
         </>
     );
 }

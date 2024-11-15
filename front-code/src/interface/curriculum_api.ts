@@ -40,6 +40,7 @@ import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/b
 import {ClassGradeDTO} from "../models/dto/class_grade_create_dto.ts";
 import {ClassGradeEntity} from "../models/entity/class_grade_entity.ts";
 import {ClassDTO} from "../models/dto/class_dto.ts";
+import {ClassMutiMoveDTO} from "../models/dto/class_muti_move_dto.ts";
 
 /**
  * # 创建课程表
@@ -132,10 +133,29 @@ const AddClassAPI = (bodyData: ClassDTO): Promise<BaseResponse<void> | undefined
     );
 }
 
+/**
+ * # 移动多个课程表
+ * 用于移动多个课程表；该接口用于移动多个课程表。
+ *
+ * @param paramBody {any} 移动多个课程表
+ * @constructor
+ */
+const MoveMutiClassAPI = (paramBody: ClassMutiMoveDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.PUT,
+        "/api/v1/curriculum/class",
+        null,
+        paramBody,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
     EditClassGradeAPI,
     DeleteClassGradeAPI,
-    AddClassAPI
+    AddClassAPI,
+    MoveMutiClassAPI
 }

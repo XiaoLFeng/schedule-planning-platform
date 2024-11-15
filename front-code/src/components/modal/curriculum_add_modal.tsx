@@ -73,7 +73,7 @@ export function CurriculumAddModal({propOpen, timeList, emit, refresh}: {
             onOk={handleOk}
             onCancel={() => emit(false)}
             footer={
-                <div className="flex gap-3 justify-end text-white">
+                <div className="flex gap- justify-end text-white">
                     <button
                         onClick={() => emit(false)}
                         className="py-1.5 px-4 rounded-lg shadow bg-red-500 hover:bg-red-600 transition"
