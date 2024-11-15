@@ -71,7 +71,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
             if (!refresh || !mergeRefresh) {
                 if (listApi?.output === "Success") setCurriculumList(listApi.data!);
                 else message.warning(listApi?.error_message);
-                if (!mergeRefresh && curriculum !== "") {
+                if (!mergeRefresh && curriculum !== "" &&  curriculum !== "system-add") {
                     const func = async () => {
                         const getResp = await GetClassGradeAPI(curriculum);
                         if (getResp?.output === "Success") {
