@@ -417,9 +417,10 @@ public class CurriculumController {
     @PatchMapping("/class/{class_uuid}")
     public ResponseEntity<BaseResponse<Void>> moveClass(
             @PathVariable("class_uuid") String classUuid,
-            @RequestParam("week") Short week,
-            @RequestParam("start_tick") Short startTick,
-            @RequestParam("end_tick") Short endTick,
+            @RequestParam(value = "week", defaultValue = "0") Short week,
+            @RequestParam(value = "start_tick", defaultValue = "0") Short startTick,
+            @RequestParam(value = "end_tick", defaultValue = "0") Short endTick,
+            @RequestParam(value = "day_tick", defaultValue = "0") Short dayTick,
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
@@ -434,9 +435,61 @@ public class CurriculumController {
         if (endTick < 0 || endTick < startTick) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
         }
+        if (dayTick < 0 || dayTick >= 7) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "星期数非法");
+        }
         UserDTO getUser = userService.getUserByToken(request);
-        curriculumService.moveClass(getUser, classUuid, week, startTick, endTick);
+        curriculumService.moveClass(getUser, classUuid, week, startTick, endTick, dayTick);
         return null;
+    }
+
+    /**
+     * 移动多个课程
+     * <p>
+     * 用于移动多个课程到指定周数以及节次位置
+     *
+     * @return {@link ResponseEntity}<{@link BaseResponse}<{@link Void}>>
+     */
+    @HasAuthorize
+    @PutMapping("/class")
+    public ResponseEntity<BaseResponse<Void>> moveMutiClass(
+            @RequestParam("class_grade") String classGrade,
+            @RequestParam("class_name") String className,
+            @RequestParam(value = "original_start_tick", defaultValue = "0") Short originalStartTick,
+            @RequestParam(value = "original_end_tick", defaultValue = "0") Short originalEndTick,
+            @RequestParam(value = "original_day_tick", defaultValue = "0") Short originalDayTick,
+            @RequestParam(value = "start_tick", defaultValue = "0") Short startTick,
+            @RequestParam(value = "end_tick", defaultValue = "0") Short endTick,
+            @RequestParam(value = "day_tick", defaultValue = "0") Short dayTick,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches("^[a-f0-9]{32}$", classGrade)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        }
+        if (className.isBlank()) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程名称非法");
+        }
+        if (originalStartTick < 0) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始开始节数非法");
+        }
+        if (originalEndTick < 0 || originalEndTick < originalStartTick) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始结束节数非法");
+        }
+        if (originalDayTick < 0 || originalDayTick > 7) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始星期数非法");
+        }
+        if (startTick < 0) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+        }
+        if (endTick < 0 || endTick < startTick) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+        }
+        if (dayTick < 0 || dayTick > 7) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "星期数非法");
+        }
+        UserDTO getUser = userService.getUserByToken(request);
+        curriculumService.moveMutiClass(getUser, classGrade, className, originalDayTick, originalStartTick, originalEndTick, startTick, endTick, dayTick);
+        return ResultUtil.success("操作成功");
     }
 
     /**

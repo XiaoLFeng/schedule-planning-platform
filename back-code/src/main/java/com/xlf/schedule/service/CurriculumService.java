@@ -96,11 +96,11 @@ public interface CurriculumService {
      * 编辑课程表时，需要提供 {@code UUID}、{@code 名称}、{@code 开始时间}、{@code 结束时间}、{@code 用户UUID}；
      * 编辑成功后，返回编辑结果。
      *
-     * @param uuid    课程表UUID
-     * @param name    名称
-     * @param begin   开始时间
-     * @param end     结束时间
-     * @param userDTO 用户信息
+     * @param uuid     课程表UUID
+     * @param name     名称
+     * @param begin    开始时间
+     * @param end      结束时间
+     * @param userDTO  用户信息
      * @param timeUuid 时间UUID
      */
     void editClassGrade(String uuid, String name, Date begin, Date end, UserDTO userDTO, String timeUuid);
@@ -247,15 +247,16 @@ public interface CurriculumService {
     /**
      * 删除课程
      * <p>
-     * 该方法用于删除课程；删除课程时，需要提供 {@code 用户信息}、{@code 课程UUID}、{@code 第几周}、{@code 第几节}、{@code 第几节}。
+     * 该方法用于删除课程；删除课程时，需要提供 {@code 用户信息}、{@code 课程UUID}、{@code 第几周}、{@code 第几节}、{@code 第几节}、{@code 第几天}。
      *
      * @param userDTO   用户信息
      * @param classUuid 课程UUID
-     * @param week      第几周
+     * @param week      移动周数
      * @param startTick 第几节
      * @param endTick   第几节
+     * @param dayTick   第几天
      */
-    void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick);
+    void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick, Short dayTick);
 
     /**
      * 删除课程
@@ -266,4 +267,21 @@ public interface CurriculumService {
      * @param classUuid 课程UUID
      */
     void deleteClass(UserDTO userDTO, String classUuid);
+
+    /**
+     * 获取课程列表
+     * <p>
+     * 该方法用于获取课程列表。
+     *
+     * @param getUser           用户信息
+     * @param classGradeUuid    课程表UUID
+     * @param className         课程名称
+     * @param originalDayTick   原星期几
+     * @param originalStartTick 原开始节次
+     * @param originalEndTick   原结束节次
+     * @param startTick         开始节次
+     * @param endTick           结束节次
+     * @param dayTick           星期几
+     */
+    void moveMutiClass(UserDTO getUser, String classGradeUuid, String className, Short originalDayTick, Short originalStartTick, Short originalEndTick, Short startTick, Short endTick, Short dayTick);
 }

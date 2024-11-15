@@ -141,6 +141,7 @@ public class CurriculumLogic implements CurriculumService {
                         ClassDTO classDTO = new ClassDTO();
                         List<Short> weeks = new ArrayList<>();
                         BeanUtils.copyProperties(classDO, classDTO);
+                        weeks.add(classDO.getWeek());
                         classDTO.setWeek(weeks);
                         classList.add(classDTO);
                     } else {
@@ -412,7 +413,7 @@ public class CurriculumLogic implements CurriculumService {
     }
 
     @Override
-    public void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick) {
+    public void moveClass(UserDTO userDTO, String classUuid, Short week, Short startTick, Short endTick, Short dayTick) {
         classDAO.lambdaQuery()
                 .eq(ClassDO::getClassUuid, classUuid)
                 .oneOpt()
@@ -428,6 +429,7 @@ public class CurriculumLogic implements CurriculumService {
                     }
                     classDO
                             .setWeek(week)
+                            .setDayTick(dayTick)
                             .setStartTick(startTick)
                             .setEndTick(endTick);
                     classDAO.updateById(classDO);
@@ -454,6 +456,35 @@ public class CurriculumLogic implements CurriculumService {
                     classDAO.removeById(classUuid);
                 }, () -> {
                     throw new BusinessException("课程不存在", ErrorCode.NOT_EXIST);
+                });
+    }
+
+    @Override
+    public void moveMutiClass(UserDTO getUser, String classGradeUuid, String className, Short originalDayTick, Short originalStartTick, Short originalEndTick, Short startTick, Short endTick, Short dayTick) {
+        classGradeDAO.lambdaQuery()
+                .eq(ClassGradeDO::getClassGradeUuid, classGradeUuid)
+                .oneOpt()
+                .ifPresentOrElse(classGradeDO -> {
+                    if (!classGradeDO.getUserUuid().equals(getUser.getUuid())) {
+                        if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
+                            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                        }
+                    }
+                    classDAO.lambdaQuery()
+                            .eq(ClassDO::getClassGradeUuid, classGradeUuid)
+                            .eq(ClassDO::getName, className)
+                            .eq(ClassDO::getDayTick, originalDayTick)
+                            .eq(ClassDO::getStartTick, originalStartTick)
+                            .eq(ClassDO::getEndTick, originalEndTick)
+                            .list().forEach(classDO -> {
+                                classDO
+                                        .setDayTick(dayTick)
+                                        .setStartTick(startTick).
+                                        setEndTick(endTick);
+                                classDAO.updateById(classDO);
+                            });
+                }, () -> {
+                    throw new BusinessException("课程表不存在", ErrorCode.NOT_EXIST);
                 });
     }
 
