@@ -18,23 +18,6 @@
  * ***************************************************************************************
  */
 
-// /**
-//  * # 获取好友拒绝列表
-//  * 用于获取好友拒绝列表；该接口用于获取好友拒绝列表。
-//  *
-//  * @returns {Promise<BaseResponse<UserFriendEntity[]> | undefined>} 好友拒绝列表
-//  */
-// const GetFriendDeniedAPI = (): Promise<BaseResponse<UserFriendEntity[]> | undefined> => {
-//     return BaseApi<UserFriendEntity[]>(
-//         MethodType.GET,
-//         "/api/v1/friend/denied",
-//         null,
-//         null,
-//         null,
-//         {Authorization: GetAuthorizationToken()}
-//     );
-// }
-
 import {BaseResponse} from "../models/base_response.ts";
 import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/base_api.ts";
 import {ClassGradeDTO} from "../models/dto/class_grade_create_dto.ts";
@@ -42,6 +25,9 @@ import {ClassGradeEntity} from "../models/entity/class_grade_entity.ts";
 import {ClassDTO} from "../models/dto/class_dto.ts";
 import {ClassMutiMoveDTO} from "../models/dto/class_muti_move_dto.ts";
 import {ClassMutiDeleteDTO} from "../models/dto/class_muti_delete_dto.ts";
+import {Page} from "../models/page.ts";
+import {PageDTO} from "../models/dto/page_dto.ts";
+import {ClassTimeEntity} from "../models/entity/class_time_entity.ts";
 
 /**
  * # 创建课程表
@@ -170,6 +156,42 @@ const DeleteMutiClassAPI = (paramBody: ClassMutiDeleteDTO): Promise<BaseResponse
     );
 }
 
+/**
+ * # 获取课程时间市场
+ * 用于获取课程时间市场；该接口用于获取课程时间市场。
+ *
+ * @param paramData {PageDTO} 获取课程时间市场
+ * @returns {Promise<BaseResponse<Page<ClassTimeEntity>> | undefined>} 课程时间市场
+ */
+const GetClassTimeMarketAPI = (paramData: PageDTO): Promise<BaseResponse<Page<ClassTimeEntity>> | undefined> => {
+    return BaseApi<Page<ClassTimeEntity>>(
+        MethodType.GET,
+        "/api/v1/curriculum/time",
+        null,
+        paramData,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 获取我的课程时间
+ * 用于获取我的课程时间；该接口用于获取我的课程时间。
+ *
+ * @param paramData {PageDTO} 获取我的课程时间
+ * @returns {Promise<BaseResponse<Page<ClassTimeEntity>> | undefined>} 我的课程时间
+ */
+const GetClassMyTimeAPI = (paramData: PageDTO): Promise<BaseResponse<Page<ClassTimeEntity>> | undefined> => {
+    return BaseApi<Page<ClassTimeEntity>>(
+        MethodType.GET,
+        "/api/v1/curriculum/my-time",
+        null,
+        paramData,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
@@ -177,5 +199,7 @@ export {
     DeleteClassGradeAPI,
     AddClassAPI,
     MoveMutiClassAPI,
-    DeleteMutiClassAPI
+    DeleteMutiClassAPI,
+    GetClassTimeMarketAPI,
+    GetClassMyTimeAPI
 }
