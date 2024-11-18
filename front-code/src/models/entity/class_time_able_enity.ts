@@ -19,6 +19,6 @@
  */
 
 export type ClassTimeAbleEntity = {
-    end_time: string;
-    start_time: string;
+    endTime: string;
+    startTime: string;
 }

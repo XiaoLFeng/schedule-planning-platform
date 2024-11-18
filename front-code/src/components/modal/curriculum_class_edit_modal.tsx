@@ -178,7 +178,7 @@ export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculu
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index} selected={index == 0}>{item.start_time}</option>
+                            <option key={index} value={index} selected={index == 0}>{item.startTime}</option>
                         ))}
                     </select>
                 </div>
@@ -192,7 +192,7 @@ export function CurriculumClassEditModal({propOpen, clazz, curriculum, curriculu
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index+1}>{item.end_time}</option>
+                            <option key={index} value={index+1}>{item.endTime}</option>
                         ))}
                     </select>
                 </div>

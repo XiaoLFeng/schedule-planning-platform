@@ -29,6 +29,7 @@ import {ClassTimeEntity} from "../../../models/entity/class_time_entity.ts";
 import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
 import {TimeAddModal} from "../../../components/modal/time_add_modal.tsx";
+import {TimeMyShowModal} from "../../../components/modal/time_my_show_modal.tsx";
 
 export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -40,9 +41,12 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     const [timeMarket, setTimeMarket] = useState<Page<ClassTimeEntity>>({} as Page<ClassTimeEntity>);
     const [timeMy, setTimeMy] = useState<Page<ClassTimeEntity>>({} as Page<ClassTimeEntity>);
 
+    const [timeMyClassTime, setTimeMyClassTime] = useState<ClassTimeEntity>({} as ClassTimeEntity);
+
     const [refresh, setRefresh] = useState<boolean>(true);
 
     const [timeAddModal, setTimeAddModal] = useState<boolean>(false);
+    const [timeMyShowModal, setTimeMyShowModal] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 课程时间`;
     onHeaderHandler("课程时间");
@@ -78,6 +82,11 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
 
     function handleMarketTimePage(page: number) {
         setTimeMarketPage({...timeMarketPage, page: page});
+    }
+
+    function handleMyTimeShow(classTime: ClassTimeEntity) {
+        setTimeMyClassTime(classTime);
+        setTimeMyShowModal(true);
     }
 
     function pageMyTimeReveal(): JSX.Element[] {
@@ -141,7 +150,7 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                         返回课程表
                     </button>
                     <button onClick={() => setTimeAddModal(true)}
-                        className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-4 py-1.5 transition"}>
+                            className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-4 py-1.5 transition"}>
                         创建时间表
                     </button>
                 </div>
@@ -163,8 +172,8 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                                             </div>
                                         </div>
                                         <div className={"flex gap-1 justify-end"}>
-                                            <button
-                                                className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
+                                            <button onClick={() => handleMyTimeShow(item)}
+                                                    className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
                                                 查看
                                             </button>
                                             {
@@ -322,6 +331,7 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                 </div>
             </div>
             <TimeAddModal propOpen={timeAddModal} emit={setTimeAddModal} refresh={setRefresh}/>
+            <TimeMyShowModal propOpen={timeMyShowModal} classTime={timeMyClassTime} emit={setTimeMyShowModal}/>
         </>
     );
 }
