@@ -211,6 +211,42 @@ const AddClassTimeAPI = (bodyData: TimeAddDTO): Promise<BaseResponse<void> | und
     );
 }
 
+/**
+ * # 删除课程时间
+ * 用于删除课程时间；该接口用于删除课程时间。
+ *
+ * @param pathData {string} 删除课程时间
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除课程时间
+ */
+const DelClassTimeAPI = (pathData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
+        "/api/v1/curriculum/time",
+        null,
+        null,
+        pathData,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 删除我的课程时间
+ * 用于删除我的课程时间；该接口用于删除我的课程时间。
+ *
+ * @param pathData {string} 删除我的课程时间
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除我的课程时间
+ */
+const DelMyClassTimeAPI = (pathData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
+        "/api/v1/curriculum/my-time",
+        null,
+        null,
+        pathData,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
@@ -221,5 +257,7 @@ export {
     DeleteMutiClassAPI,
     GetClassTimeMarketAPI,
     GetClassMyTimeAPI,
-    AddClassTimeAPI
+    AddClassTimeAPI,
+    DelClassTimeAPI,
+    DelMyClassTimeAPI
 }

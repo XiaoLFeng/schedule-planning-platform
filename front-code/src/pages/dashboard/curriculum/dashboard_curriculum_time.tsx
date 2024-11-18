@@ -30,6 +30,7 @@ import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
 import {TimeAddModal} from "../../../components/modal/time_add_modal.tsx";
 import {TimeMyShowModal} from "../../../components/modal/time_my_show_modal.tsx";
+import {TimeMyRemoveModal} from "../../../components/modal/time_my_remove_modal.tsx";
 
 export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -47,6 +48,7 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
 
     const [timeAddModal, setTimeAddModal] = useState<boolean>(false);
     const [timeMyShowModal, setTimeMyShowModal] = useState<boolean>(false);
+    const [timeMyRemoveModal, setTimeMyRemoveModal] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 课程时间`;
     onHeaderHandler("课程时间");
@@ -87,6 +89,11 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     function handleMyTimeShow(classTime: ClassTimeEntity) {
         setTimeMyClassTime(classTime);
         setTimeMyShowModal(true);
+    }
+
+    function handleMyTimeRemove(classTime: ClassTimeEntity) {
+        setTimeMyClassTime(classTime);
+        setTimeMyRemoveModal(true);
     }
 
     function pageMyTimeReveal(): JSX.Element[] {
@@ -196,8 +203,8 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                                                         删除
                                                     </button>
                                                 ) : (
-                                                    <button
-                                                        className={"bg-red-500 hover:bg-red-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
+                                                    <button onClick={() => handleMyTimeRemove(item)}
+                                                            className={"bg-red-500 hover:bg-red-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
                                                         删除
                                                     </button>
                                                 )
@@ -332,6 +339,8 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
             </div>
             <TimeAddModal propOpen={timeAddModal} emit={setTimeAddModal} refresh={setRefresh}/>
             <TimeMyShowModal propOpen={timeMyShowModal} classTime={timeMyClassTime} emit={setTimeMyShowModal}/>
+            <TimeMyRemoveModal propOpen={timeMyRemoveModal} classTime={timeMyClassTime} emit={setTimeMyRemoveModal}
+                               refresh={setRefresh}/>
         </>
     );
 }
