@@ -247,6 +247,24 @@ const DelMyClassTimeAPI = (pathData: string): Promise<BaseResponse<void> | undef
     );
 }
 
+/**
+ * # 添加我的课程时间
+ * 用于添加我的课程时间；该接口用于添加我的课程时间。
+ *
+ * @param pathData {string} 添加我的课程时间
+ * @returns {Promise<BaseResponse<void> | undefined>} 添加我的课程时间
+ */
+const AddMyClassTimeAPI = (pathData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.POST,
+        "/api/v1/curriculum/my-time",
+        null,
+        null,
+        pathData,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
@@ -259,5 +277,6 @@ export {
     GetClassMyTimeAPI,
     AddClassTimeAPI,
     DelClassTimeAPI,
-    DelMyClassTimeAPI
+    DelMyClassTimeAPI,
+    AddMyClassTimeAPI
 }

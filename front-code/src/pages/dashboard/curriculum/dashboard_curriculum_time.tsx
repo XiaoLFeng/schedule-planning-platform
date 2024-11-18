@@ -31,6 +31,7 @@ import dayjs from "dayjs";
 import {TimeAddModal} from "../../../components/modal/time_add_modal.tsx";
 import {TimeMyShowModal} from "../../../components/modal/time_my_show_modal.tsx";
 import {TimeMyRemoveModal} from "../../../components/modal/time_my_remove_modal.tsx";
+import {TimeShowModal} from "../../../components/modal/time_show_modal.tsx";
 
 export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -43,12 +44,14 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     const [timeMy, setTimeMy] = useState<Page<ClassTimeEntity>>({} as Page<ClassTimeEntity>);
 
     const [timeMyClassTime, setTimeMyClassTime] = useState<ClassTimeEntity>({} as ClassTimeEntity);
+    const [timeClassTime, setTimeClassTime] = useState<ClassTimeEntity>({} as ClassTimeEntity);
 
     const [refresh, setRefresh] = useState<boolean>(true);
 
     const [timeAddModal, setTimeAddModal] = useState<boolean>(false);
     const [timeMyShowModal, setTimeMyShowModal] = useState<boolean>(false);
     const [timeMyRemoveModal, setTimeMyRemoveModal] = useState<boolean>(false);
+    const [timeShowModal, setTimeShowModal] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 课程时间`;
     onHeaderHandler("课程时间");
@@ -94,6 +97,11 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     function handleMyTimeRemove(classTime: ClassTimeEntity) {
         setTimeMyClassTime(classTime);
         setTimeMyRemoveModal(true);
+    }
+
+    function handleTimeShow(classTime: ClassTimeEntity) {
+        setTimeClassTime(classTime);
+        setTimeShowModal(true);
     }
 
     function pageMyTimeReveal(): JSX.Element[] {
@@ -265,9 +273,9 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                         {
                             timeMarket.records?.map((item, index) => {
                                 return (
-                                    <div key={index}
+                                    <div key={index} onClick={() => handleTimeShow(item)}
                                          className={"transition bg-white rounded-lg shadow-md p-3 flex flex-col gap-1 hover:scale-105"}>
-                                        <div className={"text-lg font-medium"}>{item.name}</div>
+                                        <div className={"text-xl font-medium"}>{item.name}</div>
                                         {
                                             item.is_official ? (
                                                 <div className={"flex gap-3"}>
@@ -341,6 +349,8 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
             <TimeMyShowModal propOpen={timeMyShowModal} classTime={timeMyClassTime} emit={setTimeMyShowModal}/>
             <TimeMyRemoveModal propOpen={timeMyRemoveModal} classTime={timeMyClassTime} emit={setTimeMyRemoveModal}
                                refresh={setRefresh}/>
+            <TimeShowModal propOpen={timeShowModal} emit={setTimeShowModal} classTimeEntity={timeClassTime}
+                           refresh={setRefresh}/>
         </>
     );
 }
