@@ -28,6 +28,7 @@ import {ClassMutiDeleteDTO} from "../models/dto/class_muti_delete_dto.ts";
 import {Page} from "../models/page.ts";
 import {PageDTO} from "../models/dto/page_dto.ts";
 import {ClassTimeEntity} from "../models/entity/class_time_entity.ts";
+import {TimeAddDTO} from "../models/dto/time_add_dto.ts";
 
 /**
  * # 创建课程表
@@ -192,6 +193,24 @@ const GetClassMyTimeAPI = (paramData: PageDTO): Promise<BaseResponse<Page<ClassT
     );
 }
 
+/**
+ * # 添加课程时间
+ * 用于添加课程时间；该接口用于添加课程时间。
+ *
+ * @param bodyData {ClassTimeEntity} 添加课程时间
+ * @returns {Promise<BaseResponse<void> | undefined>} 添加课程时间
+ */
+const AddClassTimeAPI = (bodyData: TimeAddDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.POST,
+        "/api/v1/curriculum/time",
+        bodyData,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
     CreateClassGradeAPI,
     GetClassGradeAPI,
@@ -201,5 +220,6 @@ export {
     MoveMutiClassAPI,
     DeleteMutiClassAPI,
     GetClassTimeMarketAPI,
-    GetClassMyTimeAPI
+    GetClassMyTimeAPI,
+    AddClassTimeAPI
 }

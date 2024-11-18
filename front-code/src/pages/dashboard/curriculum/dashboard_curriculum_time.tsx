@@ -26,8 +26,9 @@ import {GetClassMyTimeAPI, GetClassTimeMarketAPI} from "../../../interface/curri
 import {PageDTO} from "../../../models/dto/page_dto.ts";
 import {Page} from "../../../models/page.ts";
 import {ClassTimeEntity} from "../../../models/entity/class_time_entity.ts";
-import {StarOutlined} from "@ant-design/icons";
+import {CalendarOutlined, StarOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
+import {TimeAddModal} from "../../../components/modal/time_add_modal.tsx";
 
 export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -38,6 +39,10 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     const [timeMyPage, setTimeMyPage] = useState({page: 1, size: 16} as PageDTO);
     const [timeMarket, setTimeMarket] = useState<Page<ClassTimeEntity>>({} as Page<ClassTimeEntity>);
     const [timeMy, setTimeMy] = useState<Page<ClassTimeEntity>>({} as Page<ClassTimeEntity>);
+
+    const [refresh, setRefresh] = useState<boolean>(true);
+
+    const [timeAddModal, setTimeAddModal] = useState<boolean>(false);
 
     document.title = `${webInfo.name} - 课程时间`;
     onHeaderHandler("课程时间");
@@ -60,9 +65,12 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
             }
         }
 
-        funcMarketTime().then();
-        funcMyTime().then();
-    }, [timeMarketPage, timeMyPage]);
+        if (refresh) {
+            funcMarketTime().then();
+            funcMyTime().then();
+        }
+        setRefresh(false);
+    }, [refresh, timeMarketPage, timeMyPage]);
 
     function handleMyTimePage(page: number) {
         setTimeMyPage({...timeMyPage, page: page});
@@ -125,181 +133,195 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
     }
 
     return (
-        <div className={"grid gap-3"}>
-            <div className={"flex gap-3 justify-end"}>
-                <button onClick={() => navigate("/dashboard/curriculum")}
-                        className={"bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-4 py-1.5 transition"}>
-                    返回课程表
-                </button>
-                <button className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-4 py-1.5 transition"}>
-                    创建时间表
-                </button>
-            </div>
-            <hr className={"border-2 rounded-full mx-12"}/>
-            <div className={"grid gap-1"}>
-                <div className={"text-xl font-medium"}>我的时间表</div>
-                <div className={"grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"}>
-                    {
-                        timeMy.records?.map((item, index) => {
-                            return (
-                                <div key={index}
-                                     className={"bg-white rounded-lg shadow-md p-3 flex flex-col gap-1"}>
-                                    <div className={"text-lg font-medium"}>{item.name}</div>
-                                    <div className={"text-xs text-gray-400 mb-3"}>
-                                        {item.is_public ? "公开" : "未公开"}{item.is_official ? " | 认证" : null}
-                                    </div>
-                                    <div className={"flex gap-1 justify-end"}>
-                                        <button
-                                            className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
-                                            查看
-                                        </button>
-                                        {
-                                            item.is_official || item.user_uuid == null ? (
-                                                <button
-                                                    className={"bg-gray-300 text-gray-900 rounded-lg px-2.5 py-0.5 transition"}>
-                                                    编辑
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className={"bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
-                                                    编辑
-                                                </button>
-                                            )
-                                        }
-                                        {
-                                            item.is_official || item.user_uuid == null ? (
-                                                <button
-                                                    className={"bg-gray-300 text-gray-900 rounded-lg px-2.5 py-0.5 transition"}>
-                                                    删除
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className={"bg-red-500 hover:bg-red-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
-                                                    删除
-                                                </button>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                            );
-                        })
-                    }
+        <>
+            <div className={"grid gap-3"}>
+                <div className={"flex gap-3 justify-end"}>
+                    <button onClick={() => navigate("/dashboard/curriculum")}
+                            className={"bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-4 py-1.5 transition"}>
+                        返回课程表
+                    </button>
+                    <button onClick={() => setTimeAddModal(true)}
+                        className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-4 py-1.5 transition"}>
+                        创建时间表
+                    </button>
                 </div>
-                <ol className="flex justify-center gap-1 text-xs font-medium">
-                    <li>
-                        <button
-                            onClick={() => handleMyTimePage(1)}
-                            className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
-                        >
-                            <span className="sr-only">前一页</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="size-3"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </li>
-                    {pageMyTimeReveal()}
-                    <li>
-                        <button
-                            onClick={() => handleMyTimePage(timeMy.pages)}
-                            className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
-                        >
-                            <span className="sr-only">下一页</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="size-3"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </li>
-                </ol>
-            </div>
-            <div className={"grid gap-1"}>
-                <div className={"text-xl font-medium"}>时间表市场</div>
-                <div className={"grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"}>
-                    {
-                        timeMarket.records?.map((item, index) => {
-                            return (
-                                <div key={index}
-                                     className={"bg-white rounded-lg shadow-md p-3 flex flex-col gap-1"}>
-                                    <div className={"text-lg font-medium"}>{item.name}</div>
-                                    {
-                                        item.is_official ? (
-                                            <div className={"text-yellow-500 flex space-x-1 items-center"}>
-                                                <StarOutlined/>
-                                                <span>{item.is_official ? "认证" : null}</span>
-                                            </div>
-                                        ) : (
+                <hr className={"border-2 rounded-full mx-12"}/>
+                <div className={"grid gap-1"}>
+                    <div className={"text-xl font-medium"}>我的时间表</div>
+                    <div className={"grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"}>
+                        {
+                            timeMy.records?.map((item, index) => {
+                                return (
+                                    <div key={index}
+                                         className={"transition bg-white rounded-lg shadow-md p-3 flex flex-col gap-1 hover:scale-105"}>
+                                        <div className={"text-lg font-medium"}>{item.name}</div>
+                                        <div className={"text-xs text-gray-400 mb-3"}>
+                                            {item.is_public ? "公开" : "未公开"}{item.is_official ? " | 认证" : null}
                                             <div className={"text-gray-400 flex space-x-1 items-center"}>
-                                                <StarOutlined/>
-                                                <span>{dayjs(item.created_at).format("YYYY-MM-DD")}</span>
+                                                <CalendarOutlined/>
+                                                <span>{dayjs(item?.created_at).format("YYYY-MM-DD")}</span>
                                             </div>
-                                        )
-                                    }
-                                </div>
-                            );
-                        })
-                    }
+                                        </div>
+                                        <div className={"flex gap-1 justify-end"}>
+                                            <button
+                                                className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
+                                                查看
+                                            </button>
+                                            {
+                                                item.is_official || item.user_uuid == null ? (
+                                                    <button
+                                                        className={"bg-gray-300 text-gray-900 rounded-lg px-2.5 py-0.5 transition"}>
+                                                        编辑
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className={"bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
+                                                        编辑
+                                                    </button>
+                                                )
+                                            }
+                                            {
+                                                item.is_official || item.user_uuid == null ? (
+                                                    <button
+                                                        className={"bg-gray-300 text-gray-900 rounded-lg px-2.5 py-0.5 transition"}>
+                                                        删除
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className={"bg-red-500 hover:bg-red-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
+                                                        删除
+                                                    </button>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                    <ol className="flex justify-center gap-1 text-xs font-medium pt-3">
+                        <li>
+                            <button
+                                onClick={() => handleMyTimePage(1)}
+                                className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
+                            >
+                                <span className="sr-only">前一页</span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-3"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </li>
+                        {pageMyTimeReveal()}
+                        <li>
+                            <button
+                                onClick={() => handleMyTimePage(timeMy.pages)}
+                                className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
+                            >
+                                <span className="sr-only">下一页</span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-3"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </li>
+                    </ol>
                 </div>
-                <ol className="flex justify-center gap-1 text-xs font-medium">
-                    <li>
-                        <button
-                            onClick={() => handleMarketTimePage(1)}
-                            className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
-                        >
-                            <span className="sr-only">前一页</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="size-3"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
+                <div className={"grid gap-1"}>
+                    <div className={"text-xl font-medium"}>时间表市场</div>
+                    <div className={"grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3"}>
+                        {
+                            timeMarket.records?.map((item, index) => {
+                                return (
+                                    <div key={index}
+                                         className={"transition bg-white rounded-lg shadow-md p-3 flex flex-col gap-1 hover:scale-105"}>
+                                        <div className={"text-lg font-medium"}>{item.name}</div>
+                                        {
+                                            item.is_official ? (
+                                                <div className={"flex gap-3"}>
+                                                    <div className={"text-yellow-500 flex space-x-1 items-center"}>
+                                                        <StarOutlined/>
+                                                        <span>{item.is_official ? "认证" : null}</span>
+                                                    </div>
+                                                    <div className={"text-gray-400 flex space-x-1 items-center"}>
+                                                        <CalendarOutlined/>
+                                                        <span>{dayjs(item?.created_at).format("YYYY-MM-DD")}</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className={"text-gray-400 flex space-x-1 items-center"}>
+                                                    <CalendarOutlined/>
+                                                    <span>{dayjs(item?.created_at).format("YYYY-MM-DD")}</span>
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                    <ol className="flex justify-center gap-1 text-xs font-medium pt-3">
+                        <li>
+                            <button
+                                onClick={() => handleMarketTimePage(1)}
+                                className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
                             >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </li>
-                    {pageMarketTimeReveal()}
-                    <li>
-                        <button
-                            onClick={() => handleMarketTimePage(timeMarket.pages)}
-                            className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
-                        >
-                            <span className="sr-only">下一页</span>
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="size-3"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
+                                <span className="sr-only">前一页</span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-3"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </li>
+                        {pageMarketTimeReveal()}
+                        <li>
+                            <button
+                                onClick={() => handleMarketTimePage(timeMarket.pages)}
+                                className={"inline-flex size-8 items-center justify-center rounded border border-gray-200 bg-white hover:bg-gray-200 text-gray-900 transition"}
                             >
-                                <path
-                                    fillRule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                    </li>
-                </ol>
+                                <span className="sr-only">下一页</span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="size-3"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </li>
+                    </ol>
+                </div>
             </div>
-        </div>
+            <TimeAddModal propOpen={timeAddModal} emit={setTimeAddModal} refresh={setRefresh}/>
+        </>
     );
 }
