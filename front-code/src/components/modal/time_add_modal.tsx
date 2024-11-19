@@ -147,7 +147,7 @@ export function TimeAddModal({propOpen, emit, refresh}: {
                                 timeAdd.time_able.length > 1 ? (
                                     <div onClick={() => {
                                         timeAdd.time_able.splice(index, 1);
-                                        setTimeAdd({...timeAdd})
+                                        setTimeAdd({...timeAdd});
                                     }}
                                          className={"px-2.5 h-full rounded-lg bg-red-100 text-gray-800 shadow flex items-center transition hover:bg-red-200 hover:scale-105"}>
                                         <DeleteOutlined/>

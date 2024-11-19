@@ -32,11 +32,9 @@ import {TimeAddModal} from "../../../components/modal/time_add_modal.tsx";
 import {TimeMyShowModal} from "../../../components/modal/time_my_show_modal.tsx";
 import {TimeMyRemoveModal} from "../../../components/modal/time_my_remove_modal.tsx";
 import {TimeShowModal} from "../../../components/modal/time_show_modal.tsx";
-import {UserEntity} from "../../../models/entity/user_entity.ts";
 
 export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
-    const userEntity = useSelector((state: { userCurrent: UserEntity }) => state.userCurrent);
 
     const navigate = useNavigate();
 
@@ -193,19 +191,6 @@ export function DashboardCurriculumTime({onHeaderHandler}: { onHeaderHandler: (h
                                                     className={"bg-sky-500 hover:bg-sky-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
                                                 查看
                                             </button>
-                                            {
-                                                item.is_official || item.user_uuid == null || item.user_uuid !== userEntity.uuid ? (
-                                                    <button
-                                                        className={"bg-gray-300 text-gray-900 rounded-lg px-2.5 py-0.5 transition"}>
-                                                        编辑
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        className={"bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-2.5 py-0.5 transition"}>
-                                                        编辑
-                                                    </button>
-                                                )
-                                            }
                                             {
                                                 item.is_official || item.user_uuid == null ? (
                                                     <button
