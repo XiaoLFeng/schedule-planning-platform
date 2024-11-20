@@ -20,7 +20,7 @@
 
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
-import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Link, Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {DashboardViewYearAndMonth} from "./view/dashboard_view_year_and_month.tsx";
 import {DashboardViewWeek} from "./view/dashboard_view_week.tsx";
 import {DashboardViewDay} from "./view/dashboard_view_day.tsx";
@@ -57,15 +57,32 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
                     <DashboardViewMenu to={"/dashboard/view/week"} text={"周视图"}/>
                     <DashboardViewMenu to={"/dashboard/view/day"} text={"日视图"} className={"rounded-r-lg"}/>
                 </div>
-                <div className={"flex"}>
-                    <div className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
-                        <span>课程</span>
+                <div className={"flex gap-3"}>
+                    <div>
+                        <select
+                            name="group"
+                            id="group"
+                            className="w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                        >
+                            <option value="">全部</option>
+                            <option value="JM">John Mayer</option>
+                            <option value="SRV">Stevie Ray Vaughn</option>
+                            <option value="JH">Jimi Hendrix</option>
+                            <option value="BBK">B.B King</option>
+                            <option value="AK">Albert King</option>
+                            <option value="BG">Buddy Guy</option>
+                            <option value="EC">Eric Clapton</option>
+                        </select>
                     </div>
-                    <div className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 py-1.5"}>
-                        <span>特殊日</span>
-                    </div>
-                    <div className={"transition flex gap-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-r-lg px-4 py-1.5"}>
-                        <span>设置</span>
+                    <div className={"flex"}>
+                        <div
+                            className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
+                            <span>添加日程</span>
+                        </div>
+                        <Link to={"/dashboard/curriculum"}
+                            className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white rounded-r-lg px-4 py-1.5"}>
+                            <span>添加课程</span>
+                        </Link>
                     </div>
                 </div>
             </div>

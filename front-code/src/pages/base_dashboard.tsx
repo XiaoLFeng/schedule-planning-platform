@@ -33,6 +33,7 @@ import {setUser} from "../store/user_store.ts";
 import {message} from "antd";
 import {DashboardCurriculum} from "./dashboard/dashboard_curriculum.tsx";
 import {DashboardFriends} from "./dashboard/dashboard_friends.tsx";
+import {DashboardGroups} from "./dashboard/dashboard_groups.tsx";
 
 /**
  * # 基础仪表板
@@ -108,6 +109,7 @@ export function BaseDashboard() {
                             <Route path={"/view/*"} element={<DashboardView onHeaderHandler={setHeader}/>}/>
                             <Route path={"/curriculum/*"} element={<DashboardCurriculum onHeaderHandler={setHeader}/>}/>
                             <Route path={"/friends"} element={<DashboardFriends onHeaderHandler={setHeader}/>}/>
+                            <Route path={"/groups"} element={<DashboardGroups onHeaderHandler={setHeader}/>}/>
                         </Routes>
                     </animated.div>
                 </div>
