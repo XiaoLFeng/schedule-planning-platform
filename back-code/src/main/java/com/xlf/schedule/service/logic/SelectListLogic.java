@@ -95,7 +95,7 @@ public class SelectListLogic implements SelectListService {
         return classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getUserUuid, userDTO.getUuid())
                 .and(i -> {
-                    i.or(j -> j.like(ClassGradeDO::getUserUuid, search));
+                    i.or(j -> j.like(ClassGradeDO::getClassGradeUuid, search));
                     i.or(j -> j.like(ClassGradeDO::getNickname, search));
                 }).list().stream().map(classGradeDO -> {
                     ListCurriculumDTO newCurriculum = new ListCurriculumDTO();

@@ -93,7 +93,7 @@ public class SelectListController {
             @RequestParam(value = "search", defaultValue = "") String search,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^(|[0-9A-Za-z-_@]+)$", search)) {
+        if (search == null) {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
         }
         UserDTO userDTO = userService.getUserByToken(request);
