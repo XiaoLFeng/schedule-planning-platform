@@ -24,7 +24,9 @@ import {
     AppstoreAddOutlined,
     BarsOutlined,
     CrownOutlined,
+    DeleteOutlined,
     SearchOutlined,
+    SettingOutlined,
     UnorderedListOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
@@ -33,6 +35,7 @@ import {GetScheduleGroupAPI} from "../../interface/schedule_api.ts";
 import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts";
 import {Page} from "../../models/page.ts";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
+import {animated, useTransition} from "@react-spring/web";
 
 export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -43,6 +46,15 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
         size: 20,
         type: "all",
     } as ScheduleGroupListDTO);
+
+    const transitions = useTransition(scheduleGroupList.records, {
+        keys: (item) => item.group_uuid,
+        from: {opacity: 0, transform: "scale(0.9)"},
+        enter: {opacity: 1, transform: "scale(1)"},
+        leave: {opacity: 0, transform: "scale(0.9)"},
+        config: {duration: 300},
+        trail: 100
+    });
 
     document.title = `${webInfo.name} - 日程小组`;
     onHeaderHandler("日程小组");
@@ -101,7 +113,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                 </span>
                             </label>
                             <button onClick={() => null}
-                                    className={"transition rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 md:px-8 lg:px-12 flex items-center space-x-1"}>
+                                    className={"transition rounded-md bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 md:px-8 lg:px-12 flex items-center space-x-1"}>
                                 <SearchOutlined/>
                                 <span>查询</span>
                             </button>
@@ -126,21 +138,21 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                 <div className="inline-flex rounded-md border border-gray-100 bg-gray-100 p-0.5 shadow">
                                     <button
                                         onClick={() => setScheduleSearchList({...scheduleSearchList, type: "all"})}
-                                        className="transition inline-flex items-center gap-2 rounded-md bg-white px-4 py-0.5 text-sm text-sky-600 shadow-sm focus:relative"
+                                        className={`transition inline-flex items-center gap-1 rounded-md px-4 py-0.5 text-sm focus:relative ${scheduleSearchList.type === "all" ? "bg-white text-sky-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                                     >
                                         <BarsOutlined/>
                                         <span>全部小组</span>
                                     </button>
                                     <button
                                         onClick={() => setScheduleSearchList({...scheduleSearchList, type: "master"})}
-                                        className="transition inline-flex items-center gap-1 rounded-md px-4 py-0.5 text-sm text-gray-500 hover:text-gray-700 focus:relative"
+                                        className={`transition inline-flex items-center gap-1 rounded-md px-4 py-0.5 text-sm focus:relative ${scheduleSearchList.type === "master" ? "bg-white text-sky-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                                     >
                                         <CrownOutlined/>
                                         <span>我的小组</span>
                                     </button>
                                     <button
                                         onClick={() => setScheduleSearchList({...scheduleSearchList, type: "join"})}
-                                        className="transition inline-flex items-center gap-1 rounded-md px-4 py-0.5 text-sm text-gray-500 hover:text-gray-700 focus:relative"
+                                        className={`transition inline-flex items-center gap-1 rounded-md px-4 py-0.5 text-sm focus:relative ${scheduleSearchList.type === "join" ? "bg-white text-sky-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
                                     >
                                         <UsergroupAddOutlined/>
                                         <span>加入的组</span>
@@ -152,27 +164,41 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                 </div>
                 <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"}>
                     {
-                        scheduleGroupList.records?.map((group, index) => {
-                            return (
-                                <div key={index}
-                                     className={"bg-white rounded-lg p-4 shadow-md grid gap-3"}>
-                                    <div className={"flex justify-between items-center"}>
-                                        <div className={"flex space-x-1 items-center"}>
+                        transitions((style, item) => (
+                            <animated.div style={style} key={item.group_uuid}
+                                          className={"bg-white rounded-lg p-4 shadow-md grid gap-3"}>
+                                <div className={"flex justify-between items-center"}>
+                                    <div className={"flex space-x-1 items-center"}>
                                                     <span
-                                                        className={"text-lg font-semibold text-gray-800"}>{group.name}</span>
-                                        </div>
-                                        <div className={"flex gap-3"}>
-                                            <button
-                                                onClick={() => null}
-                                                className={"transition rounded-lg bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white px-3 py-1.5 flex items-center space-x-1 shadow-sm"}>
-                                                <UsergroupAddOutlined className="text-white"/>
-                                                <span className="text-sm">加入</span>
-                                            </button>
-                                        </div>
+                                                        className={"text-lg font-semibold text-gray-800"}>{item.name}</span>
+                                    </div>
+                                    <div className={"flex gap-1"}>
+                                        <button
+                                            onClick={() => null}
+                                            className={"transition rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
+                                            <SettingOutlined/>
+                                        </button>
+                                        <button
+                                            onClick={() => null}
+                                            className={"transition rounded-lg bg-red-500 hover:bg-red-600 active:bg-red-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
+                                            <DeleteOutlined/>
+                                        </button>
                                     </div>
                                 </div>
-                            );
-                        })
+                                <div className={"flex flex-wrap"}>
+                                    <div className={"flex gap-1"}>
+                                        {
+                                            item.tags.map((tag, index) => (
+                                                <div key={index}
+                                                     className={"flex-shrink-0 transition bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md text-xs"}>
+                                                    #{tag}
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            </animated.div>
+                        ))
                     }
                 </div>
             </div>
