@@ -196,7 +196,7 @@ export function DashboardCurriculumHome({onHeaderHandler}: { onHeaderHandler: (h
                                                 <td className={`h-[50px] font-bold bg-gray-200 p-1 ${rowIndex === curriculumSelectTime.timetable.length - 1 ? "rounded-b-lg" : ""}`}>
                                                     第 {rowIndex + 1} 节
                                                     <div className="hidden lg:block text-sm text-gray-400">
-                                                        <span>{time.startTime} - {time.endTime}</span>
+                                                        <span>{time.start_time} - {time.end_time}</span>
                                                     </div>
                                                 </td>
                                                 {Array.from({length: 7}).map((_, dayIndex) => {

@@ -18,10 +18,10 @@
  * ***************************************************************************************
  */
 
-import {ClassTimeAbleEntity} from "./class_time_able_enity.ts";
+import {ClassTimeAbleSmallEntity} from "./class_time_able_enity.ts";
 
 export type ListCurriculumTimeEntity = {
     class_time_market_uuid: string;
     name: string;
-    timetable: ClassTimeAbleEntity[];
+    timetable: ClassTimeAbleSmallEntity[];
 }

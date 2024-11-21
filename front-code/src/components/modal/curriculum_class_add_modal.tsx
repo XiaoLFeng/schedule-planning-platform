@@ -148,7 +148,7 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index} selected={index == 0}>{item.startTime}</option>
+                            <option key={index} value={index} selected={index == 0}>{item.start_time}</option>
                         ))}
                     </select>
                 </div>
@@ -162,7 +162,7 @@ export function CurriculumClassAddModal({propOpen, curriculumSelectTime, curricu
                         className="mt-1 w-full rounded-md border-gray-200 sm:text-sm text-gray-800"
                     >
                         {curriculumSelectTime.timetable?.map((item, index) => (
-                            <option key={index} value={index}>{item.endTime}</option>
+                            <option key={index} value={index}>{item.end_time}</option>
                         ))}
                     </select>
                 </div>

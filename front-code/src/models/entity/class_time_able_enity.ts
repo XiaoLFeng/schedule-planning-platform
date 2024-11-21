@@ -22,3 +22,8 @@ export type ClassTimeAbleEntity = {
     endTime: string;
     startTime: string;
 }
+
+export type ClassTimeAbleSmallEntity = {
+    start_time: string;
+    end_time: string;
+}
