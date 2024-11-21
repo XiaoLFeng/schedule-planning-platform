@@ -171,7 +171,7 @@ public class ScheduleController {
             @RequestParam(value = "type", defaultValue = "master") String type,
             @NotNull HttpServletRequest request
     ) {
-        if (!"master".equalsIgnoreCase(type)) {
+        if (!"master".equalsIgnoreCase(type) && !"all".equalsIgnoreCase(type) && !"join".equalsIgnoreCase(type)) {
             throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "类型有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);

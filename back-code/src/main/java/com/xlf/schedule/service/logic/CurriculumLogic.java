@@ -90,7 +90,7 @@ public class CurriculumLogic implements CurriculumService {
         if (exists) {
             throw new BusinessException("课程表已存在", ErrorCode.EXISTED);
         }
-        if (!timeUuid.isBlank()) {
+        if (timeUuid != null && !timeUuid.isBlank()) {
             if (!timeUuid.equals(SystemConstant.defaultClassTimeUUID)) {
                 exists = classTimeMyDAO.lambdaQuery()
                         .eq(ClassTimeMyDO::getUserUuid, userUuid)
