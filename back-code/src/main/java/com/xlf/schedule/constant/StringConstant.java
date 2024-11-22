@@ -41,8 +41,12 @@ public class StringConstant {
     public static final String SEARCH_CONDITION_ILLEGAL = "搜索内容不合法";
     public static final String GROUP_NOT_EXIST = "小组不存在";
     public static final String NO_PERMISSION_DELETE = "您没有权限删除";
+    public static final String NO_PERMISSION_UPDATE = "您没有权限编辑";
     public static final String NOT_GROUP_MEMBER = "您不是该小组成员";
     public static final String USER_NOT_EXIST = "用户不存在";
+    public static final String COURSE_TIME_NOT_EXIST = "课程时间不存在";
+    public static final String CLASS_SCHEDULE_NOT_EXIST = "课程表不存在";
+
     private StringConstant() {
         throw new IllegalStateException("Utility class");
     }

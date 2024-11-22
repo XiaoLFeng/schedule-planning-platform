@@ -98,7 +98,7 @@ public class CurriculumLogic implements CurriculumService {
                         .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
                         .exists();
                 if (!exists) {
-                    throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST);
                 }
             }
         }
@@ -128,7 +128,7 @@ public class CurriculumLogic implements CurriculumService {
         ClassGradeDO getClassGrade = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getClassGradeUuid, uuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
                 throw new BusinessException("您没有权限查看", ErrorCode.OPERATION_DENIED);
@@ -163,7 +163,7 @@ public class CurriculumLogic implements CurriculumService {
         ClassGradeDO getClassGrade = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getClassGradeUuid, classGradeUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
                 throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
@@ -177,19 +177,19 @@ public class CurriculumLogic implements CurriculumService {
         ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getClassGradeUuid, uuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (!timeUuid.isBlank()) {
             if (!timeUuid.equals(SystemConstant.getDefaultClassTimeUUID())) {
                 classTimeMyDAO.lambdaQuery()
                         .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
                         .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
                         .oneOpt()
-                        .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+                        .orElseThrow(() -> new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST));
             }
         }
         if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
             }
         }
         Calendar calendar = Calendar.getInstance();
@@ -235,13 +235,13 @@ public class CurriculumLogic implements CurriculumService {
         ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (classTimeMarketDO.getIsOfficial()) {
             throw new BusinessException("录入官方课程时间不允许修改", ErrorCode.OPERATION_DENIED);
         }
         if (!classTimeMarketDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
             }
         }
         checkTimeAbleUseful(classTimeVO);
@@ -260,7 +260,7 @@ public class CurriculumLogic implements CurriculumService {
         ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (classTimeMarketDO.getIsOfficial()) {
             throw new BusinessException("录入官方课程时间不允许删除", ErrorCode.OPERATION_DENIED);
         }
@@ -291,7 +291,7 @@ public class CurriculumLogic implements CurriculumService {
         ClassTimeMarketDO classTimeMarketDO = classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST));
         ClassTimeDTO classTimeDTO = new ClassTimeDTO();
         BeanUtils.copyProperties(classTimeMarketDO, classTimeDTO);
         List<ClassTimeAbleDTO> timeAble = gson.fromJson(classTimeMarketDO.getTimetable(), new TypeToken<>() {
@@ -305,7 +305,7 @@ public class CurriculumLogic implements CurriculumService {
         classTimeMarketDAO.lambdaQuery()
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST));
         classTimeMyDAO.lambdaQuery()
                 .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
                 .eq(ClassTimeMyDO::getTimeMarketUuid, classTimeMarketUuid)
@@ -379,7 +379,7 @@ public class CurriculumLogic implements CurriculumService {
                         classTimeDTO.setTimetable(timeAble);
                     }
                 }, () -> {
-                    throw new BusinessException("课程时间不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.COURSE_TIME_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
         return classTimeDTO;
     }
@@ -391,7 +391,7 @@ public class CurriculumLogic implements CurriculumService {
         ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
                 .eq(ClassGradeDO::getClassGradeUuid, classVO.getClassGradeUuid())
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
                 throw new BusinessException("您没有权限添加", ErrorCode.OPERATION_DENIED);
@@ -422,10 +422,10 @@ public class CurriculumLogic implements CurriculumService {
                     ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
                             .eq(ClassGradeDO::getClassGradeUuid, classDO.getClassGradeUuid())
                             .oneOpt()
-                            .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                            .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
                     if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     classDO
@@ -448,7 +448,7 @@ public class CurriculumLogic implements CurriculumService {
                     ClassGradeDO classGradeDO = classGradeDAO.lambdaQuery()
                             .eq(ClassGradeDO::getClassGradeUuid, classDO.getClassGradeUuid())
                             .oneOpt()
-                            .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
+                            .orElseThrow(() -> new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
                     if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
                             throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
@@ -468,7 +468,7 @@ public class CurriculumLogic implements CurriculumService {
                 .ifPresentOrElse(classGradeDO -> {
                     if (!classGradeDO.getUserUuid().equals(getUser.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
-                            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     classDAO.lambdaQuery()
@@ -485,7 +485,7 @@ public class CurriculumLogic implements CurriculumService {
                                 classDAO.updateById(classDO);
                             });
                 }, () -> {
-                    throw new BusinessException("课程表不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -508,7 +508,7 @@ public class CurriculumLogic implements CurriculumService {
                             .eq(ClassDO::getEndTick, originalEndTick)
                             .remove();
                 }, () -> {
-                    throw new BusinessException("课程表不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.CLASS_SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 

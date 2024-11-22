@@ -98,7 +98,7 @@ public class ScheduleLogic implements ScheduleService {
                 .ifPresentOrElse(groupDO -> {
                     if (!groupDO.getMaster().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
-                            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     List<String> tags;
@@ -364,7 +364,7 @@ public class ScheduleLogic implements ScheduleService {
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
         if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
-            throw new BusinessException("您没有权限编辑", ErrorCode.OPERATION_DENIED);
+            throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
         }
         if (scheduleDO.getGroupUuid() != null) {
             GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
