@@ -174,7 +174,7 @@ public class Initialize {
         WebConstant.setAuthor(prepare.initGetGlobalVariable("system_author"));
         WebConstant.setVersion(prepare.initGetGlobalVariable("system_version"));
         WebConstant.setIcp(prepare.initGetGlobalVariable("web_icp"));
-        WebConstant.setRecord(prepare.initGetGlobalVariable("web_record"));
+        WebConstant.setGongan(prepare.initGetGlobalVariable("web_record"));
         WebConstant.setLicense(prepare.initGetGlobalVariable("system_license"));
         WebConstant.setCopyright(prepare.initGetGlobalVariable("system_copyright"));
     }

@@ -33,6 +33,9 @@ import org.jetbrains.annotations.Nullable;
  * @author xiao_lfeng
  */
 public class ProcessUtil {
+    private ProcessUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * 获取文件类型

@@ -21,6 +21,7 @@
 package com.xlf.schedule.controller.v1;
 
 import com.xlf.schedule.constant.PatternConstant;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.dto.UserFriendDTO;
@@ -72,7 +73,7 @@ public class FriendController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.USER_FORMAT_INCORRECT);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.addFriend(userDTO, friendUuid, remark);
@@ -93,7 +94,7 @@ public class FriendController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.USER_FORMAT_INCORRECT);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.deleteFriend(userDTO, friendUuid);
@@ -116,7 +117,7 @@ public class FriendController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.UUID, friendUuid)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "用户主键有误");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.USER_FORMAT_INCORRECT);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         friendService.allowFriend(userDTO, friendUuid, allow, remark);

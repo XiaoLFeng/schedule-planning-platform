@@ -45,7 +45,7 @@ public class WebInfoDTO {
     public String license;
     public String copyright;
     public String icp;
-    public String record;
+    public String data;
     public String description;
     public String keywords;
 }

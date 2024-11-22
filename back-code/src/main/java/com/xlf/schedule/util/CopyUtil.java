@@ -22,6 +22,8 @@ package com.xlf.schedule.util;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.CustomPage;
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +44,9 @@ import java.util.ArrayList;
  */
 @Slf4j
 public class CopyUtil {
+    private CopyUtil() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * 复制对象
@@ -68,14 +73,14 @@ public class CopyUtil {
                 .setCurrent(source.getCurrent())
                 .setPages(source.getPages());
         if (!source.getRecords().isEmpty()) {
-            source.getRecords().forEach(record -> {
+            source.getRecords().forEach(data -> {
                 try {
                     E dto = dtoClass.getDeclaredConstructor().newInstance();
-                    BeanUtils.copyProperties(record, dto);
+                    BeanUtils.copyProperties(data, dto);
                     target.getRecords().add(dto);
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                          InvocationTargetException e) {
-                    throw new RuntimeException("DTO 对象实例化失败: " + e.getMessage());
+                    throw new BusinessException("DTO 对象实例化失败: " + e.getMessage(), ErrorCode.SERVER_INTERNAL_ERROR);
                 }
             });
         }

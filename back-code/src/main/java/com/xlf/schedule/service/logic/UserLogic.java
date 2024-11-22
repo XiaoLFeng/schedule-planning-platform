@@ -63,7 +63,7 @@ public class UserLogic implements UserService {
     public UserDTO getUserForThreeType(String user) {
         // 检查用户类型
         UserDO userDO;
-        if (Pattern.matches("^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", user)) {
+        if (Pattern.matches("^(13\\d|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18\\d|19[0-35-9])\\d{8}$", user)) {
             userDO = userDAO.lambdaQuery().eq(UserDO::getPhone, user).one();
         } else if (Pattern.matches("^[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$", user)) {
             userDO = userDAO.lambdaQuery().eq(UserDO::getEmail, user).one();

@@ -54,7 +54,7 @@ public class WebConstant {
     private static String icp;
     @Getter
     @Setter
-    private static String record;
+    private static String gongan;
     @Getter
     @Setter
     private static String description;

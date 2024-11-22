@@ -48,9 +48,9 @@ public class ClassTimeVO {
     @AllArgsConstructor
     @SuppressWarnings("unused")
     public static class TimeAble {
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间开始时间格式错误")
+        @Pattern(regexp = "^[0-2]\\d:[0-5]\\d$", message = "课程时间开始时间格式错误")
         private String startTime;
-        @Pattern(regexp = "^[0-2][0-9]:[0-5][0-9]$", message = "课程时间结束时间格式错误")
+        @Pattern(regexp = "^[0-2]\\d:[0-5]\\d$", message = "课程时间结束时间格式错误")
         private String endTime;
     }
 }

@@ -65,7 +65,7 @@ public class WebController {
                 .setIcp(WebConstant.getIcp())
                 .setName(WebConstant.getName())
                 .setKeywords(WebConstant.getKeywords())
-                .setRecord(WebConstant.getRecord())
+                .setData(WebConstant.getGongan())
                 .setCopyright(WebConstant.getCopyright());
         return ResultUtil.success("测试输出", newInfo);
     }
