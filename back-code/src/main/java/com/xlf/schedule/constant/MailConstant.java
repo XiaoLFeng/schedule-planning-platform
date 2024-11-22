@@ -30,7 +30,7 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class MailConstant {
-    public static String mailUsername;
-    public static String mailNickName;
-    public static String mailDefaultEncoding;
+    public static String MAIL_USERNAME;
+    public static String MAIL_NICK_NAME;
+    public static String MAIL_DEFAULT_ENCODING;
 }

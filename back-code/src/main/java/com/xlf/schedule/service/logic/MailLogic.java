@@ -162,7 +162,7 @@ public class MailLogic implements MailService {
         MimeMessage mimeMessage = utilConfig.javaMailSender().createMimeMessage();
         try {
             MimeMessageHelper sendHelper = new MimeMessageHelper(mimeMessage);
-            sendHelper.setFrom("<" + MailConstant.mailUsername + ">" + MailConstant.mailNickName);
+            sendHelper.setFrom("<" + MailConstant.MAIL_USERNAME + ">" + MailConstant.MAIL_NICK_NAME);
             sendHelper.setTo(mail);
             sendHelper.setSubject(subject);
             sendHelper.setText(getProcess, true);
