@@ -77,7 +77,7 @@ public class AuthController {
             HttpServletRequest request
     ) {
         // 检查用户名输入是否有效
-        if (Pattern.matches("^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8}$", authLoginVO.getUser())
+        if (Pattern.matches("^(13\\d|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18\\d|19[0-35-9])\\d{8}$", authLoginVO.getUser())
                 || Pattern.matches("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$", authLoginVO.getUser())
                 || Pattern.matches("^[a-zA-Z0-9_-]{4,36}$", authLoginVO.getUser())
         ) {
