@@ -20,6 +20,9 @@
 
 package com.xlf.schedule.constant;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Web常量
  * <p>
@@ -31,13 +34,35 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class WebConstant {
-    public static String name;
-    public static String version;
-    public static String author;
-    public static String license;
-    public static String copyright;
-    public static String icp;
-    public static String record;
-    public static String description;
-    public static String keywords;
+    @Getter
+    @Setter
+    private static String name;
+    @Getter
+    @Setter
+    private static String version;
+    @Getter
+    @Setter
+    private static String author;
+    @Getter
+    @Setter
+    private static String license;
+    @Getter
+    @Setter
+    private static String copyright;
+    @Getter
+    @Setter
+    private static String icp;
+    @Getter
+    @Setter
+    private static String record;
+    @Getter
+    @Setter
+    private static String description;
+    @Getter
+    @Setter
+    private static String keywords;
+
+    private WebConstant() {
+        throw new IllegalStateException("Utility class");
+    }
 }

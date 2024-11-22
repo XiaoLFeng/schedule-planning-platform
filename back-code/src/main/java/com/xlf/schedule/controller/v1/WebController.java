@@ -58,15 +58,15 @@ public class WebController {
     public ResponseEntity<BaseResponse<WebInfoDTO>> info() {
         WebInfoDTO newInfo = new WebInfoDTO();
         newInfo
-                .setAuthor(WebConstant.author)
-                .setVersion(WebConstant.version)
-                .setLicense(WebConstant.license)
-                .setDescription(WebConstant.description)
-                .setIcp(WebConstant.icp)
-                .setName(WebConstant.name)
-                .setKeywords(WebConstant.keywords)
-                .setRecord(WebConstant.record)
-                .setCopyright(WebConstant.copyright);
+                .setAuthor(WebConstant.getAuthor())
+                .setVersion(WebConstant.getVersion())
+                .setLicense(WebConstant.getLicense())
+                .setDescription(WebConstant.getDescription())
+                .setIcp(WebConstant.getIcp())
+                .setName(WebConstant.getName())
+                .setKeywords(WebConstant.getKeywords())
+                .setRecord(WebConstant.getRecord())
+                .setCopyright(WebConstant.getCopyright());
         return ResultUtil.success("测试输出", newInfo);
     }
 }

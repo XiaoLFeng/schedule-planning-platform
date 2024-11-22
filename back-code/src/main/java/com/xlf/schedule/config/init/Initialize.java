@@ -168,15 +168,15 @@ public class Initialize {
         MailConstant.setMailDefaultEncoding(environment.getProperty("xutil.mail.default-encoding"));
 
         // Web 配置
-        WebConstant.name = prepare.initGetGlobalVariable("web_title");
-        WebConstant.description = prepare.initGetGlobalVariable("web_description");
-        WebConstant.keywords = prepare.initGetGlobalVariable("web_keywords");
-        WebConstant.author = prepare.initGetGlobalVariable("system_author");
-        WebConstant.version = prepare.initGetGlobalVariable("system_version");
-        WebConstant.icp = prepare.initGetGlobalVariable("web_icp");
-        WebConstant.record = prepare.initGetGlobalVariable("web_record");
-        WebConstant.license = prepare.initGetGlobalVariable("system_license");
-        WebConstant.copyright = prepare.initGetGlobalVariable("system_copyright");
+        WebConstant.setName(prepare.initGetGlobalVariable("web_title"));
+        WebConstant.setDescription(prepare.initGetGlobalVariable("web_description"));
+        WebConstant.setKeywords(prepare.initGetGlobalVariable("web_keywords"));
+        WebConstant.setAuthor(prepare.initGetGlobalVariable("system_author"));
+        WebConstant.setVersion(prepare.initGetGlobalVariable("system_version"));
+        WebConstant.setIcp(prepare.initGetGlobalVariable("web_icp"));
+        WebConstant.setRecord(prepare.initGetGlobalVariable("web_record"));
+        WebConstant.setLicense(prepare.initGetGlobalVariable("system_license"));
+        WebConstant.setCopyright(prepare.initGetGlobalVariable("system_copyright"));
     }
 
     /**

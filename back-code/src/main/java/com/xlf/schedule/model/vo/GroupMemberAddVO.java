@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.model.vo;
 
+import com.xlf.schedule.constant.PatternConstant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -39,9 +40,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class GroupMemberAddVO {
     @NotBlank(message = "小组标识符不能为空")
-    @Pattern(regexp = "^[0-9a-f]{32}$", message = "小组标识符格式错误")
+    @Pattern(regexp = PatternConstant.NO_DASH_UUID, message = "小组标识符格式错误")
     private String groupUuid;
     @NotBlank(message = "用户标识符不能为空")
-    @Pattern(regexp = "^[0-9a-f]{32}$", message = "用户标识符格式错误")
+    @Pattern(regexp = PatternConstant.NO_DASH_UUID, message = "用户标识符格式错误")
     private List<String> userUuid;
 }

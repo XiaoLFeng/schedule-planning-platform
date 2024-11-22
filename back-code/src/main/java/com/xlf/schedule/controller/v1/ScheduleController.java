@@ -22,6 +22,7 @@ package com.xlf.schedule.controller.v1;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.xlf.schedule.constant.PatternConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.GroupDTO;
@@ -101,7 +102,7 @@ public class ScheduleController {
             @RequestBody @Validated GroupVO groupVO,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -122,7 +123,7 @@ public class ScheduleController {
             @PathVariable("group_uuid") String groupUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -144,10 +145,10 @@ public class ScheduleController {
             @RequestParam("new_master") String newMaster,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
         }
-        if (Pattern.matches("^[a-f0-9]{32}$", newMaster)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, newMaster)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "新队长标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -200,7 +201,7 @@ public class ScheduleController {
             @PathVariable("group_uuid") String groupUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -240,10 +241,10 @@ public class ScheduleController {
             @PathVariable("member_uuid") String memberUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
         }
-        if (Pattern.matches("^[a-f0-9]{32}$", memberUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -265,10 +266,10 @@ public class ScheduleController {
             @PathVariable("member_uuid") String memberUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", groupUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
         }
-        if (Pattern.matches("^[a-f0-9]{32}$", memberUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -308,7 +309,7 @@ public class ScheduleController {
             @RequestBody @Validated ScheduleEditVO scheduleEditVO,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", scheduleUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -329,7 +330,7 @@ public class ScheduleController {
             @RequestParam("schedule_uuid") String scheduleUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches("^[a-f0-9]{32}$", scheduleUuid)) {
+        if (Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
         }
 

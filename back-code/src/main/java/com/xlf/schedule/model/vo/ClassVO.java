@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.model.vo;
 
+import com.xlf.schedule.constant.PatternConstant;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -42,7 +43,7 @@ import java.util.List;
 public class ClassVO {
     @NotBlank(message = "课程名称不能为空")
     private String name;
-    @Pattern(regexp = "^[0-9a-f]{32}$", message = "课程编号格式错误")
+    @Pattern(regexp = PatternConstant.NO_DASH_UUID, message = "课程编号格式错误")
     private String classGradeUuid;
     @Min(value = 1, message = "星期不能小于1")
     @Max(value = 7, message = "星期不能大于7")

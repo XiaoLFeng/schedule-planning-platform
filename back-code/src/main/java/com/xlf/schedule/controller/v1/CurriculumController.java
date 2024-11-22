@@ -23,6 +23,8 @@ package com.xlf.schedule.controller.v1;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.xlf.schedule.constant.PatternConstant;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.ClassGradeDTO;
@@ -89,10 +91,10 @@ public class CurriculumController {
             @NotNull HttpServletRequest request
     ) {
         try {
-            Date startTime = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime());
+            Date startTime = new Date(new SimpleDateFormat(StringConstant.DATE_TIMER).parse(classGradeVO.getSemesterBegin()).getTime());
             Date endTime = null;
             if (classGradeVO.getSemesterEnd() != null && !classGradeVO.getSemesterEnd().isBlank()) {
-                endTime = new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime());
+                endTime = new Date(new SimpleDateFormat(StringConstant.DATE_TIMER).parse(classGradeVO.getSemesterEnd()).getTime());
             }
             if (endTime != null && endTime.before(startTime)) {
                 log.debug(endTime.toString());
@@ -126,8 +128,8 @@ public class CurriculumController {
             @PathVariable("class_grade_uuid") String classGradeUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_ILLEGAL);
         }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.deleteClassGrade(getUser, classGradeUuid);
@@ -148,8 +150,8 @@ public class CurriculumController {
             @RequestBody @Validated @NotNull ClassGradeVO classGradeVO,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_ILLEGAL);
         }
         try {
             UserDTO getUser = userService.getUserByToken(request);
@@ -157,8 +159,8 @@ public class CurriculumController {
                 curriculumService.editClassGrade(
                         classGradeUuid,
                         classGradeVO.getGradeName(),
-                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
-                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterEnd()).getTime()),
+                        new Date(new SimpleDateFormat(StringConstant.DATE_TIMER).parse(classGradeVO.getSemesterBegin()).getTime()),
+                        new Date(new SimpleDateFormat(StringConstant.DATE_TIMER).parse(classGradeVO.getSemesterEnd()).getTime()),
                         getUser,
                         classGradeVO.getClassTimeUuid()
                 );
@@ -166,7 +168,7 @@ public class CurriculumController {
                 curriculumService.editClassGrade(
                         classGradeUuid,
                         classGradeVO.getGradeName(),
-                        new Date(new SimpleDateFormat("yyyy-MM-dd").parse(classGradeVO.getSemesterBegin()).getTime()),
+                        new Date(new SimpleDateFormat(StringConstant.DATE_TIMER).parse(classGradeVO.getSemesterBegin()).getTime()),
                         null,
                         getUser,
                         classGradeVO.getClassTimeUuid()
@@ -191,8 +193,8 @@ public class CurriculumController {
             @PathVariable("class_grade_uuid") String classGradeUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classGradeUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classGradeUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_ILLEGAL);
         }
         UserDTO getUser = userService.getUserByToken(request);
         ClassGradeDTO classGrade = curriculumService.getClassGrade(getUser, classGradeUuid);
@@ -233,7 +235,7 @@ public class CurriculumController {
             @RequestBody @Validated ClassTimeVO classTimeVO,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -255,7 +257,7 @@ public class CurriculumController {
             @PathVariable("class_time_uuid") String classTimeUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -292,7 +294,7 @@ public class CurriculumController {
     public ResponseEntity<BaseResponse<ClassTimeDTO>> getClassTimeMarket(
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
         ClassTimeDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
@@ -312,7 +314,7 @@ public class CurriculumController {
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -333,7 +335,7 @@ public class CurriculumController {
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -374,7 +376,7 @@ public class CurriculumController {
             @RequestHeader
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classTimeMarketUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -423,7 +425,7 @@ public class CurriculumController {
             @RequestParam(value = "day_tick", defaultValue = "0") Short dayTick,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程UUID非法");
         }
         if (week < 1 || week > 53) {
@@ -463,8 +465,8 @@ public class CurriculumController {
             @RequestParam(value = "day_tick", defaultValue = "0") Short dayTick,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classGrade)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classGrade)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_ILLEGAL);
         }
         if (className.isBlank()) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程名称非法");
@@ -505,7 +507,7 @@ public class CurriculumController {
             @PathVariable("class_uuid") String classUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程UUID非法");
         }
         UserDTO getUser = userService.getUserByToken(request);
@@ -530,8 +532,8 @@ public class CurriculumController {
             @RequestParam(value = "original_day_tick", defaultValue = "0") Short originalDayTick,
             @NotNull HttpServletRequest request
     ) {
-        if (!Pattern.matches("^[a-f0-9]{32}$", classGrade)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程表UUID非法");
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classGrade)) {
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_ILLEGAL);
         }
         if (className.isBlank()) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程名称非法");

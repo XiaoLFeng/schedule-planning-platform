@@ -36,4 +36,7 @@ public class StringConstant {
 
     public static final String UNABLE_GET_REQUEST_OBJECT = "无法获取请求对象";
     public static final String SYSTEM_DEFAULT_CLASS_TIME_UUID = "system_default_class_time_uuid";
+    public static final String DATE_TIMER = "yyyy-MM-dd";
+    public static final String CLASS_SCHEDULES_ILLEGAL = "课程表UUID非法";
+    public static final String USER_FORMAT_INCORRECT = "用户主键有误";
 }
