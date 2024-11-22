@@ -31,5 +31,9 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class PatternConstant {
+    private PatternConstant() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public final static String UUID = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$";
 }

@@ -30,5 +30,9 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class StringConstant {
+    private StringConstant() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static final String UNABLE_GET_REQUEST_OBJECT = "无法获取请求对象";
 }
