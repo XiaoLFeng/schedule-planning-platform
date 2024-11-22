@@ -46,14 +46,15 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
         size: 20,
         type: "all",
     } as ScheduleGroupListDTO);
+    const [search, setSearch] = useState<string>("");
 
     const transitions = useTransition(scheduleGroupList.records, {
         keys: (item) => item.group_uuid,
         from: {opacity: 0, transform: "scale(0.9)"},
         enter: {opacity: 1, transform: "scale(1)"},
         leave: {opacity: 0, transform: "scale(0.9)"},
-        config: {duration: 300},
-        trail: 100
+        config: {duration: 150},
+        trail: 50
     });
 
     document.title = `${webInfo.name} - 日程小组`;
@@ -129,9 +130,10 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                 <div className={"relative flex items-center"}>
                                     <input type="text"
                                            placeholder={"筱锋的小组"}
+                                           onChange={(event) => setSearch(event.currentTarget.value)}
                                            className={"transition rounded-md border border-gray-200 text-xs py-1 pr-14"}/>
-                                    <button
-                                        className={"absolute right-0 text-xs rounded-r-md border border-emerald-500 bg-emerald-500 px-2 py-1.5 flex text-white items-center font-extrabold"}>
+                                    <button onClick={() => {setScheduleSearchList({...scheduleSearchList, search: search})}}
+                                            className={"absolute right-0 text-xs rounded-r-md border border-emerald-500 bg-emerald-500 px-2 py-1.5 flex text-white items-center font-extrabold"}>
                                         <SearchOutlined/>
                                     </button>
                                 </div>
