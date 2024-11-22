@@ -176,10 +176,19 @@ public class ScheduleLogic implements ScheduleService {
                                     .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
                             return !groupDO.getMaster().equals(userDTO.getUuid());
                         }).toList();
-                List<GroupDO> groupList = groupMemberList.stream().map(groupMemberDO -> groupDAO.lambdaQuery()
-                        .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
-                        .oneOpt()
-                        .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))).toList();
+                List<GroupDO> groupList = groupMemberList.stream()
+                        .filter(groupMemberDO -> search == null || groupDAO.lambdaQuery()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .like(GroupDO::getName, search)
+                                .or()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .like(GroupDO::getTags, search)
+                                .oneOpt().isPresent())
+                        .map(groupMemberDO -> groupDAO.lambdaQuery()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .oneOpt()
+                                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))
+                        ).toList();
                 Page<GroupDO> pageGroup = new Page<>(page, size);
                 pageGroup.setRecords(groupList);
                 return pageGroup;
@@ -187,10 +196,19 @@ public class ScheduleLogic implements ScheduleService {
                 List<GroupMemberDO> groupMemberListAll = groupMemberDAO.lambdaQuery()
                         .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
                         .list();
-                List<GroupDO> groupListAll = groupMemberListAll.stream().map(groupMemberDO -> groupDAO.lambdaQuery()
-                        .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
-                        .oneOpt()
-                        .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))).toList();
+                List<GroupDO> groupListAll = groupMemberListAll.stream()
+                        .filter(groupMemberDO -> search == null || groupDAO.lambdaQuery()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .like(GroupDO::getName, search)
+                                .or()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .like(GroupDO::getTags, search)
+                                .oneOpt().isPresent())
+                        .map(groupMemberDO -> groupDAO.lambdaQuery()
+                                .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
+                                .oneOpt()
+                                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))
+                        ).toList();
                 Page<GroupDO> pageGroupAll = new Page<>(page, size);
                 pageGroupAll.setRecords(groupListAll);
                 return pageGroupAll;
