@@ -39,7 +39,7 @@ public class UserEditVO {
     private String username;
     @Pattern(regexp = "^(|(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\\d{8})$", message = "手机号格式不正确")
     private String phone;
-    @Pattern(regexp = "^(|\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*)$", message = "邮箱格式不正确")
+    @Pattern(regexp = "^[\\w.%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$", message = "邮箱格式不正确")
     private String email;
     @Pattern(regexp = "^(|[0-9A-Za-z]{6})$", message = "邮箱验证码格式不正确")
     private String emailCode;

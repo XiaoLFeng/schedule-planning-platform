@@ -58,7 +58,7 @@ public class InitialController {
     public ResponseEntity<BaseResponse<Void>> setUp(
             @Validated @RequestBody InitialSetupVO initialSetupVO
     ) {
-        if ("true".equals(SystemConstant.isInitialMode)) {
+        if ("true".equals(SystemConstant.getIsInitialMode())) {
             initialService.setUp(initialSetupVO);
             return ResultUtil.success("初始化设置成功");
         } else {
@@ -75,6 +75,6 @@ public class InitialController {
      */
     @GetMapping("/is-initiated")
     public ResponseEntity<BaseResponse<Boolean>> isInitiated() {
-        return ResultUtil.success("信息获取成功", "true".equals(SystemConstant.isInitialMode));
+        return ResultUtil.success("信息获取成功", "true".equals(SystemConstant.getIsInitialMode()));
     }
 }

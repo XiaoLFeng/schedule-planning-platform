@@ -111,7 +111,7 @@ public class SelectListLogic implements SelectListService {
                 .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList();
         if (stringList.isEmpty()) {
             return classTimeMarketDAO.lambdaQuery()
-                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.getDefaultClassTimeUUID())
                     .list().stream().map(classTimeMarketDO -> {
                         ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
                         BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);
@@ -122,7 +122,7 @@ public class SelectListLogic implements SelectListService {
             return classTimeMarketDAO.lambdaQuery()
                     .in(ClassTimeMarketDO::getClassTimeMarketUuid, stringList)
                     .or()
-                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.getDefaultClassTimeUUID())
                     .list().stream().map(classTimeMarketDO -> {
                         ListCurriculumTimeDTO newCurriculumTime = new ListCurriculumTimeDTO();
                         BeanUtils.copyProperties(classTimeMarketDO, newCurriculumTime);

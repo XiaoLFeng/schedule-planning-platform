@@ -33,6 +33,10 @@ import lombok.Setter;
  * @since v1.0.0
  */
 public class MailConstant {
+    private MailConstant() {
+        throw new IllegalStateException("Utility class");
+    }
+
     @Getter
     @Setter
     private static String mailUsername;

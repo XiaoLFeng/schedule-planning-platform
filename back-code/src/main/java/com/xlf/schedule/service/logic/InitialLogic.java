@@ -84,7 +84,7 @@ public class InitialLogic implements InitialService {
                 .setRole(getUserRole.getRoleUuid())
                 .setPhone("18888888888")
                 .setPassword(PasswordUtil.encrypt("test"));
-        if (!SystemConstant.isDebugMode) {
+        if (!SystemConstant.getIsDebugMode()) {
             newTestUserDO.setEnable(false);
         }
         userDAO.save(newTestUserDO);
@@ -93,9 +93,9 @@ public class InitialLogic implements InitialService {
                 .eq(InfoDO::getKey, "system_test_user_uuid")
                 .update();
         // 修改初始化
-        SystemConstant.isInitialMode = "false";
+        SystemConstant.setIsInitialMode("false");
         infoDAO.lambdaUpdate()
-                .set(InfoDO::getValue, SystemConstant.isInitialMode)
+                .set(InfoDO::getValue, SystemConstant.getIsInitialMode())
                 .eq(InfoDO::getKey, "system_initial_mode")
                 .update();
         // 打日志

@@ -22,6 +22,7 @@ package com.xlf.schedule.config.init;
 
 import com.google.gson.Gson;
 import com.xlf.schedule.constant.MailConstant;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.constant.WebConstant;
 import com.xlf.schedule.dao.InfoDAO;
@@ -99,7 +100,7 @@ public class Initialize {
                     \u001B[38;5;111m/____/\\___/_/ /_/\\___/\\__,_/\\__,_/_/\\___/\u001B[32m  /_/   /_/\\__,_/_/ /_/_/ /_/_/_/ /_/\\__, / \s
                                                                                    \u001B[32m              /____/  \s
                     """);
-            System.out.println("\t\t\t\u001B[33m::: " + SystemConstant.SYSTEM_AUTHOR + " :::\t\t\t\t\t\t\t ::: " + SystemConstant.SYSTEM_VERSION + " :::\u001B[0m");
+            System.out.println("\t\t\t\u001B[33m::: " + SystemConstant.getSYSTEM_AUTHOR() + " :::\t\t\t\t\t\t\t ::: " + SystemConstant.getSYSTEM_VERSION() + " :::\u001B[0m");
         };
     }
 
@@ -156,10 +157,10 @@ public class Initialize {
         log.info("[INIT] 全局变量初始化...");
 
         // 系统配置
-        SystemConstant.isInitialMode = prepare.initGetGlobalVariable("system_initial_mode");
-        SystemConstant.isDebugMode = Boolean.parseBoolean(prepare.initGetGlobalVariable("system_debug_mode"));
-        SystemConstant.superAdminUUID = prepare.initGetGlobalVariable("system_super_admin_uuid");
-        SystemConstant.testUserUUID = prepare.initGetGlobalVariable("system_test_user_uuid");
+        SystemConstant.setIsInitialMode(prepare.initGetGlobalVariable("system_initial_mode"));
+        SystemConstant.setIsDebugMode(Boolean.parseBoolean(prepare.initGetGlobalVariable("system_debug_mode")));
+        SystemConstant.setSuperAdminUUID(prepare.initGetGlobalVariable("system_super_admin_uuid"));
+        SystemConstant.setTestUserUUID(prepare.initGetGlobalVariable("system_test_user_uuid"));
 
         // 邮件配置
         MailConstant.setMailUsername(environment.getProperty("xutil.mail.username"));
@@ -183,7 +184,7 @@ public class Initialize {
      */
     private void initClassDefaultCheck() {
         log.info("[INIT] 检查默认课表时间信息...");
-        if (prepare.initGetGlobalVariable("system_default_class_time_uuid") == null) {
+        if (prepare.initGetGlobalVariable(StringConstant.SYSTEM_DEFAULT_CLASS_TIME_UUID) == null) {
             String newTimeMarketUuid = UuidUtil.generateUuidNoDash();
             ArrayList<ClassTimeVO.TimeAble> timeAble = new ArrayList<>();
             timeAble.add(new ClassTimeVO.TimeAble("08:00", "08:45"));
@@ -212,9 +213,9 @@ public class Initialize {
                     classTimeMarketDO.getIsOfficial()
             );
             prepare.checkInfoTableFields("system_default_class_time_uuid", newTimeMarketUuid);
-            SystemConstant.defaultClassTimeUUID = newTimeMarketUuid;
+            SystemConstant.setDefaultClassTimeUUID(newTimeMarketUuid);
         } else {
-            SystemConstant.defaultClassTimeUUID = prepare.initGetGlobalVariable("system_default_class_time_uuid");
+            SystemConstant.setDefaultClassTimeUUID(prepare.initGetGlobalVariable(StringConstant.SYSTEM_DEFAULT_CLASS_TIME_UUID));
         }
     }
 

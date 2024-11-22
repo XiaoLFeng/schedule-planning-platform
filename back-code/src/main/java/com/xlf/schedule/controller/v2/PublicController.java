@@ -55,21 +55,21 @@ public class PublicController {
     public ResponseEntity<BaseResponse<SystemInfoDTO>> getSystemInfo() {
         SystemInfoDTO systemInfoDTO = new SystemInfoDTO();
         systemInfoDTO
-                .setSystemName(SystemConstant.SYSTEM_NAME)
-                .setSystemChineseName(SystemConstant.SYSTEM_CHINESE_NAME)
-                .setSystemVersion(SystemConstant.SYSTEM_VERSION)
-                .setSystemAuthor(SystemConstant.SYSTEM_AUTHOR)
-                .setSystemAuthorEmail(SystemConstant.SYSTEM_AUTHOR_EMAIL)
-                .setSystemAuthorUrl(SystemConstant.SYSTEM_AUTHOR_URL)
-                .setSystemLicense(SystemConstant.SYSTEM_LICENSE)
-                .setSystemLicenseUrl(SystemConstant.SYSTEM_LICENSE_URL)
-                .setSystemDisclaimer(SystemConstant.SYSTEM_DISCLAIMER)
-                .setSystemChineseDisclaimer(SystemConstant.SYSTEM_CHINESE_DISCLAIMER)
-                .setSystemAbout(SystemConstant.SYSTEM_ABOUT)
-                .setSystemChineseAbout(SystemConstant.SYSTEM_CHINESE_ABOUT)
-                .setSystemLicenseStatement(SystemConstant.SYSTEM_LICENSE_STATEMENT)
-                .setSystemChineseLicenseStatement(SystemConstant.SYSTEM_CHINESE_LICENSE_STATEMENT)
-                .setSystemCopyright(SystemConstant.SYSTEM_COPYRIGHT);
+                .setSystemName(SystemConstant.getSYSTEM_NAME())
+                .setSystemChineseName(SystemConstant.getSYSTEM_CHINESE_NAME())
+                .setSystemVersion(SystemConstant.getSYSTEM_VERSION())
+                .setSystemAuthor(SystemConstant.getSYSTEM_AUTHOR())
+                .setSystemAuthorEmail(SystemConstant.getSYSTEM_AUTHOR_EMAIL())
+                .setSystemAuthorUrl(SystemConstant.getSYSTEM_AUTHOR_URL())
+                .setSystemLicense(SystemConstant.getSYSTEM_LICENSE())
+                .setSystemLicenseUrl(SystemConstant.getSYSTEM_LICENSE_URL())
+                .setSystemDisclaimer(SystemConstant.getSYSTEM_DISCLAIMER())
+                .setSystemChineseDisclaimer(SystemConstant.getSYSTEM_CHINESE_DISCLAIMER())
+                .setSystemAbout(SystemConstant.getSYSTEM_ABOUT())
+                .setSystemChineseAbout(SystemConstant.getSYSTEM_CHINESE_ABOUT())
+                .setSystemLicenseStatement(SystemConstant.getSYSTEM_LICENSE_STATEMENT())
+                .setSystemChineseLicenseStatement(SystemConstant.getSYSTEM_CHINESE_LICENSE_STATEMENT())
+                .setSystemCopyright(SystemConstant.getSYSTEM_COPYRIGHT());
         return ResultUtil.success("成功", systemInfoDTO);
     }
 }

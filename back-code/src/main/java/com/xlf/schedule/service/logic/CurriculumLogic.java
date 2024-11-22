@@ -91,7 +91,7 @@ public class CurriculumLogic implements CurriculumService {
             throw new BusinessException("课程表已存在", ErrorCode.EXISTED);
         }
         if (timeUuid != null && !timeUuid.isBlank()) {
-            if (!timeUuid.equals(SystemConstant.defaultClassTimeUUID)) {
+            if (!timeUuid.equals(SystemConstant.getDefaultClassTimeUUID())) {
                 exists = classTimeMyDAO.lambdaQuery()
                         .eq(ClassTimeMyDO::getUserUuid, userUuid)
                         .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
@@ -178,7 +178,7 @@ public class CurriculumLogic implements CurriculumService {
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!timeUuid.isBlank()) {
-            if (!timeUuid.equals(SystemConstant.defaultClassTimeUUID)) {
+            if (!timeUuid.equals(SystemConstant.getDefaultClassTimeUUID())) {
                 classTimeMyDAO.lambdaQuery()
                         .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
                         .eq(ClassTimeMyDO::getTimeMarketUuid, timeUuid)
@@ -263,7 +263,7 @@ public class CurriculumLogic implements CurriculumService {
         if (classTimeMarketDO.getIsOfficial()) {
             throw new BusinessException("录入官方课程时间不允许删除", ErrorCode.OPERATION_DENIED);
         }
-        if (classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.defaultClassTimeUUID)) {
+        if (classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.getDefaultClassTimeUUID())) {
             throw new BusinessException("默认课程时间不允许删除", ErrorCode.OPERATION_DENIED);
         }
         if (!classTimeMarketDO.getUserUuid().equals(userDTO.getUuid())) {
@@ -274,7 +274,7 @@ public class CurriculumLogic implements CurriculumService {
         // TODO[241025001] - 添加邮件发送通知
         // 配置原有课表时间转为默认时间
         classGradeDAO.lambdaUpdate().eq(ClassGradeDO::getClassTimeUuid, classTimeUuid)
-                .set(ClassGradeDO::getClassTimeUuid, SystemConstant.defaultClassTimeUUID)
+                .set(ClassGradeDO::getClassTimeUuid, SystemConstant.getDefaultClassTimeUUID())
                 .update();
         classTimeMyDAO.lambdaUpdate().eq(ClassTimeMyDO::getTimeMarketUuid, classTimeUuid).remove();
         classTimeMarketDAO.lambdaUpdate().eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeUuid).remove();
@@ -339,13 +339,13 @@ public class CurriculumLogic implements CurriculumService {
                 .list().stream().map(ClassTimeMyDO::getTimeMarketUuid).toList();
         if (stringList.isEmpty()) {
             return classTimeMarketDAO.lambdaQuery()
-                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.getDefaultClassTimeUUID())
                     .page(new Page<>(page, size));
         } else {
             return classTimeMarketDAO.lambdaQuery()
                     .in(ClassTimeMarketDO::getClassTimeMarketUuid, stringList)
                     .or()
-                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.defaultClassTimeUUID)
+                    .eq(ClassTimeMarketDO::getClassTimeMarketUuid, SystemConstant.getDefaultClassTimeUUID())
                     .page(new Page<>(page, size));
         }
     }
@@ -357,7 +357,7 @@ public class CurriculumLogic implements CurriculumService {
                 .eq(ClassTimeMarketDO::getClassTimeMarketUuid, classTimeMarketUuid)
                 .oneOpt()
                 .ifPresentOrElse(classTimeMarketDO -> {
-                    if (!classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.defaultClassTimeUUID)) {
+                    if (!classTimeMarketDO.getClassTimeMarketUuid().equals(SystemConstant.getDefaultClassTimeUUID())) {
                         classTimeMyDAO.lambdaQuery()
                                 .eq(ClassTimeMyDO::getUserUuid, userDTO.getUuid())
                                 .eq(ClassTimeMyDO::getTimeMarketUuid, classTimeMarketUuid)

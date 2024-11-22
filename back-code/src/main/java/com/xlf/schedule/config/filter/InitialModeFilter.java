@@ -56,7 +56,7 @@ public class InitialModeFilter extends OncePerRequestFilter {
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
         // 检查是否是初始化模式
-        if ("true".equals(SystemConstant.isInitialMode)) {
+        if ("true".equals(SystemConstant.getIsInitialMode())) {
             if (request.getRequestURI().contains("/api/v2/initial")) {
                 filterChain.doFilter(request, response);
             } else {

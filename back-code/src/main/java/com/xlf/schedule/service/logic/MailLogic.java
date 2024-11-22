@@ -148,9 +148,9 @@ public class MailLogic implements MailService {
         }
         // 模板注入参数
         HashMap<String, Object> mailTemplateParameters = new HashMap<>(parameters);
-        mailTemplateParameters.put("title", SystemConstant.SYSTEM_CHINESE_NAME + " - " + subject);
+        mailTemplateParameters.put("title", SystemConstant.getSYSTEM_CHINESE_NAME() + " - " + subject);
         mailTemplateParameters.put("mail", mail);
-        mailTemplateParameters.put("copyright", SystemConstant.SYSTEM_CHINESE_COPYRIGHT);
+        mailTemplateParameters.put("copyright", SystemConstant.getSYSTEM_CHINESE_COPYRIGHT());
         mailTemplateParameters.put("now_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()));
         // 处理 Context
         Context context = new Context();

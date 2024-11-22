@@ -54,7 +54,7 @@ public class TokenExpiredCheckTask {
     public void checkTokenExpired() {
         log.info("[CRON] Token 过期检查任务执行");
         long startTime = System.currentTimeMillis();
-        if (SystemConstant.isDebugMode) {
+        if (SystemConstant.getIsDebugMode()) {
             StringBuilder builder = new StringBuilder("[CRON] Token 过期数据\n\t");
             try {
                 List<TokenDO> expiredTokenList = tokenDAO.lambdaQuery()

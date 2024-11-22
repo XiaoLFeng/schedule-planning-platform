@@ -140,9 +140,9 @@ public class PermissionAspect {
                 if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
                     throw new UserAuthenticationException(UserAuthenticationException.ErrorType.PERMISSION_DENIED, request);
                 }
-                Arrays.stream(args).filter(arg -> arg instanceof Boolean).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = true);
+                Arrays.stream(args).filter(Boolean.class::isInstance).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = true);
             } else {
-                Arrays.stream(args).filter(arg -> arg instanceof Boolean).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = false);
+                Arrays.stream(args).filter(Boolean.class::isInstance).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = false);
             }
         } else {
             throw new ServerInternalErrorException(StringConstant.UNABLE_GET_REQUEST_OBJECT);

@@ -35,4 +35,5 @@ public class StringConstant {
     }
 
     public static final String UNABLE_GET_REQUEST_OBJECT = "无法获取请求对象";
+    public static final String SYSTEM_DEFAULT_CLASS_TIME_UUID = "system_default_class_time_uuid";
 }
