@@ -20,6 +20,9 @@
 
 package com.xlf.schedule.constant;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 邮件常量
  * <p>
@@ -30,7 +33,13 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class MailConstant {
-    public static String MAIL_USERNAME;
-    public static String MAIL_NICK_NAME;
-    public static String MAIL_DEFAULT_ENCODING;
+    @Getter
+    @Setter
+    private static String mailUsername;
+    @Getter
+    @Setter
+    private static String mailNickName;
+    @Getter
+    @Setter
+    private static String mailDefaultEncoding;
 }
