@@ -22,6 +22,7 @@ package com.xlf.schedule.config.aspect;
 
 import com.xlf.schedule.annotations.CheckAccessToYourOwnUuidOrAdminUuid;
 import com.xlf.schedule.constant.PatternConstant;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.service.RoleService;
@@ -82,7 +83,7 @@ public class PermissionAspect {
                 throw new UserAuthenticationException(UserAuthenticationException.ErrorType.USER_NOT_LOGIN, request);
             }
         } else {
-            throw new ServerInternalErrorException("无法获取请求对象");
+            throw new ServerInternalErrorException(StringConstant.UNABLE_GET_REQUEST_OBJECT);
         }
     }
 
@@ -110,7 +111,7 @@ public class PermissionAspect {
                 throw new UserAuthenticationException(UserAuthenticationException.ErrorType.USER_NOT_LOGIN, request);
             }
         } else {
-            throw new ServerInternalErrorException("无法获取请求对象");
+            throw new ServerInternalErrorException(StringConstant.UNABLE_GET_REQUEST_OBJECT);
         }
     }
 
@@ -144,7 +145,7 @@ public class PermissionAspect {
                 Arrays.stream(args).filter(arg -> arg instanceof Boolean).forEach(arg -> args[Arrays.asList(args).indexOf(arg)] = false);
             }
         } else {
-            throw new ServerInternalErrorException("无法获取请求对象");
+            throw new ServerInternalErrorException(StringConstant.UNABLE_GET_REQUEST_OBJECT);
         }
         return pjp.proceed();
     }

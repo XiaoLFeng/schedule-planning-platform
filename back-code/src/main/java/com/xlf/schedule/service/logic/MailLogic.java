@@ -23,10 +23,8 @@ package com.xlf.schedule.service.logic;
 import com.xlf.schedule.constant.MailConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.MailCodeDAO;
-import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.entity.MailCodeDO;
 import com.xlf.schedule.service.MailService;
-import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.config.UtilConfiguration;
 import com.xlf.utility.exception.BusinessException;
@@ -65,8 +63,6 @@ public class MailLogic implements MailService {
     private final UtilConfiguration utilConfig;
     private final SpringTemplateEngine templateEngine;
     private final MailCodeDAO mailCodeDAO;
-    private final UserDAO userDAO;
-    private final UserService userService;
 
     @Override
     public void sendMail(String mail, String template, String subject, Map<String, String> parameters) {
@@ -166,7 +162,7 @@ public class MailLogic implements MailService {
         MimeMessage mimeMessage = utilConfig.javaMailSender().createMimeMessage();
         try {
             MimeMessageHelper sendHelper = new MimeMessageHelper(mimeMessage);
-            sendHelper.setFrom("<" + MailConstant.MailUsername + ">" + MailConstant.MailNickName);
+            sendHelper.setFrom("<" + MailConstant.mailUsername + ">" + MailConstant.mailNickName);
             sendHelper.setTo(mail);
             sendHelper.setSubject(subject);
             sendHelper.setText(getProcess, true);

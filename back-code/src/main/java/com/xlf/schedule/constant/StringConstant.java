@@ -21,16 +21,14 @@
 package com.xlf.schedule.constant;
 
 /**
- * 邮件常量
+ * 字符串常量
  * <p>
- * 该类用于定义邮件常量信息;
+ * 该类用于定义字符串常量;
  *
  * @author xiao_lfeng
  * @version v1.0.0
  * @since v1.0.0
  */
-public class MailConstant {
-    public static String mailUsername;
-    public static String mailNickName;
-    public static String mailDefaultEncoding;
+public class StringConstant {
+    public static final String UNABLE_GET_REQUEST_OBJECT = "无法获取请求对象";
 }

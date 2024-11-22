@@ -162,9 +162,9 @@ public class Initialize {
         SystemConstant.testUserUUID = prepare.initGetGlobalVariable("system_test_user_uuid");
 
         // 邮件配置
-        MailConstant.MailUsername = environment.getProperty("xutil.mail.username");
-        MailConstant.MailNickName = environment.getProperty("xutil.mail.nickname");
-        MailConstant.MailDefaultEncoding = environment.getProperty("xutil.mail.default-encoding");
+        MailConstant.mailUsername = environment.getProperty("xutil.mail.username");
+        MailConstant.mailNickName = environment.getProperty("xutil.mail.nickname");
+        MailConstant.mailDefaultEncoding = environment.getProperty("xutil.mail.default-encoding");
 
         // Web 配置
         WebConstant.name = prepare.initGetGlobalVariable("web_title");
