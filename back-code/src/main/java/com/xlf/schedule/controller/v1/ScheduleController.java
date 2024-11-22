@@ -332,6 +332,7 @@ public class ScheduleController {
         if (Pattern.matches("^[a-f0-9]{32}$", scheduleUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
         }
+
         UserDTO userDTO = userService.getUserByToken(request);
         scheduleService.deleteSchedule(userDTO, scheduleUuid);
         return ResultUtil.success("删除日程成功");
