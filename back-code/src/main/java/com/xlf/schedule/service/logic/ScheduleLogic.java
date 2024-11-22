@@ -22,6 +22,7 @@ package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.dao.GroupDAO;
 import com.xlf.schedule.dao.GroupMemberDAO;
 import com.xlf.schedule.dao.ScheduleDAO;
@@ -112,7 +113,7 @@ public class ScheduleLogic implements ScheduleService {
                             .setTags(gson.toJson(tags));
                     groupDAO.updateById(groupDO);
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -123,12 +124,12 @@ public class ScheduleLogic implements ScheduleService {
                 .ifPresentOrElse(groupDO -> {
                     if (!groupDO.getMaster().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
-                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     groupDAO.removeById(groupDO);
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -145,7 +146,7 @@ public class ScheduleLogic implements ScheduleService {
                     groupDO.setMaster(newMaster);
                     groupDAO.updateById(groupDO);
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -173,7 +174,7 @@ public class ScheduleLogic implements ScheduleService {
                             GroupDO groupDO = groupDAO.lambdaQuery()
                                     .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
                                     .oneOpt()
-                                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+                                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
                             return !groupDO.getMaster().equals(userDTO.getUuid());
                         }).toList();
                 List<GroupDO> groupList = groupMemberList.stream()
@@ -187,7 +188,7 @@ public class ScheduleLogic implements ScheduleService {
                         .map(groupMemberDO -> groupDAO.lambdaQuery()
                                 .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
                                 .oneOpt()
-                                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))
+                                .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST))
                         ).toList();
                 Page<GroupDO> pageGroup = new Page<>(page, size);
                 pageGroup.setRecords(groupList);
@@ -207,7 +208,7 @@ public class ScheduleLogic implements ScheduleService {
                         .map(groupMemberDO -> groupDAO.lambdaQuery()
                                 .eq(GroupDO::getGroupUuid, groupMemberDO.getGroupUuid())
                                 .oneOpt()
-                                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST))
+                                .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST))
                         ).toList();
                 Page<GroupDO> pageGroupAll = new Page<>(page, size);
                 pageGroupAll.setRecords(groupListAll);
@@ -220,13 +221,13 @@ public class ScheduleLogic implements ScheduleService {
     @Override
     public GroupDTO getGroup(@NotNull UserDTO userDTO, String groupUuid) {
         GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid).oneOpt()
-                .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (!groupDO.getMaster().equals(userDTO.getUuid())) {
             groupMemberDAO.lambdaQuery()
                     .eq(GroupMemberDO::getGroupUuid, groupUuid)
                     .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
                     .oneOpt()
-                    .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+                    .orElseThrow(() -> new BusinessException(StringConstant.NOT_GROUP_MEMBER, ErrorCode.OPERATION_DENIED));
             if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
                 throw new BusinessException("您没有权限查看", ErrorCode.OPERATION_DENIED);
             }
@@ -250,7 +251,7 @@ public class ScheduleLogic implements ScheduleService {
                     }
                     userDAO.lambdaQuery().eq(UserDO::getUuid, memberUuid)
                             .oneOpt()
-                            .orElseThrow(() -> new BusinessException("用户不存在", ErrorCode.NOT_EXIST));
+                            .orElseThrow(() -> new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST));
                     GroupMemberDO groupMemberDO = new GroupMemberDO();
                     groupMemberDO
                             .setGroupUuid(groupUuid)
@@ -258,7 +259,7 @@ public class ScheduleLogic implements ScheduleService {
                             .setStatus((short) 1);
                     groupMemberDAO.save(groupMemberDO);
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -279,7 +280,7 @@ public class ScheduleLogic implements ScheduleService {
                     memberUuidList.forEach(memberUuid -> {
                         userDAO.lambdaQuery().eq(UserDO::getUuid, memberUuid)
                                 .oneOpt()
-                                .orElseThrow(() -> new BusinessException("用户不存在", ErrorCode.NOT_EXIST));
+                                .orElseThrow(() -> new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST));
                         GroupMemberDO groupMemberDO = new GroupMemberDO();
                         groupMemberDO
                                 .setGroupUuid(groupUuid)
@@ -289,7 +290,7 @@ public class ScheduleLogic implements ScheduleService {
                     });
                     groupMemberDAO.saveBatch(groupMemberDOList);
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -300,7 +301,7 @@ public class ScheduleLogic implements ScheduleService {
                 .ifPresentOrElse(groupDO -> {
                     if (!groupDO.getMaster().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getUuid())) {
-                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     groupMemberDAO.lambdaQuery()
@@ -311,7 +312,7 @@ public class ScheduleLogic implements ScheduleService {
                                 throw new BusinessException("成员不存在", ErrorCode.NOT_EXIST);
                             });
                 }, () -> {
-                    throw new BusinessException("小组不存在", ErrorCode.NOT_EXIST);
+                    throw new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST);
                 });
     }
 
@@ -323,7 +324,7 @@ public class ScheduleLogic implements ScheduleService {
             GroupDO getGroup = groupDAO.lambdaQuery()
                     .eq(GroupDO::getGroupUuid, scheduleAddVO.getGroupUuid())
                     .oneOpt()
-                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
             if (!getGroup.getUserAbleAdd()) {
                 throw new BusinessException("小组不允许普通用户添加日程", ErrorCode.OPERATION_DENIED);
             }
@@ -331,7 +332,7 @@ public class ScheduleLogic implements ScheduleService {
                     .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
                     .eq(GroupMemberDO::getGroupUuid, getGroup.getGroupUuid())
                     .oneOpt()
-                    .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+                    .orElseThrow(() -> new BusinessException(StringConstant.NOT_GROUP_MEMBER, ErrorCode.OPERATION_DENIED));
             newSchedule.setGroupUuid(scheduleAddVO.getGroupUuid());
         }
         // 图片上传
@@ -368,13 +369,13 @@ public class ScheduleLogic implements ScheduleService {
         if (scheduleDO.getGroupUuid() != null) {
             GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
                     .oneOpt()
-                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
             if (!groupDO.getMaster().equals(userDTO.getUuid())) {
                 groupMemberDAO.lambdaQuery()
                         .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
                         .eq(GroupMemberDO::getGroupUuid, groupDO.getGroupUuid())
                         .oneOpt()
-                        .orElseThrow(() -> new BusinessException("您不是该小组成员", ErrorCode.OPERATION_DENIED));
+                        .orElseThrow(() -> new BusinessException(StringConstant.NOT_GROUP_MEMBER, ErrorCode.OPERATION_DENIED));
             }
             scheduleDO.setUserUuid(null);
             scheduleDO.setGroupUuid(groupDO.getGroupUuid());
@@ -413,14 +414,14 @@ public class ScheduleLogic implements ScheduleService {
                 .oneOpt()
                 .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
         if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
-            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+            throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
         }
         if (scheduleDO.getGroupUuid() != null) {
             GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
                     .oneOpt()
-                    .orElseThrow(() -> new BusinessException("小组不存在", ErrorCode.NOT_EXIST));
+                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
             if (!groupDO.getMaster().equals(userDTO.getUuid())) {
-                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
             }
         }
         scheduleDAO.removeById(scheduleDO);

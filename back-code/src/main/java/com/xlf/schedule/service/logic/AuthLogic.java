@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.service.logic;
 
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.entity.RoleDO;
@@ -99,7 +100,7 @@ public class AuthLogic implements AuthService {
     public void changePassword(String userUuid, String password) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         userDO
                 .setOldPassword(userDO.getPassword())

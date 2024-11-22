@@ -23,6 +23,7 @@ package com.xlf.schedule.service.logic;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.constant.SystemConstant;
 import com.xlf.schedule.dao.ClassDAO;
 import com.xlf.schedule.dao.ClassGradeDAO;
@@ -165,7 +166,7 @@ public class CurriculumLogic implements CurriculumService {
                 .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
         if (!getClassGrade.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
             }
         }
         classGradeDAO.removeById(classGradeUuid);
@@ -268,7 +269,7 @@ public class CurriculumLogic implements CurriculumService {
         }
         if (!classTimeMarketDO.getUserUuid().equals(userDTO.getUuid())) {
             if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
             }
         }
         // TODO[241025001] - 添加邮件发送通知
@@ -450,7 +451,7 @@ public class CurriculumLogic implements CurriculumService {
                             .orElseThrow(() -> new BusinessException("课程表不存在", ErrorCode.NOT_EXIST));
                     if (!classGradeDO.getUserUuid().equals(userDTO.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(userDTO.getRole())) {
-                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     classDAO.removeById(classUuid);
@@ -496,7 +497,7 @@ public class CurriculumLogic implements CurriculumService {
                 .ifPresentOrElse(classGradeDO -> {
                     if (!classGradeDO.getUserUuid().equals(getUser.getUuid())) {
                         if (!roleService.checkRoleHasAdmin(getUser.getRole())) {
-                            throw new BusinessException("您没有权限删除", ErrorCode.OPERATION_DENIED);
+                            throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
                         }
                     }
                     classDAO.lambdaUpdate()

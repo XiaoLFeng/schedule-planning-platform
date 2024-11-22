@@ -138,7 +138,7 @@ public class FriendController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches("^([0-9A-Za-z-_@]+)$", search)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.SEARCH_CONDITION_ILLEGAL);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         List<UserFriendDTO> userList = friendService.searchFriend(userDTO, search);

@@ -295,7 +295,7 @@ public class CurriculumController {
             @PathVariable("class_time_market_uuid") String classTimeMarketUuid
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_TIME_MARKET);
         }
         ClassTimeDTO classTimeMarket = curriculumService.getClassTimeMarket(classTimeMarketUuid);
         return ResultUtil.success("操作成功", classTimeMarket);
@@ -315,7 +315,7 @@ public class CurriculumController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_TIME_MARKET);
         }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.addMyClassTime(getUser, classTimeMarketUuid);
@@ -336,7 +336,7 @@ public class CurriculumController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_TIME_MARKET);
         }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.deleteMyClassTime(getUser, classTimeMarketUuid);
@@ -377,7 +377,7 @@ public class CurriculumController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, classTimeMarketUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "课程时间市场UUID非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_SCHEDULES_TIME_MARKET);
         }
         UserDTO getUser = userService.getUserByToken(request);
         ClassTimeDTO myClassTime = curriculumService.getMyClassTime(getUser, classTimeMarketUuid);
@@ -398,10 +398,10 @@ public class CurriculumController {
             @NotNull HttpServletRequest request
     ) {
         if (classVO.getStartTick() < 0) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_START_TIME);
         }
         if (classVO.getEndTick() < 0 || classVO.getEndTick() < classVO.getStartTick()) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_END_TIME);
         }
         UserDTO getUser = userService.getUserByToken(request);
         curriculumService.addClass(getUser, classVO);
@@ -432,10 +432,10 @@ public class CurriculumController {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "周数非法");
         }
         if (startTick < 0) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_START_TIME);
         }
         if (endTick < 0 || endTick < startTick) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_END_TIME);
         }
         if (dayTick < 0 || dayTick >= 7) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "星期数非法");
@@ -481,10 +481,10 @@ public class CurriculumController {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "原始星期数非法");
         }
         if (startTick < 0) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "开始节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_START_TIME);
         }
         if (endTick < 0 || endTick < startTick) {
-            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "结束节数非法");
+            throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, StringConstant.CLASS_TIME_END_TIME);
         }
         if (dayTick < 0 || dayTick > 7) {
             throw new IllegalDataException(ErrorCode.BODY_ILLEGAL, "星期数非法");

@@ -39,13 +39,13 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WebInfoDTO {
-    public String name;
-    public String version;
-    public String author;
-    public String license;
-    public String copyright;
-    public String icp;
-    public String data;
-    public String description;
-    public String keywords;
+    private String name;
+    private String version;
+    private String author;
+    private String license;
+    private String copyright;
+    private String icp;
+    private String data;
+    private String description;
+    private String keywords;
 }

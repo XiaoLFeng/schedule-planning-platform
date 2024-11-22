@@ -30,13 +30,20 @@ package com.xlf.schedule.constant;
  * @since v1.0.0
  */
 public class StringConstant {
-    private StringConstant() {
-        throw new IllegalStateException("Utility class");
-    }
-
     public static final String UNABLE_GET_REQUEST_OBJECT = "无法获取请求对象";
     public static final String SYSTEM_DEFAULT_CLASS_TIME_UUID = "system_default_class_time_uuid";
     public static final String DATE_TIMER = "yyyy-MM-dd";
     public static final String CLASS_SCHEDULES_ILLEGAL = "课程表UUID非法";
     public static final String USER_FORMAT_INCORRECT = "用户主键有误";
+    public static final String CLASS_SCHEDULES_TIME_MARKET = "课程时间市场UUID非法";
+    public static final String CLASS_TIME_START_TIME = "开始节数非法";
+    public static final String CLASS_TIME_END_TIME = "结束节数非法";
+    public static final String SEARCH_CONDITION_ILLEGAL = "搜索内容不合法";
+    public static final String GROUP_NOT_EXIST = "小组不存在";
+    public static final String NO_PERMISSION_DELETE = "您没有权限删除";
+    public static final String NOT_GROUP_MEMBER = "您不是该小组成员";
+    public static final String USER_NOT_EXIST = "用户不存在";
+    private StringConstant() {
+        throw new IllegalStateException("Utility class");
+    }
 }

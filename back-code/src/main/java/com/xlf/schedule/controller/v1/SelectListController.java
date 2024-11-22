@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.controller.v1;
 
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.ListCurriculumDTO;
 import com.xlf.schedule.model.dto.ListCurriculumTimeDTO;
@@ -74,7 +75,7 @@ public class SelectListController {
             @RequestParam(value = "search", defaultValue = "") String search
     ) {
         if (!Pattern.matches("^(|[0-9A-Za-z-_@]+)$", search)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.SEARCH_CONDITION_ILLEGAL);
         }
         List<ListUserDTO> listUser = selectListService.selectUserList(search);
         return ResultUtil.success("获取成功",  listUser);
@@ -94,7 +95,7 @@ public class SelectListController {
             @NotNull HttpServletRequest request
     ) {
         if (search == null) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.SEARCH_CONDITION_ILLEGAL);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         List<ListCurriculumDTO> listCurriculum = selectListService.selectCurriculumList(userDTO, search);
@@ -115,7 +116,7 @@ public class SelectListController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches("^(|[0-9A-Za-z-_@]+)$", search)) {
-            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "搜索内容不合法");
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, StringConstant.SEARCH_CONDITION_ILLEGAL);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         List<ListCurriculumTimeDTO> listCurriculumTime = selectListService.selectCurriculumTimeList(userDTO, search);

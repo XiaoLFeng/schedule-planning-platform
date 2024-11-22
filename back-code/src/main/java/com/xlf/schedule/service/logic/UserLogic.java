@@ -20,6 +20,7 @@
 
 package com.xlf.schedule.service.logic;
 
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.dao.TokenDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.exception.lib.IllegalDataException;
@@ -73,7 +74,7 @@ public class UserLogic implements UserService {
             userDO = null;
         }
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
@@ -85,7 +86,7 @@ public class UserLogic implements UserService {
     public UserDTO getUserByUuid(String userUuid) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
@@ -115,7 +116,7 @@ public class UserLogic implements UserService {
     public UserDTO getUserByEmail(String email) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getEmail, email).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
@@ -126,7 +127,7 @@ public class UserLogic implements UserService {
     public UserDTO getUserByPhone(String phone) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getPhone, phone).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
@@ -148,7 +149,7 @@ public class UserLogic implements UserService {
     public void editUser(String userUuid, UserEditVO userEditVO) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         if (userEditVO.getUsername() != null) {
             userDO.setUsername(userEditVO.getUsername());
@@ -167,7 +168,7 @@ public class UserLogic implements UserService {
     public void banUser(String userUuid, boolean isBan, String reason) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         userDO.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         if (isBan) {
@@ -189,7 +190,7 @@ public class UserLogic implements UserService {
     public void enableUser(String userUuid, boolean isEnable) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUuid, userUuid).one();
         if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+            throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
         userDO
                 .setEnable(isEnable)
