@@ -23,9 +23,10 @@ import {useEffect, useState} from "react";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
 import {CloseOutlined} from "@ant-design/icons";
 
-export function GroupManageModal({propOpen, groupEntity, emit}: {
+export function GroupManageModal({propOpen, groupEntity, refresh, emit}: {
     propOpen: boolean,
     groupEntity: ScheduleGroupEntity,
+    refresh: (data: boolean) => void,
     emit: (data: boolean) => void
 }) {
     const [open, setOpen] = useState<boolean>(false);
@@ -39,6 +40,7 @@ export function GroupManageModal({propOpen, groupEntity, emit}: {
 
     function handleOk() {
         emit(false);
+        refresh(true);
     }
 
     return (

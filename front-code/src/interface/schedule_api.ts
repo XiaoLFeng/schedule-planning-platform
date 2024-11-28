@@ -23,6 +23,7 @@ import {BaseApi, GetAuthorizationToken, MethodType} from "../assets/typescript/b
 import {ScheduleGroupListDTO} from "../models/dto/schedule_group_list_dto.ts";
 import {Page} from "../models/page.ts";
 import {ScheduleGroupEntity} from "../models/entity/schedule_group_entity.ts";
+import {GroupEditDTO} from "../models/dto/group_edit_dto.ts";
 
 /**
  * # 获取课程表分组
@@ -42,6 +43,45 @@ const GetScheduleGroupAPI = (paramData: ScheduleGroupListDTO): Promise<BaseRespo
     );
 }
 
+/**
+ * # 编辑课程表分组
+ * 用于编辑课程表分组；该接口用于编辑课程表分组。
+ *
+ * @param pathData {string} 编辑课程表分组
+ * @param bodyData {GroupEditDTO} 编辑课程表分组
+ * @returns {Promise<BaseResponse<void> | undefined>} 编辑课程表分组
+ */
+const EditScheduleGroupAPI = (pathData: string, bodyData: GroupEditDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.PUT,
+        "/api/v1/schedule/group/" + pathData,
+        bodyData,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 删除课程表分组
+ * 用于删除课程表分组；该接口用于删除课程表分组。
+ *
+ * @param pathData {string} 删除课程表分组
+ * @returns {Promise<BaseResponse<void> | undefined>} 删除课程表分组
+ */
+const DeleteScheduleGroupAPI = (pathData: string): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.DELETE,
+        "/api/v1/schedule/group/" + pathData,
+        null,
+        null,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
 export {
-    GetScheduleGroupAPI
+    GetScheduleGroupAPI,
+    EditScheduleGroupAPI,
+    DeleteScheduleGroupAPI
 }

@@ -37,6 +37,7 @@ import {Page} from "../../models/page.ts";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
 import {animated, useTransition} from "@react-spring/web";
 import {GroupManageModal} from "../../components/modal/group_manage_modal.tsx";
+import {GroupDeleteModal} from "../../components/modal/group_delete_modal.tsx";
 
 export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -51,6 +52,9 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
     const [singleScheduleGroupEntity, setSingleScheduleGroupEntity] = useState<ScheduleGroupEntity>({} as ScheduleGroupEntity);
 
     const [manageModal, setManageModal] = useState<boolean>(false);
+    const [deleteModal, setDeleteModal] = useState<boolean>(false);
+
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     const transitions = useTransition(scheduleGroupList.records, {
         keys: (item) => item.group_uuid,
@@ -76,11 +80,17 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
         }
 
         func().then();
-    }, [scheduleSearchList]);
+        setRefresh(false);
+    }, [scheduleSearchList, refresh]);
 
     function handleManage(groupData: ScheduleGroupEntity) {
         setSingleScheduleGroupEntity(groupData);
         setManageModal(true);
+    }
+
+    function handleDelete(groupData: ScheduleGroupEntity) {
+        setSingleScheduleGroupEntity(groupData);
+        setDeleteModal(true);
     }
 
     return (
@@ -193,7 +203,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                             <SettingOutlined/>
                                         </button>
                                         <button
-                                            onClick={() => null}
+                                            onClick={() => handleDelete(item)}
                                             className={"transition rounded-lg bg-red-500 hover:bg-red-600 active:bg-red-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
                                             <DeleteOutlined/>
                                         </button>
@@ -216,7 +226,8 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                     }
                 </div>
             </div>
-            <GroupManageModal propOpen={manageModal} emit={setManageModal} groupEntity={singleScheduleGroupEntity}/>
+            <GroupManageModal propOpen={manageModal} emit={setManageModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
+            <GroupDeleteModal propOpen={deleteModal} emit={setDeleteModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
         </>
     );
 }
