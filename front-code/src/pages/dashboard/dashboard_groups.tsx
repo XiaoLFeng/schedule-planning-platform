@@ -36,6 +36,7 @@ import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts"
 import {Page} from "../../models/page.ts";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
 import {animated, useTransition} from "@react-spring/web";
+import {GroupManageModal} from "../../components/modal/group_manage_modal.tsx";
 
 export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -47,6 +48,9 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
         type: "all",
     } as ScheduleGroupListDTO);
     const [search, setSearch] = useState<string>("");
+    const [singleScheduleGroupEntity, setSingleScheduleGroupEntity] = useState<ScheduleGroupEntity>({} as ScheduleGroupEntity);
+
+    const [manageModal, setManageModal] = useState<boolean>(false);
 
     const transitions = useTransition(scheduleGroupList.records, {
         keys: (item) => item.group_uuid,
@@ -73,6 +77,11 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
 
         func().then();
     }, [scheduleSearchList]);
+
+    function handleManage(groupData: ScheduleGroupEntity) {
+        setSingleScheduleGroupEntity(groupData);
+        setManageModal(true);
+    }
 
     return (
         <>
@@ -132,7 +141,9 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                            placeholder={"筱锋的小组"}
                                            onChange={(event) => setSearch(event.currentTarget.value)}
                                            className={"transition rounded-md border border-gray-200 text-xs py-1 pr-14"}/>
-                                    <button onClick={() => {setScheduleSearchList({...scheduleSearchList, search: search})}}
+                                    <button onClick={() => {
+                                        setScheduleSearchList({...scheduleSearchList, search: search})
+                                    }}
                                             className={"absolute right-0 text-xs rounded-r-md border border-emerald-500 bg-emerald-500 px-2 py-1.5 flex text-white items-center font-extrabold"}>
                                         <SearchOutlined/>
                                     </button>
@@ -171,12 +182,13 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                           className={"bg-white rounded-lg p-4 shadow-md grid gap-3"}>
                                 <div className={"flex justify-between items-center"}>
                                     <div className={"flex space-x-1 items-center"}>
-                                                    <span
-                                                        className={"text-lg font-semibold text-gray-800"}>{item.name}</span>
+                                        <span className={"text-lg font-semibold text-gray-800"}>
+                                            {item.name}
+                                        </span>
                                     </div>
                                     <div className={"flex gap-1"}>
                                         <button
-                                            onClick={() => null}
+                                            onClick={() => handleManage(item)}
                                             className={"transition rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
                                             <SettingOutlined/>
                                         </button>
@@ -187,8 +199,8 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                         </button>
                                     </div>
                                 </div>
-                                <div className={"flex flex-wrap"}>
-                                    <div className={"flex gap-1"}>
+                                <div className={"flex"}>
+                                    <div className={"flex gap-1 flex-wrap break-words"}>
                                         {
                                             item.tags.map((tag, index) => (
                                                 <div key={index}
@@ -204,6 +216,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                     }
                 </div>
             </div>
+            <GroupManageModal propOpen={manageModal} emit={setManageModal} groupEntity={singleScheduleGroupEntity}/>
         </>
     );
 }
