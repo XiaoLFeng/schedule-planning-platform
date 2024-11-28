@@ -102,7 +102,7 @@ public class ScheduleController {
             @RequestBody @Validated GroupVO groupVO,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -123,7 +123,7 @@ public class ScheduleController {
             @PathVariable("group_uuid") String groupUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -145,10 +145,10 @@ public class ScheduleController {
             @RequestParam("new_master") String newMaster,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
         }
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, newMaster)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, newMaster)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "新队长标识有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -201,7 +201,7 @@ public class ScheduleController {
             @PathVariable("group_uuid") String groupUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -241,10 +241,10 @@ public class ScheduleController {
             @PathVariable("member_uuid") String memberUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
         }
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -266,10 +266,10 @@ public class ScheduleController {
             @PathVariable("member_uuid") String memberUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有有误");
         }
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, memberUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "成员标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -309,7 +309,7 @@ public class ScheduleController {
             @RequestBody @Validated ScheduleEditVO scheduleEditVO,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
         }
         UserDTO userDTO = userService.getUserByToken(request);
@@ -330,7 +330,7 @@ public class ScheduleController {
             @RequestParam("schedule_uuid") String scheduleUuid,
             @NotNull HttpServletRequest request
     ) {
-        if (Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
         }
 
