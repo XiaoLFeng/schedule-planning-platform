@@ -19,36 +19,28 @@
  */
 
 import {message, Modal} from "antd";
-import {useEffect, useState} from "react";
-import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
 import {CloseOutlined} from "@ant-design/icons";
-import {EditScheduleGroupAPI} from "../../interface/schedule_api.ts";
-import {GroupEditDTO} from "../../models/dto/group_edit_dto.ts";
+import {useEffect, useState} from "react";
+import {GroupAddDTO} from "../../models/dto/group_add_dto.ts";
+import {AddScheduleGroupAPI} from "../../interface/schedule_api.ts";
 
-export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonly<{
-    propOpen: boolean,
-    groupEntity: ScheduleGroupEntity,
-    refresh: (data: boolean) => void,
-    emit: (data: boolean) => void
+export function GroupAddModal({openProp, emit, refresh}: Readonly<{
+    openProp: boolean,
+    emit: (data: boolean) => void,
+    refresh: (data: boolean) => void
 }>) {
     const [open, setOpen] = useState<boolean>(false);
-    const [entity, setEntity] = useState<ScheduleGroupEntity>({} as ScheduleGroupEntity);
+    const [newEntity, setNewEntity] = useState<GroupAddDTO>({able_add: true} as GroupAddDTO);
     const [changeTag, setChangeTag] = useState<string>("" as string);
 
     useEffect(() => {
-        setOpen(propOpen);
-        setEntity(groupEntity);
-    }, [groupEntity, propOpen]);
+        setOpen(openProp);
+    }, [openProp]);
 
     async function handleOk() {
-        const editEntity = {
-            able_add: true,
-            name: entity.name,
-            tags: entity.tags,
-        } as GroupEditDTO;
-        const getResp = await EditScheduleGroupAPI(groupEntity.group_uuid, editEntity);
+        const getResp = await AddScheduleGroupAPI(newEntity);
         if (getResp?.output === "Success") {
-            message.success("编辑成功");
+            message.success("添加成功");
             emit(false);
             refresh(true);
         } else {
@@ -56,10 +48,10 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
         }
     }
 
-    return (
+    return(
         <Modal
             open={open}
-            title="小组管理"
+            title="添加小组"
             onOk={handleOk}
             onCancel={() => emit(false)}
             footer={
@@ -77,7 +69,6 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
         >
             <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-2">
-                    <div className="text-xl font-bold">小组信息</div>
                     <div>
                         <label htmlFor="group-name" className="flex font-medium text-gray-700 gap-1">
                             <span>小组名字</span>
@@ -86,9 +77,8 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
                         <input
                             type="text"
                             id="group-name"
-                            placeholder="john@rhcp.com"
-                            value={entity.name}
-                            onChange={(event) => setEntity({...entity, name: event.currentTarget.value})}
+                            placeholder="宿舍组"
+                            onChange={(event) => setNewEntity({...newEntity, name: event.currentTarget.value})}
                             className="transition w-full rounded-md border-gray-200 shadow-sm sm:text-sm"
                         />
                     </div>
@@ -109,12 +99,14 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
                                 className={"flex-shrink-0 py-1.5 px-4 rounded-md text-white shadow bg-sky-500 hover:bg-sky-600 transition"}
                                 onClick={async () => {
                                     if (changeTag.trim() !== "") {
-                                        if (!entity.tags.includes(changeTag.trim())) {
-                                            entity.tags?.push(changeTag.trim());
-                                            setEntity({...entity});
+                                        if (newEntity.tags === undefined) {
+                                            newEntity.tags = [changeTag.trim()];
+                                        } else if (!newEntity.tags.includes(changeTag.trim())) {
+                                            newEntity.tags?.push(changeTag.trim());
                                         } else {
                                             message.warning("标签已存在");
                                         }
+                                        setNewEntity({...newEntity});
                                     } else {
                                         message.warning("标签不能为空");
                                     }
@@ -125,22 +117,19 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
                     </div>
                     <div className={"flex gap-1 flex-wrap break-words"}>
                         {
-                            entity.tags?.map((tag, index) => (
+                            newEntity.tags?.map((tag, index) => (
                                 <div key={`tag-${tag}-${index}`}
                                      className={"flex-shrink-0 transition bg-gray-100 text-gray-600 px-3 py-1 rounded-md justify-center flex space-x-1"}>
                                     <span>#{tag}</span>
                                     <CloseOutlined className={"transition text-gray-600 hover:text-gray-800"}
                                                    onClick={() => {
-                                                       entity.tags.splice(index, 1);
-                                                       setEntity({...entity});
+                                                       newEntity.tags.splice(index, 1);
+                                                       setNewEntity({...newEntity});
                                                    }}/>
                                 </div>
                             ))
                         }
                     </div>
-                </div>
-                <div className="flex flex-col">
-                    <div className="text-xl font-bold">小组成员</div>
                 </div>
             </div>
         </Modal>

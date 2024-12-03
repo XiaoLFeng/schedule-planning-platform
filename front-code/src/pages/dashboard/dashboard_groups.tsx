@@ -38,8 +38,9 @@ import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts"
 import {animated, useTransition} from "@react-spring/web";
 import {GroupManageModal} from "../../components/modal/group_manage_modal.tsx";
 import {GroupDeleteModal} from "../../components/modal/group_delete_modal.tsx";
+import {GroupAddModal} from "../../components/modal/group_add_modal.tsx";
 
-export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
+export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (header: string) => void }>) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
     const [scheduleGroupList, setScheduleGroupList] = useState<Page<ScheduleGroupEntity>>({} as Page<ScheduleGroupEntity>);
@@ -51,6 +52,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
     const [search, setSearch] = useState<string>("");
     const [singleScheduleGroupEntity, setSingleScheduleGroupEntity] = useState<ScheduleGroupEntity>({} as ScheduleGroupEntity);
 
+    const [addModal, setAddModal] = useState<boolean>(false);
     const [manageModal, setManageModal] = useState<boolean>(false);
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
 
@@ -68,7 +70,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
     document.title = `${webInfo.name} - 日程小组`;
     onHeaderHandler("日程小组");
 
-    // 获取日程小组0
+    // 获取日程小组
     useEffect(() => {
         const func = async () => {
             const getResp = await GetScheduleGroupAPI(scheduleSearchList);
@@ -98,11 +100,11 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
             <div className={"grid gap-3"}>
                 <div className={"flex justify-end"}>
                     <div className={"flex"}>
-                        <div onClick={() => null}
+                        <button onClick={() => setAddModal(true)}
                              className={"transition rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-3 py-1.5 flex items-center space-x-1"}>
                             <AppstoreAddOutlined/>
                             <span>创建小组</span>
-                        </div>
+                        </button>
                     </div>
                 </div>
                 <div className={"bg-white rounded-lg p-3 shadow grid gap-6"}>
@@ -129,10 +131,10 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                 <span
                                     className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs"
                                 >
-                                    组号
+                                    查询信息
                                 </span>
                             </label>
-                            <button onClick={() => null}
+                            <button onClick={() => setRefresh(true)}
                                     className={"transition rounded-md bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 md:px-8 lg:px-12 flex items-center space-x-1"}>
                                 <SearchOutlined/>
                                 <span>查询</span>
@@ -212,8 +214,8 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                                 <div className={"flex"}>
                                     <div className={"flex gap-1 flex-wrap break-words"}>
                                         {
-                                            item.tags.map((tag, index) => (
-                                                <div key={index}
+                                            item.tags.map((tag) => (
+                                                <div key={`tag-${tag}`}
                                                      className={"flex-shrink-0 transition bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md text-xs"}>
                                                     #{tag}
                                                 </div>
@@ -226,6 +228,7 @@ export function DashboardGroups({onHeaderHandler}: { onHeaderHandler: (header: s
                     }
                 </div>
             </div>
+            <GroupAddModal openProp={addModal} emit={setAddModal} refresh={setRefresh}/>
             <GroupManageModal propOpen={manageModal} emit={setManageModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
             <GroupDeleteModal propOpen={deleteModal} emit={setDeleteModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
         </>

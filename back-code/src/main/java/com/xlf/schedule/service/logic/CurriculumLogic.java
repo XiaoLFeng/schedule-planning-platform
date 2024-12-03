@@ -272,7 +272,6 @@ public class CurriculumLogic implements CurriculumService {
                 throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
             }
         }
-        // TODO[241025001] - 添加邮件发送通知
         // 配置原有课表时间转为默认时间
         classGradeDAO.lambdaUpdate().eq(ClassGradeDO::getClassTimeUuid, classTimeUuid)
                 .set(ClassGradeDO::getClassTimeUuid, SystemConstant.getDefaultClassTimeUUID())

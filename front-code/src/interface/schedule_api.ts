@@ -24,6 +24,7 @@ import {ScheduleGroupListDTO} from "../models/dto/schedule_group_list_dto.ts";
 import {Page} from "../models/page.ts";
 import {ScheduleGroupEntity} from "../models/entity/schedule_group_entity.ts";
 import {GroupEditDTO} from "../models/dto/group_edit_dto.ts";
+import {GroupAddDTO} from "../models/dto/group_add_dto.ts";
 
 /**
  * # 获取课程表分组
@@ -38,6 +39,24 @@ const GetScheduleGroupAPI = (paramData: ScheduleGroupListDTO): Promise<BaseRespo
         "/api/v1/schedule/group",
         null,
         paramData,
+        null,
+        {Authorization: GetAuthorizationToken()}
+    );
+}
+
+/**
+ * # 添加课程表分组
+ * 用于添加课程表分组；该接口用于添加课程表分组。
+ *
+ * @param bodyData {GroupAddDTO} 添加课程表分组
+ * @returns {Promise<BaseResponse<void> | undefined>} 添加课程表分组
+ */
+const AddScheduleGroupAPI = (bodyData: GroupAddDTO): Promise<BaseResponse<void> | undefined> => {
+    return BaseApi<void>(
+        MethodType.POST,
+        "/api/v1/schedule/group",
+        bodyData,
+        null,
         null,
         {Authorization: GetAuthorizationToken()}
     );
@@ -82,6 +101,7 @@ const DeleteScheduleGroupAPI = (pathData: string): Promise<BaseResponse<void> | 
 
 export {
     GetScheduleGroupAPI,
+    AddScheduleGroupAPI,
     EditScheduleGroupAPI,
     DeleteScheduleGroupAPI
 }
