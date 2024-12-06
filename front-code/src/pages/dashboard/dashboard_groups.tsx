@@ -39,6 +39,7 @@ import {animated, useTransition} from "@react-spring/web";
 import {GroupManageModal} from "../../components/modal/group_manage_modal.tsx";
 import {GroupDeleteModal} from "../../components/modal/group_delete_modal.tsx";
 import {GroupAddModal} from "../../components/modal/group_add_modal.tsx";
+import {GroupUserManageModal} from "../../components/modal/group_user_manage_modal.tsx";
 
 export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (header: string) => void }>) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -55,6 +56,7 @@ export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (
     const [addModal, setAddModal] = useState<boolean>(false);
     const [manageModal, setManageModal] = useState<boolean>(false);
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
+    const [userManageModal, setUserManageModal] = useState<boolean>(false);
 
     const [refresh, setRefresh] = useState<boolean>(false);
 
@@ -93,6 +95,11 @@ export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (
     function handleDelete(groupData: ScheduleGroupEntity) {
         setSingleScheduleGroupEntity(groupData);
         setDeleteModal(true);
+    }
+
+    function handleUserManage(groupData: ScheduleGroupEntity) {
+        setSingleScheduleGroupEntity(groupData);
+        setUserManageModal(true);
     }
 
     return (
@@ -200,6 +207,11 @@ export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (
                                     </div>
                                     <div className={"flex gap-1"}>
                                         <button
+                                            onClick={() => handleUserManage(item)}
+                                            className={"transition rounded-lg bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
+                                            <UsergroupAddOutlined />
+                                        </button>
+                                        <button
                                             onClick={() => handleManage(item)}
                                             className={"transition rounded-lg bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white p-1.5 flex items-center space-x-1 shadow-sm"}>
                                             <SettingOutlined/>
@@ -231,6 +243,7 @@ export function DashboardGroups({onHeaderHandler}: Readonly<{ onHeaderHandler: (
             <GroupAddModal openProp={addModal} emit={setAddModal} refresh={setRefresh}/>
             <GroupManageModal propOpen={manageModal} emit={setManageModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
             <GroupDeleteModal propOpen={deleteModal} emit={setDeleteModal} refresh={setRefresh} groupEntity={singleScheduleGroupEntity}/>
+            <GroupUserManageModal propOpen={userManageModal} groupEntity={singleScheduleGroupEntity} refresh={setRefresh} emit={setUserManageModal}/>
         </>
     );
 }

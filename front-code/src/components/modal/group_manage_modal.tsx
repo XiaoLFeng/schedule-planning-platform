@@ -139,9 +139,6 @@ export function GroupManageModal({propOpen, groupEntity, refresh, emit}: Readonl
                         }
                     </div>
                 </div>
-                <div className="flex flex-col">
-                    <div className="text-xl font-bold">小组成员</div>
-                </div>
             </div>
         </Modal>
     );
