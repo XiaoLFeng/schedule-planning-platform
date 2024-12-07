@@ -83,7 +83,7 @@ export function DashboardViewYearAndMonth() {
         return (
             <ul className="events grid gap-1">
                 {listData.map((item, index) => (
-                    <li key={index}>
+                    <li key={"item-" + index}>
                         {item.content}
                     </li>
                 ))}

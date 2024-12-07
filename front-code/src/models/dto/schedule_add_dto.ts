@@ -18,16 +18,20 @@
  * ***************************************************************************************
  */
 
-import {Route, Routes} from "react-router-dom";
-import {DashboardCurriculumHome} from "./curriculum/dashboard_curriculum_home.tsx";
-import {DashboardCurriculumTime} from "./curriculum/dashboard_curriculum_time.tsx";
-
-export function DashboardCurriculum({onHeaderHandler}: Readonly<{ onHeaderHandler: (header: string) => void }>) {
-
-    return (
-        <Routes>
-            <Route path={"/"} element={<DashboardCurriculumHome onHeaderHandler={onHeaderHandler}/>}/>
-            <Route path={"/time"} element={<DashboardCurriculumTime onHeaderHandler={onHeaderHandler}/>}/>
-        </Routes>
-    );
+export type ScheduleAddDTO = {
+    /**
+     * 添加位置是个人还是小组添加
+     */
+    add_location: boolean;
+    custom_loop: number;
+    description?: string;
+    end_time: number;
+    group_uuid?: string;
+    loop_type: number;
+    name: string;
+    priority: number;
+    resources?: string[];
+    start_time: number;
+    tags?: string[];
+    type: number;
 }

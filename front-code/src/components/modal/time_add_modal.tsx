@@ -25,11 +25,11 @@ import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
 import {AddClassTimeAPI} from "../../interface/curriculum_api.ts";
 
-export function TimeAddModal({propOpen, emit, refresh}: {
+export function TimeAddModal({propOpen, emit, refresh}: Readonly<{
     propOpen: boolean,
     emit: (data: boolean) => void,
     refresh: (data: boolean) => void
-}) {
+}>) {
     const {RangePicker} = DatePicker;
 
     const [open, setOpen] = useState<boolean>(false);
@@ -119,7 +119,7 @@ export function TimeAddModal({propOpen, emit, refresh}: {
                 </label>
                 {
                     timeAdd.time_able?.map((time, index) => (
-                        <div key={index} className={"col-span-full flex items-center gap-3"}>
+                        <div key={"time-" + index} className={"col-span-full flex items-center gap-3"}>
                             <div className={"px-3 h-full rounded-lg bg-sky-100 text-gray-800 shadow flex items-center"}>
                                 {index + 1}
                             </div>
@@ -145,13 +145,13 @@ export function TimeAddModal({propOpen, emit, refresh}: {
                                          className={"rounded-md border-gray-200 text-gray-800 shadow-sm sm:text-sm flex-1 h-full"}/>
                             {
                                 timeAdd.time_able.length > 1 ? (
-                                    <div onClick={() => {
+                                    <button onClick={() => {
                                         timeAdd.time_able.splice(index, 1);
                                         setTimeAdd({...timeAdd});
                                     }}
                                          className={"px-2.5 h-full rounded-lg bg-red-100 text-gray-800 shadow flex items-center transition hover:bg-red-200 hover:scale-105"}>
                                         <DeleteOutlined/>
-                                    </div>
+                                    </button>
                                 ) : (
                                     <div
                                         className={"px-2.5 h-full rounded-lg bg-gray-100 text-gray-800 shadow flex items-center"}>
@@ -163,10 +163,10 @@ export function TimeAddModal({propOpen, emit, refresh}: {
                     ))
                 }
                 <div className={"col-span-full flex justify-end"}>
-                    <div onClick={addTimeAble}
+                    <button onClick={addTimeAble}
                          className={"transition p-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg text-white flex item-center"}>
                         <PlusOutlined/>
-                    </div>
+                    </button>
                 </div>
             </div>
         </Modal>

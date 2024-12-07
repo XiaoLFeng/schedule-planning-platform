@@ -78,7 +78,7 @@ export function GroupUserManageModal({propOpen, groupEntity, refresh, emit}: Rea
                             </div>
                             <div className="flex-shrink-0 items-center flex gap-1">
                                 {
-                                    entity.tags.map((tag, index) => (
+                                    entity.tags?.map((tag, index) => (
                                         <span key={`tag-${tag.trim()}-${index}`}
                                               className="px-2 py-1 bg-blue-100 text-blue-500 rounded-md text-xs">{tag}</span>
                                     ))

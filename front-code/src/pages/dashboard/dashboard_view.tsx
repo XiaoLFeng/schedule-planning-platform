@@ -25,16 +25,33 @@ import {DashboardViewYearAndMonth} from "./view/dashboard_view_year_and_month.ts
 import {DashboardViewWeek} from "./view/dashboard_view_week.tsx";
 import {DashboardViewDay} from "./view/dashboard_view_day.tsx";
 import {animated, useTransition} from "@react-spring/web";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {DashboardViewMenu} from "../../components/dashboard/dashboard_view_menu.tsx";
+import {Page} from "../../models/page.ts";
+import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
+import {GetScheduleGroupAPI} from "../../interface/schedule_api.ts";
+import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts";
+import {ScheduleAddModal} from "../../components/modal/schedule_add_modal.tsx";
 
 export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
     const location = useLocation();
     const navigate = useNavigate();
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
 
+    const [scheduleAdd, setScheduleAdd] = useState<boolean>(false);
+    const [selectedGroup, setSelectedGroup] = useState<string>("");
+    const [refresh, setRefresh] = useState<boolean>(false);
+
+    const [scheduleGroupList, setScheduleGroupList] = useState<Page<ScheduleGroupEntity>>({} as Page<ScheduleGroupEntity>);
+    const [scheduleSearchList] = useState<ScheduleGroupListDTO>({
+        page: 1,
+        size: 1000,
+        type: "all",
+    } as ScheduleGroupListDTO);
+
     document.title = `${webInfo.name} - 视图`;
     onHeaderHandler("视图");
+
 
     const transition = useTransition(location, {
         from: {opacity: 0},
@@ -48,51 +65,68 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
         }
     });
 
+    useEffect(() => {
+        const func = async () => {
+            const getResp = await GetScheduleGroupAPI(scheduleSearchList);
+            if (getResp?.output === "Success") {
+                setScheduleGroupList(getResp.data!);
+            } else {
+                console.error(getResp?.error_message);
+            }
+        }
+
+        func().then();
+    }, [refresh]);
+
     return transition((style) => (
-        <div className={"grid gap-3"}>
-            <div className={"flex justify-between"}>
-                <div className={"flex"}>
-                    <DashboardViewMenu to={"/dashboard/view/year-and-month"} text={"年/月视图"}
-                                       className={"rounded-l-lg"}/>
-                    <DashboardViewMenu to={"/dashboard/view/week"} text={"周视图"}/>
-                    <DashboardViewMenu to={"/dashboard/view/day"} text={"日视图"} className={"rounded-r-lg"}/>
-                </div>
-                <div className={"flex gap-3"}>
-                    <div>
-                        <select
-                            name="group"
-                            id="group"
-                            className="w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
-                        >
-                            <option value="">全部</option>
-                            <option value="JM">John Mayer</option>
-                            <option value="SRV">Stevie Ray Vaughn</option>
-                            <option value="JH">Jimi Hendrix</option>
-                            <option value="BBK">B.B King</option>
-                            <option value="AK">Albert King</option>
-                            <option value="BG">Buddy Guy</option>
-                            <option value="EC">Eric Clapton</option>
-                        </select>
-                    </div>
+        <>
+            <div className={"grid gap-3"}>
+                <div className={"flex justify-between"}>
                     <div className={"flex"}>
-                        <div
-                            className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
-                            <span>添加日程</span>
+                        <DashboardViewMenu to={"/dashboard/view/year-and-month"} text={"年/月视图"}
+                                           className={"rounded-l-lg"}/>
+                        <DashboardViewMenu to={"/dashboard/view/week"} text={"周视图"}/>
+                        <DashboardViewMenu to={"/dashboard/view/day"} text={"日视图"} className={"rounded-r-lg"}/>
+                    </div>
+                    <div className={"flex gap-3"}>
+                        <div>
+                            <select
+                                name="group"
+                                id="group"
+                                onChange={(e) => setSelectedGroup(e.target.value)}
+                                className="w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                            >
+                                <option value="">全部</option>
+                                {
+                                    scheduleGroupList.records?.map((item) => (
+                                        <option key={item.group_uuid} value={item.group_uuid}>{item.name}</option>
+                                    ))
+                                }
+                            </select>
                         </div>
-                        <Link to={"/dashboard/curriculum"}
-                            className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white rounded-r-lg px-4 py-1.5"}>
-                            <span>添加课程</span>
-                        </Link>
+                        <div className={"flex"}>
+                            <button
+                                onClick={() => setScheduleAdd(true)}
+                                className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
+                                <span>添加日程</span>
+                            </button>
+                            <Link
+                                to={"/dashboard/curriculum"}
+                                className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white rounded-r-lg px-4 py-1.5"}>
+                                <span>添加课程</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
+                <animated.div style={style} className={"w-full h-full"}>
+                    <Routes>
+                        <Route path={"/year-and-month"} element={<DashboardViewYearAndMonth/>}/>
+                        <Route path={"/week"} element={<DashboardViewWeek/>}/>
+                        <Route path={"/day"} element={<DashboardViewDay/>}/>
+                    </Routes>
+                </animated.div>
             </div>
-            <animated.div style={style} className={"w-full h-full"}>
-                <Routes>
-                    <Route path={"/year-and-month"} element={<DashboardViewYearAndMonth/>}/>
-                    <Route path={"/week"} element={<DashboardViewWeek/>}/>
-                    <Route path={"/day"} element={<DashboardViewDay/>}/>
-                </Routes>
-            </animated.div>
-        </div>
+            <ScheduleAddModal propOpen={scheduleAdd} groupUuid={selectedGroup} groupList={scheduleGroupList} emit={setScheduleAdd} refresh={setRefresh}/>
+        </>
     ));
 }
