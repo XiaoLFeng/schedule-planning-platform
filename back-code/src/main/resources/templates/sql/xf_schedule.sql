@@ -21,7 +21,7 @@
 -- auto-generated definition
 create table xf_schedule
 (
-    schedule_uuid varchar(32)                   not null
+    schedule_uuid varchar(32)             not null
         constraint xf_schedule_pk
             primary key,
     user_uuid     varchar(36)
@@ -32,17 +32,17 @@ create table xf_schedule
         constraint xf_schedule_xf_group_group_uuid_fk
             references xf_group
             on update cascade on delete cascade,
-    name          varchar(64)                   not null,
+    name          varchar(64)             not null,
     description   varchar,
-    start_time    timestamp                     not null,
-    end_time      timestamp                     not null,
-    type          smallint  default 0           not null,
+    start_time    timestamp,
+    end_time      timestamp,
+    type          smallint  default 0     not null,
     loop_type     smallint,
     custom_loop   integer,
-    tags          varchar default '[]' not null,
-    priority      smallint  default 1           not null,
+    tags          varchar   default '[]'  not null,
+    priority      smallint  default 1     not null,
     resources     varchar,
-    created_at    timestamp default now()       not null,
+    created_at    timestamp default now() not null,
     updated_at    timestamp
 );
 

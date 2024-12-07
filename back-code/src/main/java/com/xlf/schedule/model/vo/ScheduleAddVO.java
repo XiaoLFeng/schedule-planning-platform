@@ -24,7 +24,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -39,21 +38,20 @@ import java.util.List;
 @Getter
 @SuppressWarnings("unused")
 public class ScheduleAddVO {
+    /**
+     * 这个是确认用户是个人添加还是小组添加
+     */
     @NotNull(message = "添加位置不能为空")
     private Boolean addLocation;
     private String groupUuid;
     @NotBlank(message = "日程名称不能为空")
     private String name;
     private String description;
-    @NotBlank(message = "开始时间不能为空")
-    private Timestamp startTime;
-    @NotBlank(message = "结束时间不能为空")
-    private Timestamp endTime;
+    private Long startTime;
+    private Long endTime;
     @NotNull(message = "日程类型不能为空")
     private Short type;
-    @NotNull(message = "循环类型不能为空")
     private Short loopType;
-    @NotNull(message = "循环间隔不能为空")
     private Integer customLoop;
     private List<String> tags;
     @NotNull(message = "优先级不能为空")

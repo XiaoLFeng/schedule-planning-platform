@@ -348,8 +348,8 @@ public class ScheduleLogic implements ScheduleService {
         newSchedule
                 .setName(scheduleAddVO.getName())
                 .setDescription(scheduleAddVO.getDescription())
-                .setStartTime(scheduleAddVO.getStartTime())
-                .setEndTime(scheduleAddVO.getEndTime())
+                .setStartTime(new Timestamp(scheduleAddVO.getStartTime()))
+                .setEndTime(new Timestamp(scheduleAddVO.getEndTime()))
                 .setType(scheduleAddVO.getType())
                 .setLoopType(scheduleAddVO.getLoopType())
                 .setCustomLoop(scheduleAddVO.getCustomLoop())
