@@ -20,33 +20,90 @@
 
 import {useSelector} from "react-redux";
 import {WebInfoEntity} from "../../models/entity/web_info_entity.ts";
-import {Timeline, TimelineItemProps} from "antd";
+import {message, Timeline, TimelineItemProps} from "antd";
 import {useEffect, useState} from "react";
 import {BuildOutlined, CalendarOutlined, PlusOutlined} from "@ant-design/icons";
 import {RomanI, RomanII, RomanIII, RomanIV} from "../../assets/icon/roman_numerals_svg.tsx";
+import {GetScheduleListMaybeGroup, GetScheduleListWithPriority} from "../../interface/schedule_api.ts";
+import {SchedulePriorityEntity} from "../../models/entity/schedule_priority_entity.ts";
+import dayjs from "dayjs";
+import {ScheduleGetGroupDTO} from "../../models/dto/schedule_get_group_dto.ts";
 
 /**
  * # 看板主页
  * @constructor
  */
-export function DashboardHome({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
+export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (header: string) => void }>) {
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
+
     const [timeLine, setTimeLine] = useState<TimelineItemProps[]>([] as TimelineItemProps[]);
+    const [schedulePriorityEntity, setSchedulePriorityEntity] = useState<SchedulePriorityEntity>({} as SchedulePriorityEntity);
+    const [scheduleSearchInfo] = useState<ScheduleGetGroupDTO>({
+        // 获取本周周一到本周日（格式 yyyy-MM-dd）
+        start_time: dayjs().startOf("week").toISOString().split("T")[0],
+        end_time: dayjs().endOf("week").toISOString().split("T")[0],
+    } as ScheduleGetGroupDTO);
 
     document.title = `${webInfo.name} - 看板`;
     onHeaderHandler("看板");
 
     useEffect(() => {
-        setTimeLine([
-            {
-                color: 'green',
-                children: 'Create a services site 2015-09-01',
-            },
-            {
-                color: 'green',
-                children: 'Create a services site 2015-09-01',
-            },
-        ] as TimelineItemProps[]);
+        const func = async () => {
+            const getResp = await GetScheduleListWithPriority("week");
+            if (getResp?.output === "Success") {
+                setSchedulePriorityEntity(getResp.data!);
+            } else {
+                message.warning(getResp?.error_message);
+            }
+        }
+
+        const func2 = async () => {
+            const getResp = await GetScheduleListMaybeGroup(scheduleSearchInfo);
+            if (getResp?.output === "Success") {
+                const timeLineItem = [] as TimelineItemProps[];
+                getResp.data!.forEach((item) => {
+                    let color: string;
+                    switch (item.priority) {
+                        case 4:
+                            color = 'red';
+                            break;
+                        case 3:
+                            color = 'orange';
+                            break;
+                        case 2:
+                            color = 'green';
+                            break;
+                        case 1:
+                            color = 'teal';
+                            break;
+                        default:
+                            color = 'gray';
+                            break;
+                    }
+                    timeLineItem.push({
+                        color: color,
+                        children: (
+                            <div>
+                                <div className={"flex space-x-1"}>
+                                    <div className={"text-black font-medium"}>{item.name}</div>
+                                    <div
+                                        className="text-gray-400 text-sm font-thin">{dayjs(item.start_time).format("YYYY-MM-DD HH:mm")}</div>
+                                </div>
+                                <div
+                                    className={"text-gray-500 text-sm"}>{item.description ? item.description : "暂无描述"}</div>
+                            </div>
+                        ),
+                    });
+                });
+                // 设置 timeLineItem 为反序列
+                setTimeLine(timeLineItem.reverse());
+            } else {
+                message.warning(getResp?.error_message);
+            }
+        }
+
+        func().then();
+        func2().then();
     }, []);
 
     return (
@@ -73,34 +130,98 @@ export function DashboardHome({onHeaderHandler}: { onHeaderHandler: (header: str
                     <div className={"grid gap-1 p-1 h-full"}>
                         <div className={"flex gap-1"}>
                             <div className="flex-1 bg-white rounded-tl-md">
-                                <div className={"bg-red-400 rounded-tl-md ps-3 py-1 text-red-900 fill-red-900 flex gap-1 items-center"}>
+                                <div
+                                    className={"bg-red-400 rounded-tl-md ps-3 py-1 text-red-900 fill-red-900 flex gap-1 items-center"}>
                                     <RomanI/>
                                     <span>重要且紧急</span>
                                 </div>
-                                <div className={"p-3"}>内容1</div>
+                                <div className={"grid p-3 gap-1 w-full"}>
+                                    {
+                                        schedulePriorityEntity.important?.map((item) => (
+                                            <div key={item.schedule_uuid}
+                                                 className={"bg-red-100/75 rounded-lg p-3 overflow-ellipsis overflow-hidden whitespace-nowrap"}>
+                                                <div className={"flex items-start justify-between space-x-1"}>
+                                                    <div className={"text-black font-medium"}>{item.name}</div>
+                                                    <div
+                                                        className="text-gray-400 text-sm font-thin">{dayjs(item.start_time).format("YYYY-MM-DD HH:mm")}</div>
+                                                </div>
+                                                <div
+                                                    className={"text-gray-500 text-sm truncate"}>{item.description ? item.description : "暂无描述"}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             </div>
                             <div className="flex-1 bg-white rounded-tr-md">
-                                <div className={"bg-yellow-400 rounded-tr-md ps-3 py-1 text-yellow-900 fill-yellow-900 flex gap-1 items-center"}>
+                                <div
+                                    className={"bg-yellow-400 rounded-tr-md ps-3 py-1 text-yellow-900 fill-yellow-900 flex gap-1 items-center"}>
                                     <RomanII/>
                                     <span>重要不紧急</span>
                                 </div>
-                                <div className={"p-3"}>内容1</div>
+                                <div className={"grid p-3 gap-1 w-full"}>
+                                    {
+                                        schedulePriorityEntity.normal?.map((item) => (
+                                            <div key={item.schedule_uuid}
+                                                 className={"bg-yellow-100/75 rounded-lg p-3 overflow-ellipsis overflow-hidden whitespace-nowrap"}>
+                                                <div className={"flex items-start justify-between space-x-1"}>
+                                                    <div className={"text-black font-medium"}>{item.name}</div>
+                                                    <div
+                                                        className="text-gray-400 text-sm font-thin">{dayjs(item.start_time).format("YYYY-MM-DD HH:mm")}</div>
+                                                </div>
+                                                <div
+                                                    className={"text-gray-500 text-sm truncate"}>{item.description ? item.description : "暂无描述"}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             </div>
                         </div>
                         <div className={"flex gap-1"}>
                             <div className="flex-1 bg-white rounded-bl-md">
-                                <div className={"bg-green-400 ps-3 py-1 text-green-900 fill-green-900 flex gap-1 items-center"}>
+                                <div
+                                    className={"bg-green-400 ps-3 py-1 text-green-900 fill-green-900 flex gap-1 items-center"}>
                                     <RomanIII/>
                                     <span>紧急不重要</span>
                                 </div>
-                                <div className={"p-3"}>内容1</div>
+                                <div className={"grid p-3 gap-1 w-full"}>
+                                    {
+                                        schedulePriorityEntity.general?.map((item) => (
+                                            <div key={item.schedule_uuid}
+                                                 className={"bg-green-100/75 rounded-lg p-3 overflow-ellipsis overflow-hidden whitespace-nowrap"}>
+                                                <div className={"flex items-start justify-between space-x-1"}>
+                                                    <div className={"text-black font-medium"}>{item.name}</div>
+                                                    <div
+                                                        className="text-gray-400 text-sm font-thin">{dayjs(item.start_time).format("YYYY-MM-DD HH:mm")}</div>
+                                                </div>
+                                                <div
+                                                    className={"text-gray-500 text-sm truncate"}>{item.description ? item.description : "暂无描述"}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             </div>
                             <div className="flex-1 bg-white rounded-br-md">
-                                <div className={"bg-teal-400 ps-3 py-1 text-teal-900 fill-teal-900 flex gap-1 items-center"}>
+                                <div
+                                    className={"bg-teal-400 ps-3 py-1 text-teal-900 fill-teal-900 flex gap-1 items-center"}>
                                     <RomanIV/>
                                     <span>不重要不紧急</span>
                                 </div>
-                                <div className={"p-3"}>内容1</div>
+                                <div className={"grid p-3 gap-1 w-full"}>
+                                    {
+                                        schedulePriorityEntity.low?.map((item) => (
+                                            <div key={item.schedule_uuid}
+                                                 className={"bg-teal-100/75 rounded-lg p-3 overflow-ellipsis overflow-hidden whitespace-nowrap"}>
+                                                <div className={"flex items-start justify-between space-x-1"}>
+                                                    <div className={"text-black font-medium"}>{item.name}</div>
+                                                    <div
+                                                        className="text-gray-400 text-sm font-thin">{dayjs(item.start_time).format("YYYY-MM-DD HH:mm")}</div>
+                                                </div>
+                                                <div
+                                                    className={"text-gray-500 text-sm truncate"}>{item.description ? item.description : "暂无描述"}</div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>

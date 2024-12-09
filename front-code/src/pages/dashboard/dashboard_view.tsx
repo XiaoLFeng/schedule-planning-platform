@@ -25,7 +25,7 @@ import {DashboardViewYearAndMonth} from "./view/dashboard_view_year_and_month.ts
 import {DashboardViewWeek} from "./view/dashboard_view_week.tsx";
 import {DashboardViewDay} from "./view/dashboard_view_day.tsx";
 import {animated, useTransition} from "@react-spring/web";
-import {createContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {DashboardViewMenu} from "../../components/dashboard/dashboard_view_menu.tsx";
 import {Page} from "../../models/page.ts";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
@@ -34,9 +34,6 @@ import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts"
 import {ScheduleAddModal} from "../../components/modal/schedule_add_modal.tsx";
 import {ScheduleEntity} from "../../models/dto/schedule_entity.ts";
 import {ScheduleGetGroupDTO} from "../../models/dto/schedule_get_group_dto.ts";
-
-
-export const LoadingContext = createContext<boolean>(false);
 
 export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
 
