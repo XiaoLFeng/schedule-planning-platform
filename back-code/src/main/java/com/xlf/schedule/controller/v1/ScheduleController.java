@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -150,7 +151,7 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.GROUP_UUID_ILLEGAL);
         }
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, newMaster)) {
             throw new IllegalDataException(ErrorCode.BODY_INVALID, "新队长标识有误");
@@ -206,7 +207,7 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_INVALID, "小组标识符有误");
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.GROUP_UUID_ILLEGAL);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         GroupDTO groupDTO = scheduleService.getGroup(userDTO, groupUuid);
@@ -396,7 +397,7 @@ public class ScheduleController {
     @HasAuthorize
     @GetMapping("/list/priority")
     public ResponseEntity<BaseResponse<SchedulePriorityDTO>> getSchedulePriorityList(
-            @RequestParam(defaultValue = "week", required = false) String timeline,
+            @RequestParam(defaultValue = "week", required = false, value = "time_line") String timeline,
             @NotNull HttpServletRequest request
     ) {
         String[] allowedTimeline = {"today", "week", "month", "year"};
@@ -405,6 +406,35 @@ public class ScheduleController {
         }
         UserDTO userDTO = userService.getUserByToken(request);
         SchedulePriorityDTO scheduleList = scheduleService.getSchedulePriorityList(userDTO, timeline);
+        return ResultUtil.success("获取成功", scheduleList);
+    }
+
+    /**
+     * 获取日程列表(可能是小组)
+     * <p>
+     * 该方法用于获取日程列表(可能是小组)
+     *
+     * @return 获取日程列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/list/user")
+    public ResponseEntity<BaseResponse<List<ScheduleDTO>>> getScheduleListMaybeGroup(
+            @RequestParam(value = "group_uuid", required = false) String groupUuid,
+            @RequestParam("start_time") String startTime,
+            @RequestParam("end_time") String endTime,
+            @NotNull HttpServletRequest request
+    ) {
+        if (groupUuid != null && !Pattern.matches(PatternConstant.NO_DASH_UUID, groupUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.GROUP_UUID_ILLEGAL);
+        }
+        if (!Pattern.matches(PatternConstant.DATE_FORMAT, startTime)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "开始时间有误");
+        }
+        if (!Pattern.matches(PatternConstant.DATE_FORMAT, endTime)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, "结束时间有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        List<ScheduleDTO> scheduleList = scheduleService.getScheduleListMaybeGroup(userDTO, groupUuid, startTime, endTime);
         return ResultUtil.success("获取成功", scheduleList);
     }
 }

@@ -496,12 +496,12 @@ public class ScheduleLogic implements ScheduleService {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(StringConstant.DATE_FORMAT);
                 long currentTime = System.currentTimeMillis();
                 long firstDayOfWeek = currentTime - (currentTime + 1000 * 60 * 60 * 24 * 6) % (1000 * 60 * 60 * 24);
-                yield Timestamp.valueOf(simpleDateFormat.format(firstDayOfWeek) + " 00:00:00");
+                yield Timestamp.valueOf(simpleDateFormat.format(firstDayOfWeek) + StringConstant.DATE_START);
             }
             case "today" -> {
                 // 获取今天的时间戳
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(StringConstant.DATE_FORMAT);
-                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + " 00:00:00");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + StringConstant.DATE_START);
             }
             default ->
                     throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
@@ -522,12 +522,12 @@ public class ScheduleLogic implements ScheduleService {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(StringConstant.DATE_FORMAT);
                 long currentTime = System.currentTimeMillis();
                 long lastDayOfWeek = currentTime + (1000 * 60 * 60 * 24 * 6) - (currentTime + 1000 * 60 * 60 * 24 * 6) % (1000 * 60 * 60 * 24);
-                yield Timestamp.valueOf(simpleDateFormat.format(lastDayOfWeek) + " 23:59:59");
+                yield Timestamp.valueOf(simpleDateFormat.format(lastDayOfWeek) + StringConstant.DATE_END);
             }
             case "today" -> {
                 // 获取今天的时间戳
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(StringConstant.DATE_FORMAT);
-                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + " 23:59:59");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + StringConstant.DATE_END);
             }
             default ->
                     throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
@@ -552,7 +552,7 @@ public class ScheduleLogic implements ScheduleService {
                 .eq(ScheduleDO::getType, 2)
                 .or(i -> i
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
-                        .ge(ScheduleDO::getStartTime, timeLine)
+                .ge(ScheduleDO::getStartTime, timeLine)
                 .or(j -> j
                         .in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
                                 .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
@@ -607,5 +607,57 @@ public class ScheduleLogic implements ScheduleService {
             }
         });
         return schedulePriorityDTO;
+    }
+
+    @Override
+    public List<ScheduleDTO> getScheduleListMaybeGroup(UserDTO userDTO, String groupUuid, String startTime, String endTime) {
+        // 时间获取为 yyyy-MM-dd 调整为 Timestamp
+        Timestamp startTimestamp = Timestamp.valueOf(startTime + StringConstant.DATE_START);
+        Timestamp endTimestamp = Timestamp.valueOf(endTime + StringConstant.DATE_END);
+        // 小组可能为空，如果为空则获取个人，如果有小组获取小组
+        List<ScheduleDO> scheduleList = new ArrayList<>();
+        if (groupUuid == null) {
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 0)
+                    .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                    .ge(ScheduleDO::getStartTime, startTimestamp)
+                    .le(ScheduleDO::getEndTime, endTimestamp)
+                    .list());
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 2)
+                    .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                    .ge(ScheduleDO::getStartTime, startTimestamp)
+                    .list());
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 1)
+                    .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                    .list());
+        } else {
+            GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 0)
+                    .eq(ScheduleDO::getGroupUuid, groupDO.getGroupUuid())
+                    .ge(ScheduleDO::getStartTime, startTimestamp)
+                    .le(ScheduleDO::getEndTime, endTimestamp)
+                    .list());
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 2)
+                    .eq(ScheduleDO::getGroupUuid, groupDO.getGroupUuid())
+                    .ge(ScheduleDO::getStartTime, startTimestamp)
+                    .list());
+            scheduleList.addAll(scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getType, 1)
+                    .eq(ScheduleDO::getGroupUuid, groupDO.getGroupUuid())
+                    .list());
+        }
+        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
+        scheduleList.stream().distinct().forEach(action -> {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            BeanUtils.copyProperties(action, scheduleDTO);
+            scheduleDTOList.add(scheduleDTO);
+        });
+        return scheduleDTOList;
     }
 }

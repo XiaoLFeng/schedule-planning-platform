@@ -211,4 +211,17 @@ public interface ScheduleService {
      * @return 日程优先级列表
      */
     SchedulePriorityDTO getSchedulePriorityList(UserDTO userDTO, @NotNull String timeline);
+
+    /**
+     * 获取日程列表
+     * <p>
+     * 该方法用于获取日程列表
+     *
+     * @param userDTO 用户信息
+     * @param groupUuid 小组uuid
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 日程列表
+     */
+    List<ScheduleDTO> getScheduleListMaybeGroup(UserDTO userDTO, String groupUuid, String startTime, String endTime);
 }
