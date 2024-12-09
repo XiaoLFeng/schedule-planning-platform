@@ -46,6 +46,7 @@ import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.util.UuidUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,7 @@ import java.util.List;
  * @version v1.0.0
  * @since v1.0.0
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ScheduleLogic implements ScheduleService {
@@ -542,32 +544,35 @@ public class ScheduleLogic implements ScheduleService {
         }
 
         List<ScheduleDO> scheduleList = scheduleDAO.lambdaQuery()
-                .eq(ScheduleDO::getType, 0)
                 .or(i -> i
+                        .eq(ScheduleDO::getType, 0)
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
                         .ge(ScheduleDO::getStartTime, timeLine)
                         .le(ScheduleDO::getEndTime, endTimeLine))
                 .or(i -> i
+                        .eq(ScheduleDO::getType, 0)
                         .in(ScheduleDO::getGroupUuid, getGroup)
                         .ge(ScheduleDO::getStartTime, timeLine)
                         .le(ScheduleDO::getEndTime, endTimeLine))
                 .orderByAsc(ScheduleDO::getPriority)
                 .list();
         scheduleList.addAll(scheduleDAO.lambdaQuery()
-                .eq(ScheduleDO::getType, 2)
                 .or(i -> i
+                        .eq(ScheduleDO::getType, 2)
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
                         .ge(ScheduleDO::getStartTime, timeLine))
                 .or(j -> j
+                        .eq(ScheduleDO::getType, 2)
                         .in(ScheduleDO::getGroupUuid, getGroup)
                         .ge(ScheduleDO::getStartTime, timeLine))
                 .orderByAsc(ScheduleDO::getPriority)
                 .list());
         scheduleList.addAll(scheduleDAO.lambdaQuery()
-                .eq(ScheduleDO::getType, 1)
                 .or(i -> i
+                        .eq(ScheduleDO::getType, 1)
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
                 .or(j -> j
+                        .eq(ScheduleDO::getType, 1)
                         .in(ScheduleDO::getGroupUuid, getGroup))
                 .orderByAsc(ScheduleDO::getPriority)
                 .list());
@@ -637,6 +642,7 @@ public class ScheduleLogic implements ScheduleService {
                             .le(ScheduleDO::getEndTime, endTimestamp)
                     )
                     .list());
+            log.info("scheduleList: {}", scheduleList);
             scheduleList.addAll(scheduleDAO.lambdaQuery()
                     .or(i -> i
                             .eq(ScheduleDO::getType, 2)
@@ -649,6 +655,7 @@ public class ScheduleLogic implements ScheduleService {
                             .ge(ScheduleDO::getStartTime, startTimestamp)
                     )
                     .list());
+            log.info("scheduleList: {}", scheduleList);
             scheduleList.addAll(scheduleDAO.lambdaQuery()
                     .or(i -> i
                             .eq(ScheduleDO::getType, 1)

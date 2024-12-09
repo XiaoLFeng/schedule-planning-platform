@@ -39,9 +39,9 @@ export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (he
     const [timeLine, setTimeLine] = useState<TimelineItemProps[]>([] as TimelineItemProps[]);
     const [schedulePriorityEntity, setSchedulePriorityEntity] = useState<SchedulePriorityEntity>({} as SchedulePriorityEntity);
     const [scheduleSearchInfo] = useState<ScheduleGetGroupDTO>({
-        // 获取本周周一到本周日（格式 yyyy-MM-dd）
-        start_time: dayjs().startOf("week").toISOString().split("T")[0],
-        end_time: dayjs().endOf("week").toISOString().split("T")[0],
+        // 获取本周周一到本周日，要求周一开始而不是周六（格式 yyyy-MM-dd）
+        start_time: dayjs().startOf("week").add(2, "day").toISOString().split("T")[0],
+        end_time: dayjs().endOf("week").add(1, "day").toISOString().split("T")[0],
     } as ScheduleGetGroupDTO);
 
     document.title = `${webInfo.name} - 看板`;

@@ -91,7 +91,9 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                     <SideMenuItem icon={<UserSwitchOutlined/>} title={"好友"} path={"/dashboard/friends"}/>
                     <SideMenuItem icon={<UsergroupAddOutlined />} title={"日程小组"} path={"/dashboard/groups"}/>
                     <SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>
-                    <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/>
+                    {
+                        userEntity.role === "ADMIN" ? <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/> : null
+                    }
                 </div>
             </div>
             <div className={"flex-shrink-0 text-white"}>
