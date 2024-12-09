@@ -532,6 +532,15 @@ public class ScheduleLogic implements ScheduleService {
             default ->
                     throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
         };
+        List<String> getGroup = new ArrayList<>(groupMemberDAO.lambdaQuery()
+                .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                .list().stream()
+                .map(GroupMemberDO::getGroupUuid)
+                .toList());
+        if (getGroup.isEmpty()) {
+            getGroup.add("underfund");
+        }
+
         List<ScheduleDO> scheduleList = scheduleDAO.lambdaQuery()
                 .eq(ScheduleDO::getType, 0)
                 .or(i -> i
@@ -539,11 +548,7 @@ public class ScheduleLogic implements ScheduleService {
                         .ge(ScheduleDO::getStartTime, timeLine)
                         .le(ScheduleDO::getEndTime, endTimeLine))
                 .or(i -> i
-                        .in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                                .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                                .list().stream()
-                                .map(GroupMemberDO::getGroupUuid)
-                                .toList())
+                        .in(ScheduleDO::getGroupUuid, getGroup)
                         .ge(ScheduleDO::getStartTime, timeLine)
                         .le(ScheduleDO::getEndTime, endTimeLine))
                 .orderByAsc(ScheduleDO::getPriority)
@@ -551,14 +556,10 @@ public class ScheduleLogic implements ScheduleService {
         scheduleList.addAll(scheduleDAO.lambdaQuery()
                 .eq(ScheduleDO::getType, 2)
                 .or(i -> i
-                        .eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
-                .ge(ScheduleDO::getStartTime, timeLine)
+                        .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                        .ge(ScheduleDO::getStartTime, timeLine))
                 .or(j -> j
-                        .in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                                .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                                .list().stream()
-                                .map(GroupMemberDO::getGroupUuid)
-                                .toList())
+                        .in(ScheduleDO::getGroupUuid, getGroup)
                         .ge(ScheduleDO::getStartTime, timeLine))
                 .orderByAsc(ScheduleDO::getPriority)
                 .list());
@@ -567,11 +568,7 @@ public class ScheduleLogic implements ScheduleService {
                 .or(i -> i
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
                 .or(j -> j
-                        .in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                                .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                                .list().stream()
-                                .map(GroupMemberDO::getGroupUuid)
-                                .toList()))
+                        .in(ScheduleDO::getGroupUuid, getGroup))
                 .orderByAsc(ScheduleDO::getPriority)
                 .list());
         SchedulePriorityDTO schedulePriorityDTO = new SchedulePriorityDTO();
@@ -616,41 +613,63 @@ public class ScheduleLogic implements ScheduleService {
         Timestamp endTimestamp = Timestamp.valueOf(endTime + StringConstant.DATE_END);
         // 小组可能为空，如果为空则获取个人，如果有小组获取小组
         List<ScheduleDO> scheduleList = new ArrayList<>();
+        List<String> getGroup = new ArrayList<>(groupMemberDAO.lambdaQuery()
+                .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                .list().stream()
+                .map(GroupMemberDO::getGroupUuid)
+                .toList());
+        if (getGroup.isEmpty()) {
+            getGroup.add("underfund");
+        }
+
         if (groupUuid == null) {
             scheduleList.addAll(scheduleDAO.lambdaQuery()
-                    .eq(ScheduleDO::getType, 0)
-                    .or(i -> i.eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
-                    .or(i -> i.in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                            .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                            .list().stream()
-                            .map(GroupMemberDO::getGroupUuid)
-                            .toList()))
-                    .ge(ScheduleDO::getStartTime, startTimestamp)
-                    .le(ScheduleDO::getEndTime, endTimestamp)
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 0)
+                            .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                            .ge(ScheduleDO::getStartTime, startTimestamp)
+                            .le(ScheduleDO::getEndTime, endTimestamp)
+                    )
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 0)
+                            .in(ScheduleDO::getGroupUuid, getGroup)
+                            .ge(ScheduleDO::getStartTime, startTimestamp)
+                            .le(ScheduleDO::getEndTime, endTimestamp)
+                    )
                     .list());
             scheduleList.addAll(scheduleDAO.lambdaQuery()
-                    .eq(ScheduleDO::getType, 2)
-                    .or(i -> i.eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
-                    .or(i -> i.in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                            .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                            .list().stream()
-                            .map(GroupMemberDO::getGroupUuid)
-                            .toList()))
-                    .ge(ScheduleDO::getStartTime, startTimestamp)
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 2)
+                            .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                            .ge(ScheduleDO::getStartTime, startTimestamp)
+                    )
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 2)
+                            .in(ScheduleDO::getGroupUuid, getGroup)
+                            .ge(ScheduleDO::getStartTime, startTimestamp)
+                    )
                     .list());
             scheduleList.addAll(scheduleDAO.lambdaQuery()
-                    .eq(ScheduleDO::getType, 1)
-                    .or(i -> i.eq(ScheduleDO::getUserUuid, userDTO.getUuid()))
-                    .or(i -> i.in(ScheduleDO::getGroupUuid, groupMemberDAO.lambdaQuery()
-                            .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
-                            .list().stream()
-                            .map(GroupMemberDO::getGroupUuid)
-                            .toList()))
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 1)
+                            .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                    )
+                    .or(i -> i
+                            .eq(ScheduleDO::getType, 1)
+                            .in(ScheduleDO::getGroupUuid, getGroup)
+                    )
                     .list());
         } else {
             GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, groupUuid)
                     .oneOpt()
                     .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
+            // 检查用户是否在该小组
+            groupMemberDAO.lambdaQuery()
+                    .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                    .eq(GroupMemberDO::getGroupUuid, groupDO.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException(StringConstant.NOT_GROUP_MEMBER, ErrorCode.OPERATION_DENIED));
+
             scheduleList.addAll(scheduleDAO.lambdaQuery()
                     .eq(ScheduleDO::getType, 0)
                     .eq(ScheduleDO::getGroupUuid, groupDO.getGroupUuid())

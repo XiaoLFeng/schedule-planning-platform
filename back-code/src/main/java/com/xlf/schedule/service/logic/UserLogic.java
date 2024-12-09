@@ -21,13 +21,16 @@
 package com.xlf.schedule.service.logic;
 
 import com.xlf.schedule.constant.StringConstant;
+import com.xlf.schedule.dao.RoleDAO;
 import com.xlf.schedule.dao.TokenDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.dto.UserDTO;
+import com.xlf.schedule.model.entity.RoleDO;
 import com.xlf.schedule.model.entity.TokenDO;
 import com.xlf.schedule.model.entity.UserDO;
 import com.xlf.schedule.model.vo.UserEditVO;
+import com.xlf.schedule.service.RoleService;
 import com.xlf.schedule.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
@@ -59,6 +62,8 @@ import java.util.regex.Pattern;
 public class UserLogic implements UserService {
     private final UserDAO userDAO;
     private final TokenDAO tokenDAO;
+    private final RoleService roleService;
+    private final RoleDAO roleDAO;
 
     @Override
     public UserDTO getUserForThreeType(String user) {
@@ -88,9 +93,10 @@ public class UserLogic implements UserService {
         if (userDO == null) {
             throw new BusinessException(StringConstant.USER_NOT_EXIST, ErrorCode.NOT_EXIST);
         }
+        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleUuid, userDO.getRole()).one();
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(userDO, userDTO);
-
+        userDTO.setRole(roleDO.getName());
         return userDTO;
     }
 
