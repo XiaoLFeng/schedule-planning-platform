@@ -19,9 +19,11 @@
  */
 
 import {Calendar, type CalendarProps} from "antd";
-import {Dayjs} from "dayjs";
-import React from "react";
-import {RomanI, RomanIII} from "../../../assets/icon/roman_numerals_svg.tsx";
+import dayjs, {Dayjs} from "dayjs";
+import React, {JSX, useEffect, useState} from "react";
+import {RomanI, RomanII, RomanIII, RomanIV} from "../../../assets/icon/roman_numerals_svg.tsx";
+import {ScheduleEntity} from "../../../models/dto/schedule_entity.ts";
+import {ScheduleGetGroupDTO} from "../../../models/dto/schedule_get_group_dto.ts";
 
 /**
  * # 看板视图年月
@@ -31,51 +33,171 @@ import {RomanI, RomanIII} from "../../../assets/icon/roman_numerals_svg.tsx";
  * @version v1.0.0
  * @author xiao_lfeng
  */
-export function DashboardViewYearAndMonth() {
+export function DashboardViewYearAndMonth({getScheduleData, searchInfo, emit}: Readonly<{
+    getScheduleData: ScheduleEntity[],
+    searchInfo: ScheduleGetGroupDTO
+    emit: ({group_uuid, start_time, end_time}: ScheduleGetGroupDTO) => void
+}>) {
+    const [scheduleData, setScheduleData] = useState<ScheduleEntity[]>([] as ScheduleEntity[]);
+
+    useEffect(() => {
+        setScheduleData(getScheduleData);
+        console.log("getScheduleData", getScheduleData);
+    }, [getScheduleData]);
 
     const getListData = (value: Dayjs) => {
-        let listData: { content: React.ReactElement | string }[] = []; // Specify the type of listData
-        if (value.month() === 9) {
-            switch (value.date()) {
-                case 8:
-                    listData = [
-                        {
-                            content: (
-                                <div className={"flex gap-1 text-sm whitespace-nowrap"}>
-                                    <div className={"px-1 bg-red-400 fill-red-900 rounded text-white flex items-center"}>
-                                        <RomanI/></div>
-                                    <div className={"px-1 bg-teal-500 rounded text-white"}>课程</div>
-                                    <div>物理课</div>
-                                </div>
-                            )
-                        },
-                        {
-                            content: (
-                                <div className={"flex gap-1 text-sm whitespace-nowrap"}>
-                                    <div
-                                        className={"px-1 bg-green-400 fill-green-900 rounded text-white flex items-center"}>
-                                        <RomanIII/></div>
-                                    <div className={"px-1 bg-sky-500 rounded text-white"}>日程</div>
-                                    <div>学习 SpringMVC 设计原理</div>
-                                </div>
-                            )
-                        },
-                    ];
-                    break;
-                default:
-            }
+        const listData: { content: React.ReactElement | string }[] = []; // Specify the type of listData
+        if (scheduleData.length > 0) {
+            scheduleData.forEach(schedule => {
+                // 对获取的数据进行判断月日，然后填入数据
+                if (value.year() === dayjs(schedule.start_time).year()) {
+                    if (value.month() === dayjs(schedule.start_time).month()) {
+                        if (value.date() === dayjs(schedule.start_time).date()) {
+                            let priorityElement: JSX.Element;
+                            switch (schedule.priority) {
+                                case 4: {
+                                    priorityElement = (
+                                        <div
+                                            className={"px-1 bg-red-400 fill-red-900 rounded text-white flex items-center"}>
+                                            <RomanI/>
+                                        </div>
+                                    );
+                                    break;
+                                }
+                                case 3: {
+                                    priorityElement = (
+                                        <div
+                                            className={"px-1 bg-yellow-400 fill-yellow-900 rounded text-white flex items-center"}>
+                                            <RomanII/>
+                                        </div>
+                                    );
+                                    break;
+                                }
+                                case 2: {
+                                    priorityElement = (
+                                        <div
+                                            className={"px-1 bg-green-400 fill-green-900 rounded text-white flex items-center"}>
+                                            <RomanIII/>
+                                        </div>
+                                    );
+                                    break;
+                                }
+                                case 1: {
+                                    priorityElement = (
+                                        <div
+                                            className={"px-1 bg-teal-400 fill-teal-900 rounded text-white flex items-center"}>
+                                            <RomanIV/>
+                                        </div>
+                                    );
+                                    break;
+                                }
+                                default: {
+                                    priorityElement = (
+                                        <div
+                                            className={"px-1 bg-teal-400 fill-teal-900 rounded text-white flex items-center"}>
+                                            <RomanIV/>
+                                        </div>
+                                    );
+                                    break;
+                                }
+                            }
+                            listData.push({
+                                content: (
+                                    <div className={"flex gap-1 text-sm whitespace-nowrap"}>
+                                        {priorityElement}
+                                        <div className={"px-1 bg-teal-500 rounded text-white"}>日程</div>
+                                        <div>{schedule.name}</div>
+                                    </div>
+                                )
+                            });
+                        }
+                    }
+                }
+            });
         }
         return listData || [];
     };
 
+    const getMonthData = (value: Dayjs) => {
+        const listData: { content: React.ReactElement | string }[] = []; // Specify the type of listData
+        scheduleData.forEach(schedule => {
+            // 对获取的数据进行判断月日，然后填入数据
+            if (value.year() === dayjs(schedule.start_time).year()) {
+                if (value.month() === dayjs(schedule.start_time).month()) {
+                    let priorityElement: JSX.Element;
+                    switch (schedule.priority) {
+                        case 4: {
+                            priorityElement = (
+                                <div
+                                    className={"px-1 bg-red-400 fill-red-900 rounded text-white flex items-center"}>
+                                    <RomanI/>
+                                </div>
+                            );
+                            break;
+                        }
+                        case 3: {
+                            priorityElement = (
+                                <div
+                                    className={"px-1 bg-yellow-400 fill-yellow-900 rounded text-white flex items-center"}>
+                                    <RomanII/>
+                                </div>
+                            );
+                            break;
+                        }
+                        case 2: {
+                            priorityElement = (
+                                <div
+                                    className={"px-1 bg-green-400 fill-green-900 rounded text-white flex items-center"}>
+                                    <RomanIII/>
+                                </div>
+                            );
+                            break;
+                        }
+                        case 1: {
+                            priorityElement = (
+                                <div
+                                    className={"px-1 bg-teal-400 fill-teal-900 rounded text-white flex items-center"}>
+                                    <RomanIV/>
+                                </div>
+                            );
+                            break;
+                        }
+                        default: {
+                            priorityElement = (
+                                <div
+                                    className={"px-1 bg-teal-400 fill-teal-900 rounded text-white flex items-center"}>
+                                    <RomanIV/>
+                                </div>
+                            );
+                            break;
+                        }
+                    }
+                    listData.push({
+                        content: (
+                            <div className={"flex gap-1 text-sm whitespace-nowrap"}>
+                                {priorityElement}
+                                <div className={"px-1 bg-teal-500 rounded text-white"}>日程</div>
+                                <div>{schedule.name}</div>
+                            </div>
+                        )
+                    });
+                }
+            }
+        });
+        return listData || [];
+    };
+
     const monthCellRender = (value: Dayjs) => {
-        const num = getMonthData(value);
-        return num ? (
-            <div className="notes-month">
-                <section>{num}</section>
-                <span>Backlog number</span>
-            </div>
-        ) : null;
+        const listData = getMonthData(value);
+        return (
+            <ul className="events grid gap-1">
+                {listData.map((item, index) => (
+                    <li key={"item-" + index}>
+                        {item.content}
+                    </li>
+                ))}
+            </ul>
+        );
     };
 
     const dateCellRender = (value: Dayjs) => {
@@ -99,13 +221,17 @@ export function DashboardViewYearAndMonth() {
 
     return (
         <div className={"grid shadow p-6 bg-white rounded-lg"}>
-            <Calendar cellRender={cellRender}/>
+            <Calendar
+                cellRender={cellRender}
+                onChange={(date) => {
+                    // 获取当前点击的日期中的年份
+                    emit({
+                        group_uuid: searchInfo.group_uuid,
+                        start_time: date.startOf("month").toISOString().split("T")[0],
+                        end_time: date.endOf("month").toISOString().split("T")[0],
+                    });
+                }}
+            />
         </div>
     );
 }
-
-const getMonthData = (value: Dayjs) => {
-    if (value.month() === 8) {
-        return 1394;
-    }
-};

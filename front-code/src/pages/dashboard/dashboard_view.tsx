@@ -25,15 +25,21 @@ import {DashboardViewYearAndMonth} from "./view/dashboard_view_year_and_month.ts
 import {DashboardViewWeek} from "./view/dashboard_view_week.tsx";
 import {DashboardViewDay} from "./view/dashboard_view_day.tsx";
 import {animated, useTransition} from "@react-spring/web";
-import {useEffect, useState} from "react";
+import {createContext, useEffect, useState} from "react";
 import {DashboardViewMenu} from "../../components/dashboard/dashboard_view_menu.tsx";
 import {Page} from "../../models/page.ts";
 import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
-import {GetScheduleGroupAPI} from "../../interface/schedule_api.ts";
+import {GetScheduleGroupAPI, GetScheduleListMaybeGroup} from "../../interface/schedule_api.ts";
 import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts";
 import {ScheduleAddModal} from "../../components/modal/schedule_add_modal.tsx";
+import {ScheduleEntity} from "../../models/dto/schedule_entity.ts";
+import {ScheduleGetGroupDTO} from "../../models/dto/schedule_get_group_dto.ts";
+
+
+export const LoadingContext = createContext<boolean>(false);
 
 export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: string) => void }) {
+
     const location = useLocation();
     const navigate = useNavigate();
     const webInfo = useSelector((state: { webInfo: WebInfoEntity }) => state.webInfo);
@@ -41,6 +47,12 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
     const [scheduleAdd, setScheduleAdd] = useState<boolean>(false);
     const [selectedGroup, setSelectedGroup] = useState<string>("");
     const [refresh, setRefresh] = useState<boolean>(false);
+    const [scheduleList, setScheduleList] = useState<ScheduleEntity[]>({} as ScheduleEntity[]);
+    const [scheduleSearchInfo, setScheduleSearchInfo] = useState<ScheduleGetGroupDTO>({
+        // 获取当年第一天和月末最后一天 （格式 yyyy-MM-dd）
+        start_time: new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0],
+        end_time: new Date(new Date().getFullYear(), 11, 31).toISOString().split("T")[0],
+    } as ScheduleGetGroupDTO);
 
     const [scheduleGroupList, setScheduleGroupList] = useState<Page<ScheduleGroupEntity>>({} as Page<ScheduleGroupEntity>);
     const [scheduleSearchList] = useState<ScheduleGroupListDTO>({
@@ -64,6 +76,22 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
             navigate("/dashboard/view/year-and-month");
         }
     });
+
+    useEffect(() => {
+        const func = async () => {
+            const getResp = await GetScheduleListMaybeGroup(scheduleSearchInfo);
+            if (getResp?.output === "Success") {
+                setScheduleList(getResp.data!);
+                console.log(getResp.data);
+            } else {
+                console.error(getResp?.error_message);
+            }
+        }
+
+        if (location.pathname !== "/dashboard/view") {
+            func().then();
+        }
+    }, [location.pathname, scheduleSearchInfo, refresh]);
 
     useEffect(() => {
         const func = async () => {
@@ -93,7 +121,14 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
                             <select
                                 name="group"
                                 id="group"
-                                onChange={(e) => setSelectedGroup(e.target.value)}
+                                onChange={(e) => {
+                                    setSelectedGroup(e.target.value);
+                                    if (e.target.value) {
+                                        setScheduleSearchInfo({...scheduleSearchInfo, group_uuid: e.target.value});
+                                    } else {
+                                        setScheduleSearchInfo({...scheduleSearchInfo, group_uuid: undefined});
+                                    }
+                                }}
                                 className="w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
                             >
                                 <option value="">全部</option>
@@ -120,13 +155,21 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
                 </div>
                 <animated.div style={style} className={"w-full h-full"}>
                     <Routes>
-                        <Route path={"/year-and-month"} element={<DashboardViewYearAndMonth/>}/>
+                        <Route path={"/year-and-month"}
+                               element={
+                                   <DashboardViewYearAndMonth
+                                       getScheduleData={scheduleList}
+                                       emit={setScheduleSearchInfo}
+                                       searchInfo={scheduleSearchInfo}
+                                   />
+                               }/>
                         <Route path={"/week"} element={<DashboardViewWeek/>}/>
                         <Route path={"/day"} element={<DashboardViewDay/>}/>
                     </Routes>
                 </animated.div>
             </div>
-            <ScheduleAddModal propOpen={scheduleAdd} groupUuid={selectedGroup} groupList={scheduleGroupList} emit={setScheduleAdd} refresh={setRefresh}/>
+            <ScheduleAddModal propOpen={scheduleAdd} groupUuid={selectedGroup} groupList={scheduleGroupList}
+                              emit={setScheduleAdd} refresh={setRefresh}/>
         </>
     ));
 }
