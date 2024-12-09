@@ -28,8 +28,10 @@ import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.ScheduleDTO;
+import com.xlf.schedule.model.dto.SchedulePriorityDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
+import com.xlf.schedule.model.entity.ScheduleDO;
 import com.xlf.schedule.model.vo.GroupMemberAddVO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.model.vo.ScheduleAddVO;
@@ -342,11 +344,11 @@ public class ScheduleController {
     }
 
     /**
-     * 获取日程列表
+     * 获取日程
      * <p>
-     * 该方法用于获取日程列表
+     * 该方法用于获取日程
      *
-     * @return 获取日程列表结果
+     * @return 获取日程结果
      */
     @HasAuthorize
     @GetMapping("/{schedule_uuid}")
@@ -360,5 +362,49 @@ public class ScheduleController {
         UserDTO userDTO = userService.getUserByToken(request);
         ScheduleDTO scheduleDTO = scheduleService.getSchedule(userDTO, scheduleUuid);
         return ResultUtil.success("获取日程成功", scheduleDTO);
+    }
+
+    /**
+     * 获取日程列表
+     * <p>
+     * 该方法用于获取日程列表
+     *
+     * @return 获取日程列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/list")
+    public ResponseEntity<BaseResponse<CustomPage<ScheduleDTO>>> getScheduleList(
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size,
+            @RequestParam(value = "search", defaultValue = "") String search,
+            @NotNull HttpServletRequest request
+    ) {
+        UserDTO userDTO = userService.getUserByToken(request);
+        Page<ScheduleDO> scheduleList = scheduleService.getScheduleList(userDTO, page, size, search);
+        CustomPage<ScheduleDTO> pageDTO = new CustomPage<>();
+        CopyUtil.pageDoCopyToDTO(scheduleList, pageDTO, ScheduleDTO.class);
+        return ResultUtil.success("获取成功", pageDTO);
+    }
+
+    /**
+     * 获取日程优先级列表
+     * <p>
+     * 该方法用于获取日程优先级列表
+     *
+     * @return 获取日程优先级列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/list/priority")
+    public ResponseEntity<BaseResponse<SchedulePriorityDTO>> getSchedulePriorityList(
+            @RequestParam(defaultValue = "week", required = false) String timeline,
+            @NotNull HttpServletRequest request
+    ) {
+        String[] allowedTimeline = {"today", "week", "month", "year"};
+        if (!Arrays.asList(allowedTimeline).contains(timeline)) {
+            throw new IllegalDataException(ErrorCode.PARAMETER_ILLEGAL, "时间线有误");
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        SchedulePriorityDTO scheduleList = scheduleService.getSchedulePriorityList(userDTO, timeline);
+        return ResultUtil.success("获取成功", scheduleList);
     }
 }

@@ -30,6 +30,7 @@ import com.xlf.schedule.dao.ScheduleDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.ScheduleDTO;
+import com.xlf.schedule.model.dto.SchedulePriorityDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.entity.GroupMemberDO;
@@ -451,8 +452,81 @@ public class ScheduleLogic implements ScheduleService {
         }
         ScheduleDTO scheduleDTO = new ScheduleDTO();
         BeanUtils.copyProperties(scheduleDO, scheduleDTO);
-        List<String> tags = gson.fromJson(scheduleDO.getTags(), new TypeToken<>() {});
+        List<String> tags = gson.fromJson(scheduleDO.getTags(), new TypeToken<>() {
+        });
         scheduleDTO.setTags(tags);
         return scheduleDTO;
+    }
+
+    @Override
+    public Page<ScheduleDO> getScheduleList(UserDTO userDTO, Integer page, Integer size, String search) {
+        Page<ScheduleDO> schedulePage;
+        if (search != null && !search.isEmpty()) {
+            schedulePage = scheduleDAO.lambdaQuery()
+                    .or(i -> i.eq(ScheduleDO::getUserUuid, userDTO.getUuid()).like(ScheduleDO::getName, search))
+                    .or(i -> i.eq(ScheduleDO::getUserUuid, userDTO.getUuid()).like(ScheduleDO::getTags, search))
+                    .page(new Page<>(page, size));
+        } else {
+            schedulePage = scheduleDAO.lambdaQuery()
+                    .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                    .page(new Page<>(page, size));
+        }
+        Page<ScheduleDO> pageSchedule = new Page<>(page, size);
+        pageSchedule.setRecords(schedulePage.getRecords());
+        return pageSchedule;
+    }
+
+    @Override
+    public SchedulePriorityDTO getSchedulePriorityList(UserDTO userDTO, @NotNull String timeline) {
+        // 根据时间轴获取数据库中的日程（时间轴分为“年，月，周，日”
+        Timestamp timeLine = switch (timeline) {
+            case "year" -> new Timestamp(System.currentTimeMillis() - 31536000000L);
+            case "month" -> new Timestamp(System.currentTimeMillis() - 2592000000L);
+            case "week" -> new Timestamp(System.currentTimeMillis() - 604800000L);
+            case "day" -> new Timestamp(System.currentTimeMillis() - 86400000L);
+            default ->
+                    throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
+        };
+        List<ScheduleDO> scheduleList = scheduleDAO.lambdaQuery()
+                .or(i -> i
+                        .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                        .ge(ScheduleDO::getStartTime, timeLine))
+                .or(i -> i
+                        .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                        .ge(ScheduleDO::getEndTime, timeLine))
+                .list();
+        SchedulePriorityDTO schedulePriorityDTO = new SchedulePriorityDTO();
+        scheduleList.forEach(action -> {
+            ScheduleDTO scheduleDTO = new ScheduleDTO();
+            BeanUtils.copyProperties(action, scheduleDTO);
+            switch (action.getPriority()) {
+                case 4 -> {
+                    if (schedulePriorityDTO.getImportant() == null) {
+                        schedulePriorityDTO.setImportant(new ArrayList<>());
+                    }
+                    schedulePriorityDTO.getImportant().add(scheduleDTO);
+                }
+                case 3 -> {
+                    if (schedulePriorityDTO.getNormal() == null) {
+                        schedulePriorityDTO.setNormal(new ArrayList<>());
+                    }
+                    schedulePriorityDTO.getNormal().add(scheduleDTO);
+                }
+                case 2 -> {
+                    if (schedulePriorityDTO.getGeneral() == null) {
+                        schedulePriorityDTO.setGeneral(new ArrayList<>());
+                    }
+                    schedulePriorityDTO.getGeneral().add(scheduleDTO);
+                }
+                case 1 -> {
+                    if (schedulePriorityDTO.getLow() == null) {
+                        schedulePriorityDTO.setLow(new ArrayList<>());
+                    }
+                    schedulePriorityDTO.getLow().add(scheduleDTO);
+                }
+                default -> throw new BusinessException(StringConstant.PRIORITY_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
+            }
+        });
+        return schedulePriorityDTO;
     }
 }

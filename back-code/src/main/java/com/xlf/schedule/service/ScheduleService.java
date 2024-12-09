@@ -23,11 +23,14 @@ package com.xlf.schedule.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.GroupDTO;
 import com.xlf.schedule.model.dto.ScheduleDTO;
+import com.xlf.schedule.model.dto.SchedulePriorityDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
+import com.xlf.schedule.model.entity.ScheduleDO;
 import com.xlf.schedule.model.vo.GroupVO;
 import com.xlf.schedule.model.vo.ScheduleAddVO;
 import com.xlf.schedule.model.vo.ScheduleEditVO;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -184,4 +187,28 @@ public interface ScheduleService {
      * @return 日程列表
      */
     ScheduleDTO getSchedule(UserDTO userDTO, String scheduleUuid);
+
+    /**
+     * 获取日程列表
+     * <p>
+     * 该方法用于获取日程列表
+     *
+     * @param userDTO 用户信息
+     * @param page    页码
+     * @param size    每页大小
+     * @param search  搜索关键字
+     * @return 日程列表
+     */
+    Page<ScheduleDO> getScheduleList(UserDTO userDTO, Integer page, Integer size, String search);
+
+    /**
+     * 获取日程优先级列表
+     * <p>
+     * 该方法用于获取日程优先级列表
+     *
+     * @param userDTO  用户信息
+     * @param timeline 时间线
+     * @return 日程优先级列表
+     */
+    SchedulePriorityDTO getSchedulePriorityList(UserDTO userDTO, @NotNull String timeline);
 }
