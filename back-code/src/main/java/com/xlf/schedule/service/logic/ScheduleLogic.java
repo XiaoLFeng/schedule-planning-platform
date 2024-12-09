@@ -22,12 +22,14 @@ package com.xlf.schedule.service.logic;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.dao.GroupDAO;
 import com.xlf.schedule.dao.GroupMemberDAO;
 import com.xlf.schedule.dao.ScheduleDAO;
 import com.xlf.schedule.dao.UserDAO;
 import com.xlf.schedule.model.dto.GroupDTO;
+import com.xlf.schedule.model.dto.ScheduleDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.entity.GroupMemberDO;
@@ -362,7 +364,7 @@ public class ScheduleLogic implements ScheduleService {
     public void editSchedule(UserDTO userDTO, String scheduleUuid, ScheduleEditVO scheduleEditVO) {
         ScheduleDO scheduleDO = scheduleDAO.lambdaQuery().eq(ScheduleDO::getScheduleUuid, scheduleUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
             throw new BusinessException(StringConstant.NO_PERMISSION_UPDATE, ErrorCode.OPERATION_DENIED);
         }
@@ -412,7 +414,7 @@ public class ScheduleLogic implements ScheduleService {
     public void deleteSchedule(UserDTO userDTO, String scheduleUuid) {
         ScheduleDO scheduleDO = scheduleDAO.lambdaQuery().eq(ScheduleDO::getScheduleUuid, scheduleUuid)
                 .oneOpt()
-                .orElseThrow(() -> new BusinessException("日程不存在", ErrorCode.NOT_EXIST));
+                .orElseThrow(() -> new BusinessException(StringConstant.SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
         if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
             throw new BusinessException(StringConstant.NO_PERMISSION_DELETE, ErrorCode.OPERATION_DENIED);
         }
@@ -425,5 +427,32 @@ public class ScheduleLogic implements ScheduleService {
             }
         }
         scheduleDAO.removeById(scheduleDO);
+    }
+
+    @Override
+    public ScheduleDTO getSchedule(UserDTO userDTO, String scheduleUuid) {
+        ScheduleDO scheduleDO = scheduleDAO.lambdaQuery().eq(ScheduleDO::getScheduleUuid, scheduleUuid)
+                .oneOpt()
+                .orElseThrow(() -> new BusinessException(StringConstant.SCHEDULE_NOT_EXIST, ErrorCode.NOT_EXIST));
+        if (scheduleDO.getUserUuid() != null && !scheduleDO.getUserUuid().equals(userDTO.getUuid())) {
+            throw new BusinessException(StringConstant.NO_PERMISSION_QUERY, ErrorCode.OPERATION_DENIED);
+        }
+        if (scheduleDO.getGroupUuid() != null) {
+            GroupDO groupDO = groupDAO.lambdaQuery().eq(GroupDO::getGroupUuid, scheduleDO.getGroupUuid())
+                    .oneOpt()
+                    .orElseThrow(() -> new BusinessException(StringConstant.GROUP_NOT_EXIST, ErrorCode.NOT_EXIST));
+            if (!groupDO.getMaster().equals(userDTO.getUuid())) {
+                groupMemberDAO.lambdaQuery()
+                        .eq(GroupMemberDO::getUserUuid, userDTO.getUuid())
+                        .eq(GroupMemberDO::getGroupUuid, groupDO.getGroupUuid())
+                        .oneOpt()
+                        .orElseThrow(() -> new BusinessException(StringConstant.NOT_GROUP_MEMBER, ErrorCode.OPERATION_DENIED));
+            }
+        }
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        BeanUtils.copyProperties(scheduleDO, scheduleDTO);
+        List<String> tags = gson.fromJson(scheduleDO.getTags(), new TypeToken<>() {});
+        scheduleDTO.setTags(tags);
+        return scheduleDTO;
     }
 }

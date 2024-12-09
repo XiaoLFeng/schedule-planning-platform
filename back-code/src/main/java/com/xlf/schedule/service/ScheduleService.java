@@ -22,6 +22,7 @@ package com.xlf.schedule.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xlf.schedule.model.dto.GroupDTO;
+import com.xlf.schedule.model.dto.ScheduleDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupVO;
@@ -147,7 +148,7 @@ public interface ScheduleService {
      * <p>
      * 该方法用于获取小组成员列表
      *
-     * @param userDTO    用户信息
+     * @param userDTO       用户信息
      * @param scheduleAddVO 日程请求参数
      */
     void addSchedule(UserDTO userDTO, ScheduleAddVO scheduleAddVO);
@@ -157,8 +158,8 @@ public interface ScheduleService {
      * <p>
      * 该方法用于编辑日程
      *
-     * @param userDTO       用户信息
-     * @param scheduleUuid  日程uuid
+     * @param userDTO        用户信息
+     * @param scheduleUuid   日程uuid
      * @param scheduleEditVO 编辑日程请求参数
      */
     void editSchedule(UserDTO userDTO, String scheduleUuid, ScheduleEditVO scheduleEditVO);
@@ -172,4 +173,15 @@ public interface ScheduleService {
      * @param scheduleUuid 日程uuid
      */
     void deleteSchedule(UserDTO userDTO, String scheduleUuid);
+
+    /**
+     * 获取日程列表
+     * <p>
+     * 该方法用于获取日程列表
+     *
+     * @param userDTO      用户信息
+     * @param scheduleUuid 日程uuid
+     * @return 日程列表
+     */
+    ScheduleDTO getSchedule(UserDTO userDTO, String scheduleUuid);
 }

@@ -23,9 +23,11 @@ package com.xlf.schedule.controller.v1;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.xlf.schedule.constant.PatternConstant;
+import com.xlf.schedule.constant.StringConstant;
 import com.xlf.schedule.exception.lib.IllegalDataException;
 import com.xlf.schedule.model.CustomPage;
 import com.xlf.schedule.model.dto.GroupDTO;
+import com.xlf.schedule.model.dto.ScheduleDTO;
 import com.xlf.schedule.model.dto.UserDTO;
 import com.xlf.schedule.model.entity.GroupDO;
 import com.xlf.schedule.model.vo.GroupMemberAddVO;
@@ -310,7 +312,7 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.SCHEDULE_UUID_ILLEGAL);
         }
         UserDTO userDTO = userService.getUserByToken(request);
         scheduleService.editSchedule(userDTO, scheduleUuid, scheduleEditVO);
@@ -331,11 +333,32 @@ public class ScheduleController {
             @NotNull HttpServletRequest request
     ) {
         if (!Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
-            throw new IllegalDataException(ErrorCode.BODY_INVALID, "日程标识符有误");
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.SCHEDULE_UUID_ILLEGAL);
         }
 
         UserDTO userDTO = userService.getUserByToken(request);
         scheduleService.deleteSchedule(userDTO, scheduleUuid);
         return ResultUtil.success("删除日程成功");
+    }
+
+    /**
+     * 获取日程列表
+     * <p>
+     * 该方法用于获取日程列表
+     *
+     * @return 获取日程列表结果
+     */
+    @HasAuthorize
+    @GetMapping("/{schedule_uuid}")
+    public ResponseEntity<BaseResponse<ScheduleDTO>> getSchedule(
+            @PathVariable("schedule_uuid") String scheduleUuid,
+            @NotNull HttpServletRequest request
+    ) {
+        if (!Pattern.matches(PatternConstant.NO_DASH_UUID, scheduleUuid)) {
+            throw new IllegalDataException(ErrorCode.BODY_INVALID, StringConstant.SCHEDULE_UUID_ILLEGAL);
+        }
+        UserDTO userDTO = userService.getUserByToken(request);
+        ScheduleDTO scheduleDTO = scheduleService.getSchedule(userDTO, scheduleUuid);
+        return ResultUtil.success("获取日程成功", scheduleDTO);
     }
 }
