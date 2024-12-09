@@ -48,9 +48,8 @@ export function ScheduleAddModal({propOpen, groupUuid, groupList, emit, refresh}
         loop_type: 1,
         name: "",
         priority: 3,
-        resources: [""],
         start_time: 0,
-        tags: [""],
+        tags: [],
         type: 0,
     } as ScheduleAddDTO);
     const [hasMoreThanOneDay, setHasMoreThanOneDay] = useState<boolean>(false);
@@ -68,9 +67,8 @@ export function ScheduleAddModal({propOpen, groupUuid, groupList, emit, refresh}
             loop_type: 1,
             name: "",
             priority: 3,
-            resources: [""],
             start_time: 0,
-            tags: [""],
+            tags: [],
             type: 0,
         } as ScheduleAddDTO);
         if (!selectedGroupUuid) {
@@ -102,7 +100,19 @@ export function ScheduleAddModal({propOpen, groupUuid, groupList, emit, refresh}
     }, [selectedGroupUuid]);
 
     useEffect(() => {
-        setScheduleAdd({type: 0, priority: 3, loop_type: 1, add_location: false} as ScheduleAddDTO);
+        setScheduleAdd({
+            add_location: false,
+            custom_loop: 0,
+            description: "",
+            end_time: 0,
+            group_uuid: "",
+            loop_type: 1,
+            name: "",
+            priority: 3,
+            start_time: 0,
+            tags: [],
+            type: 0,
+        } as ScheduleAddDTO);
     }, [refresh]);
 
     async function handleOk() {
