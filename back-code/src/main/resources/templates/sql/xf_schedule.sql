@@ -34,7 +34,7 @@ create table xf_schedule
             on update cascade on delete cascade,
     name          varchar(64)             not null,
     description   varchar,
-    start_time    timestamp,
+    start_time    timestamp               not null,
     end_time      timestamp,
     type          smallint  default 0     not null,
     loop_type     smallint,

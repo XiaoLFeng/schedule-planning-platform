@@ -51,6 +51,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -480,23 +481,105 @@ public class ScheduleLogic implements ScheduleService {
     public SchedulePriorityDTO getSchedulePriorityList(UserDTO userDTO, @NotNull String timeline) {
         // 根据时间轴获取数据库中的日程（时间轴分为“年，月，周，日”
         Timestamp timeLine = switch (timeline) {
-            case "year" -> new Timestamp(System.currentTimeMillis() - 31536000000L);
-            case "month" -> new Timestamp(System.currentTimeMillis() - 2592000000L);
-            case "week" -> new Timestamp(System.currentTimeMillis() - 604800000L);
-            case "day" -> new Timestamp(System.currentTimeMillis() - 86400000L);
+            case "year" -> {
+                // 获取今年的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + "-01-01 00:00:00");
+            }
+            case "month" -> {
+                // 获取本月的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + "-01 00:00:00");
+            }
+            case "week" -> {
+                // 获取本周的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                long currentTime = System.currentTimeMillis();
+                long firstDayOfWeek = currentTime - (currentTime + 1000 * 60 * 60 * 24 * 6) % (1000 * 60 * 60 * 24);
+                yield Timestamp.valueOf(simpleDateFormat.format(firstDayOfWeek) + " 00:00:00");
+            }
+            case "today" -> {
+                // 获取今天的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + " 00:00:00");
+            }
+            default ->
+                    throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
+        };
+        Timestamp endTimeLine = switch (timeline) {
+            case "year" -> {
+                // 获取今年的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + "-12-31 23:59:59");
+            }
+            case "month" -> {
+                // 获取本月的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + "-31 23:59:59");
+            }
+            case "week" -> {
+                // 获取本周的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                long currentTime = System.currentTimeMillis();
+                long lastDayOfWeek = currentTime + (1000 * 60 * 60 * 24 * 6) - (currentTime + 1000 * 60 * 60 * 24 * 6) % (1000 * 60 * 60 * 24);
+                yield Timestamp.valueOf(simpleDateFormat.format(lastDayOfWeek) + " 23:59:59");
+            }
+            case "today" -> {
+                // 获取今天的时间戳
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                yield Timestamp.valueOf(simpleDateFormat.format(System.currentTimeMillis()) + " 23:59:59");
+            }
             default ->
                     throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
         };
         List<ScheduleDO> scheduleList = scheduleDAO.lambdaQuery()
                 .or(i -> i
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
-                        .ge(ScheduleDO::getStartTime, timeLine))
+                        .eq(ScheduleDO::getType, (short) 0)
+                        .ge(ScheduleDO::getStartTime, timeLine)
+                        .le(ScheduleDO::getEndTime, endTimeLine))
                 .or(i -> i
                         .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
-                        .ge(ScheduleDO::getEndTime, timeLine))
+                        .eq(ScheduleDO::getType, (short) 2)
+                        .ge(ScheduleDO::getStartTime, timeLine)
+                        .le(ScheduleDO::getEndTime, endTimeLine))
                 .list();
+        // 根据 start_time 到 end_time 的时间范围内中，如果type 为循环任务，需要判断是否在时间范围内
+        // 如果不在时间内，还需要根据 loop_type 类型确定当前时间点开始后是否有任务
+        // （loop_type 分为 1: 每天，2: 每周, 3: 每个工作日, 4: 每个月 1 号，5: 每个月 14号，0: 自定义）
+        // 若为 0 需要查看 custom_loop 中数字，数字代表隔多少天执行一次
+        // 如果是一日任务，需要判断是否在时间范围内
+        // 根据查询到的循环内容，根据 loop 信息，检查可能的时间点
+        ArrayList<Timestamp> checkAbleTime = new ArrayList<>();
+        ArrayList<Timestamp> checkAbleEndTime = new ArrayList<>();
+        scheduleDAO.lambdaQuery()
+                .or(i -> i
+                        .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                        .eq(ScheduleDO::getType, (short) 1))
+                .list().forEach(scheduleDO -> {
+                    switch (scheduleDO.getLoopType()) {
+                        // TODO[241209001] - 需要根据 loop_type 类型确定当前时间点开始后是否有任务
+                        default ->
+                                throw new BusinessException(StringConstant.SEARCH_CONDITION_ILLEGAL, ErrorCode.PARAMETER_ILLEGAL);
+                    }
+                });
+        // 根据 AbleTime 和 EndTime 进行查询
+        List<ScheduleDO> scheduleListForLoop = new ArrayList<>();
+        checkAbleTime.forEach(action -> {
+            scheduleListForLoop.addAll(scheduleDAO.lambdaQuery()
+                    .or(i -> i
+                            .eq(ScheduleDO::getUserUuid, userDTO.getUuid())
+                            .eq(ScheduleDO::getType, (short) 1)
+                            .le(ScheduleDO::getStartTime, action)
+                            .ge(ScheduleDO::getEndTime, checkAbleEndTime.get(checkAbleTime.indexOf(action))))
+                    .list());
+        });
+
+        // 两者 List 合并，去掉重复部分
+        scheduleList.addAll(scheduleListForLoop);
+        List<ScheduleDO> newScheduleList = scheduleList.stream().distinct().toList();
         SchedulePriorityDTO schedulePriorityDTO = new SchedulePriorityDTO();
-        scheduleList.forEach(action -> {
+        newScheduleList.forEach(action -> {
             ScheduleDTO scheduleDTO = new ScheduleDTO();
             BeanUtils.copyProperties(action, scheduleDTO);
             switch (action.getPriority()) {
