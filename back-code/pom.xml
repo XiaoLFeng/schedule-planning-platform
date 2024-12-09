@@ -25,8 +25,8 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.3.5</version>
+        <relativePath/>
     </parent>
     <groupId>com.xlf</groupId>
     <artifactId>schedule-planning-platform</artifactId>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.x-lf.utility</groupId>
             <artifactId>general-utils</artifactId>
-            <version>1.0.9-beta.2.5</version>
+            <version>1.0.9-beta.2.6</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
