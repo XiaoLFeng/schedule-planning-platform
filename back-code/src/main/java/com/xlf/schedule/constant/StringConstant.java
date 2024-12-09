@@ -50,6 +50,7 @@ public class StringConstant {
     public static final String SCHEDULE_UUID_ILLEGAL = "日程标识符有误";
     public static final String SCHEDULE_NOT_EXIST = "日程不存在";
     public static final String PRIORITY_ILLEGAL = "优先级非法";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private StringConstant() {
         throw new IllegalStateException("Utility class");
