@@ -2,7 +2,7 @@ pipeline {
     agent { label 'centos' }  // 选择带有标签 "centos" 的节点
 
     environment {
-        SONAR_TOKEN = credentials('sonar-token')  // 引用 Jenkins Credentials 中的 Token
+        SONAR_TOKEN = credentials('xiaolfeng-sonar-token')  // 引用 Jenkins Credentials 中的 Token
     }
 
     tools {
