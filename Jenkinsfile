@@ -22,7 +22,7 @@ pipeline {
         stage('SonarQube Analysis - Backend') {
             steps {
                 ansiColor('xterm') {
-                    withSonarQubeEnv('SonarQube') {  // 替换 'SonarQube' 为你配置的服务器名称
+                    withSonarQubeEnv('SonarScanner') {  // 替换 'SonarQube' 为你配置的服务器名称
                         sh '''
                             cd back-code
                             mvn clean verify sonar:sonar \
@@ -38,7 +38,7 @@ pipeline {
         stage('SonarQube Analysis - Frontend') {
             steps {
                 ansiColor('xterm') {
-                    withSonarQubeEnv('SonarQube') {  // 替换 'SonarQube' 为你配置的服务器名称
+                    withSonarQubeEnv('SonarScanner') {  // 替换 'SonarQube' 为你配置的服务器名称
                         sh '''
                             cd front-code
                             npx sonar-scanner \
@@ -60,7 +60,7 @@ pipeline {
             echo 'SonarQube 分析完成 🎉'
         }
         failure {
-            echo 'SonarQube 分析失败，请检查日志！'
+            error(message: 'SonarQube 分析失败，请检查日志！')
         }
     }
 }
