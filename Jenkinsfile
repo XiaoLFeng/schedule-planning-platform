@@ -1,46 +1,66 @@
-envrionment {
-  SONAR_TOKEN = credentials('sonar-token')
-}
-node("centos") {
-  ansiColor('xterm') {
+pipeline {
+    agent { label 'centos' }  // 选择带有标签 "centos" 的节点
 
-    stage('SCM') {
-      // 拉取代码
-      checkout scm
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')  // 引用 Jenkins Credentials 中的 Token
     }
-    
-    stage('SonarQube Analysis - Backend') {
-      // Maven 工具的配置，"maven" 是在 Jenkins 全局工具中配置的 Maven 名称
-      def mvn = tool 'maven';
-      
-      // 使用 SonarQube 环境
-      withSonarQubeEnv() {
-        // 切换到 back-code 目录并执行 Maven 命令
-        sh """
-          cd back-code
-          ${mvn}/bin/mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=XiaoLFeng_schedule-planning-platform_backend \
-            -Dsonar.projectToken=$SONAR_TOKEN \
-            -Dsonar.projectName='学生日程规划平台后端'
-        """
-      }
+
+    tools {
+        maven 'maven'  // 配置 Maven 工具，名称是 Jenkins 全局工具配置里的名称
     }
-    
-    stage('SonarQube Analysis - Frontend') {
-      // 使用 SonarQube 环境
-      withSonarQubeEnv() {
-        // 切换到 front-code 目录并执行 SonarQube 分析命令
-        sh """
-          cd front-code
-          npx sonar-scanner \
-            -Dsonar.projectKey=schedule-planning-platform_frontend \
-            -Dsonar.projectName='schedule-planning-platform-platform_frontend' \
-            -Dsonar.projectToken=$SONAR_TOKEN \
-            -Dsonar.sources=src \
-            -Dsonar.language=ts \
-            -Dsonar.sourceEncoding=UTF-8
-        """
-      }
+
+    stages {
+        stage('SCM') {
+            steps {
+                ansiColor('xterm') {
+                    echo "拉取代码..."
+                    checkout scm  // 拉取代码
+                }
+            }
+        }
+
+        stage('SonarQube Analysis - Backend') {
+            steps {
+                ansiColor('xterm') {
+                    withSonarQubeEnv('SonarQube') {  // 替换 'SonarQube' 为你配置的服务器名称
+                        sh '''
+                            cd back-code
+                            mvn clean verify sonar:sonar \
+                                -Dsonar.projectKey=XiaoLFeng_schedule-planning-platform_backend \
+                                -Dsonar.projectName="学生日程规划平台后端" \
+                                -Dsonar.token=${SONAR_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis - Frontend') {
+            steps {
+                ansiColor('xterm') {
+                    withSonarQubeEnv('SonarQube') {  // 替换 'SonarQube' 为你配置的服务器名称
+                        sh '''
+                            cd front-code
+                            npx sonar-scanner \
+                                -Dsonar.projectKey=schedule-planning-platform_frontend \
+                                -Dsonar.projectName="学生日程规划平台前端" \
+                                -Dsonar.token=${SONAR_TOKEN} \
+                                -Dsonar.sources=src \
+                                -Dsonar.language=ts \
+                                -Dsonar.sourceEncoding=UTF-8
+                        '''
+                    }
+                }
+            }
+        }
     }
-  }
+
+    post {
+        success {
+            echo 'SonarQube 分析完成 🎉'
+        }
+        failure {
+            echo 'SonarQube 分析失败，请检查日志！'
+        }
+    }
 }
