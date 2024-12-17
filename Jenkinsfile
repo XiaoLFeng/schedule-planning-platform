@@ -4,6 +4,10 @@ node("centos") {
       // 拉取代码
       checkout scm
     }
+
+    environment {
+      SONAR_TOKEN = credentials('sonar-token')
+    }
     
     stage('SonarQube Analysis - Backend') {
       // Maven 工具的配置，"maven" 是在 Jenkins 全局工具中配置的 Maven 名称
@@ -16,6 +20,7 @@ node("centos") {
           cd back-code
           ${mvn}/bin/mvn clean verify sonar:sonar \
             -Dsonar.projectKey=XiaoLFeng_schedule-planning-platform_backend \
+            -Dsonar.projectToken=${SONAR_TOKEN} \
             -Dsonar.projectName='学生日程规划平台后端'
         """
       }
@@ -30,6 +35,7 @@ node("centos") {
           npx sonar-scanner \
             -Dsonar.projectKey=schedule-planning-platform_frontend \
             -Dsonar.projectName='schedule-planning-platform-platform_frontend' \
+            -Dsonar.projectToken=${SONAR_TOKEN} \
             -Dsonar.sources=src \
             -Dsonar.language=ts \
             -Dsonar.sourceEncoding=UTF-8
