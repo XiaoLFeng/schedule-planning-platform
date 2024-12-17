@@ -29,7 +29,7 @@ import {AddScheduleAPI} from "../../interface/schedule_api.ts";
 
 export function ScheduleAddModal({propOpen, groupUuid, groupList, emit, refresh}: Readonly<{
     propOpen: boolean,
-    groupUuid: string,
+    groupUuid?: string,
     groupList: Page<ScheduleGroupEntity>,
     emit: (data: boolean) => void,
     refresh: (data: boolean) => void

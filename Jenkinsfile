@@ -1,4 +1,4 @@
-node {
+node("centos") {
   stage('SCM') {
     // 拉取代码
     checkout scm

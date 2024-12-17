@@ -24,10 +24,19 @@ import {message, Timeline, TimelineItemProps} from "antd";
 import {useEffect, useState} from "react";
 import {BuildOutlined, CalendarOutlined, PlusOutlined} from "@ant-design/icons";
 import {RomanI, RomanII, RomanIII, RomanIV} from "../../assets/icon/roman_numerals_svg.tsx";
-import {GetScheduleListMaybeGroup, GetScheduleListWithPriority} from "../../interface/schedule_api.ts";
+import {
+    GetScheduleGroupAPI,
+    GetScheduleListMaybeGroup,
+    GetScheduleListWithPriority
+} from "../../interface/schedule_api.ts";
 import {SchedulePriorityEntity} from "../../models/entity/schedule_priority_entity.ts";
 import dayjs from "dayjs";
 import {ScheduleGetGroupDTO} from "../../models/dto/schedule_get_group_dto.ts";
+import {ScheduleAddModal} from "../../components/modal/schedule_add_modal.tsx";
+import {Page} from "../../models/page.ts";
+import {ScheduleGroupEntity} from "../../models/entity/schedule_group_entity.ts";
+import {ScheduleGroupListDTO} from "../../models/dto/schedule_group_list_dto.ts";
+import {Link} from "react-router-dom";
 
 /**
  * # 看板主页
@@ -39,13 +48,36 @@ export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (he
     const [timeLine, setTimeLine] = useState<TimelineItemProps[]>([] as TimelineItemProps[]);
     const [schedulePriorityEntity, setSchedulePriorityEntity] = useState<SchedulePriorityEntity>({} as SchedulePriorityEntity);
     const [scheduleSearchInfo] = useState<ScheduleGetGroupDTO>({
-        // 获取本周周一到本周日，要求周一开始而不是周六（格式 yyyy-MM-dd）
-        start_time: dayjs().startOf("week").add(2, "day").toISOString().split("T")[0],
+        // 获取当天所在的周一到周日
+        start_time: dayjs().startOf("week").add(-5, "day").toISOString().split("T")[0],
         end_time: dayjs().endOf("week").add(1, "day").toISOString().split("T")[0],
     } as ScheduleGetGroupDTO);
 
+    const [scheduleSearchList] = useState<ScheduleGroupListDTO>({
+        page: 1,
+        size: 1000,
+        type: "all",
+    } as ScheduleGroupListDTO);
+
+    const [scheduleAdd, setScheduleAdd] = useState<boolean>(false);
+    const [scheduleGroupList, setScheduleGroupList] = useState<Page<ScheduleGroupEntity>>({} as Page<ScheduleGroupEntity>);
+    const [refresh, setRefresh] = useState<boolean>(false);
+
     document.title = `${webInfo.name} - 看板`;
     onHeaderHandler("看板");
+
+    useEffect(() => {
+        const func = async () => {
+            const getResp = await GetScheduleGroupAPI(scheduleSearchList);
+            if (getResp?.output === "Success") {
+                setScheduleGroupList(getResp.data!);
+            } else {
+                console.error(getResp?.error_message);
+            }
+        }
+
+        func().then();
+    }, [refresh]);
 
     useEffect(() => {
         const func = async () => {
@@ -95,7 +127,7 @@ export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (he
                         ),
                     });
                 });
-                // 设置 timeLineItem 为反序列
+                // 设置 timeLineItem 为按照时间的倒序 (最新的在最上面)
                 setTimeLine(timeLineItem.reverse());
             } else {
                 message.warning(getResp?.error_message);
@@ -104,26 +136,23 @@ export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (he
 
         func().then();
         func2().then();
-    }, []);
+    }, [refresh]);
 
     return (
         <div className={"flex-1 flex flex-col gap-3 h-full"}>
             <div className={"flex-shrink-0 col-span-2 flex justify-end"}>
-                <div
+                <Link
+                    to={"/dashboard/curriculum"}
                     className={"transition flex gap-1 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-l-lg px-4 py-1.5"}>
                     <BuildOutlined/>
                     <span>课程</span>
-                </div>
-                <div
-                    className={"transition flex gap-1 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white px-4 py-1.5"}>
-                    <CalendarOutlined/>
-                    <span>特殊日</span>
-                </div>
-                <div
-                    className={"transition flex gap-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-r-lg px-4 py-1.5"}>
+                </Link>
+                <button
+                    onClick={() => setScheduleAdd(true)}
+                    className={"transition flex items-center gap-1 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-r-lg px-4 py-1.5"}>
                     <PlusOutlined/>
                     <span>日程</span>
-                </div>
+                </button>
             </div>
             <div className={"flex-1 grid gap-3 grid-cols-2"}>
                 <div className={"transition bg-gray-200/75 shadow hover:shadow-lg rounded-lg"}>
@@ -233,6 +262,8 @@ export function DashboardHome({onHeaderHandler}: Readonly<{ onHeaderHandler: (he
                     <Timeline items={timeLine} className={"p-3"}/>
                 </div>
             </div>
+            <ScheduleAddModal propOpen={scheduleAdd} groupList={scheduleGroupList}
+                              emit={setScheduleAdd} refresh={setRefresh}/>
         </div>
     );
 }

@@ -90,10 +90,10 @@ export function DashboardSideMenu({webInfo}: { webInfo: WebInfoEntity }) {
                     <SideMenuItem icon={<SnippetsOutlined/>} title={"课程表"} path={"/dashboard/curriculum"}/>
                     <SideMenuItem icon={<UserSwitchOutlined/>} title={"好友"} path={"/dashboard/friends"}/>
                     <SideMenuItem icon={<UsergroupAddOutlined />} title={"日程小组"} path={"/dashboard/groups"}/>
-                    <SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>
-                    {
-                        userEntity.role === "ADMIN" ? <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/> : null
-                    }
+                    {/*<SideMenuItem icon={<SettingOutlined/>} title={"设置"} path={"/dashboard/settings"}/>*/}
+                    {/*{*/}
+                    {/*    userEntity.role === "ADMIN" ? <SideMenuItem icon={<SlidersOutlined/>} title={"管理"} path={"/admin/home"}/> : null*/}
+                    {/*}*/}
                 </div>
             </div>
             <div className={"flex-shrink-0 text-white"}>

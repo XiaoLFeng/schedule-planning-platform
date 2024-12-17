@@ -642,7 +642,6 @@ public class ScheduleLogic implements ScheduleService {
                             .le(ScheduleDO::getEndTime, endTimestamp)
                     )
                     .list());
-            log.info("scheduleList: {}", scheduleList);
             scheduleList.addAll(scheduleDAO.lambdaQuery()
                     .or(i -> i
                             .eq(ScheduleDO::getType, 2)
@@ -655,7 +654,6 @@ public class ScheduleLogic implements ScheduleService {
                             .ge(ScheduleDO::getStartTime, startTimestamp)
                     )
                     .list());
-            log.info("scheduleList: {}", scheduleList);
             scheduleList.addAll(scheduleDAO.lambdaQuery()
                     .or(i -> i
                             .eq(ScheduleDO::getType, 1)

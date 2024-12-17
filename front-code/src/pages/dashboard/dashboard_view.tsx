@@ -109,9 +109,9 @@ export function DashboardView({onHeaderHandler}: { onHeaderHandler: (header: str
                 <div className={"flex justify-between"}>
                     <div className={"flex"}>
                         <DashboardViewMenu to={"/dashboard/view/year-and-month"} text={"年/月视图"}
-                                           className={"rounded-l-lg"}/>
-                        <DashboardViewMenu to={"/dashboard/view/week"} text={"周视图"}/>
-                        <DashboardViewMenu to={"/dashboard/view/day"} text={"日视图"} className={"rounded-r-lg"}/>
+                                           className={"rounded-l-lg rounded-r-lg"}/>
+                        {/*<DashboardViewMenu to={"/dashboard/view/week"} text={"周视图"}/>*/}
+                        {/*<DashboardViewMenu to={"/dashboard/view/day"} text={"日视图"} className={"rounded-r-lg"}/>*/}
                     </div>
                     <div className={"flex gap-3"}>
                         <div>
