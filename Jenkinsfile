@@ -15,7 +15,7 @@ node("centos") {
         cd back-code
         ${mvn}/bin/mvn clean verify sonar:sonar \
           -Dsonar.projectKey=XiaoLFeng_schedule-planning-platform_backend \
-          -Dsonar.projectName='schedule-planning-platform-backend'
+          -Dsonar.projectName='学生日程规划平台后端'
       """
     }
   }
@@ -27,8 +27,8 @@ node("centos") {
       sh """
         cd front-code
         npx sonar-scanner \
-          -Dsonar.projectKey=XiaoLFeng_schedule-planning-platform_frontend \
-          -Dsonar.projectName='schedule-planning-platform-frontend' \
+          -Dsonar.projectKey=schedule-planning-platform_frontend \
+          -Dsonar.projectName='schedule-planning-platform-platform_frontend' \
           -Dsonar.sources=src \
           -Dsonar.language=ts \
           -Dsonar.sourceEncoding=UTF-8
